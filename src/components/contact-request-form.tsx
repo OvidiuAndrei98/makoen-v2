@@ -1,34 +1,55 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import CustomSelect from "./custom-select";
 import { serviceOptions, isEventService } from "@/lib/service-options";
 import { legal } from "@/lib/legal";
 
-const teams = [
+export const contactTeams = [
   "1–10 persoane",
   "11–30 persoane",
   "31–75 persoane",
   "76–150 persoane",
   "Peste 150 persoane",
 ];
+
+const serviceLabels: Record<string, string> = {
+  "Abonament Vero Aqua — 31 € + TVA/lună": "Abonament Vero Aqua",
+  "Prăjire și blenduri personalizate": "Prăjire și blenduri",
+  "Cafea pentru espresso sau filtru": "Cafea espresso / filtru",
+  "Consultanță pentru filtrarea apei": "Consultanță pentru apă",
+  "Instalare sistem de filtrare": "Instalare filtrare",
+  "Schimb filtre și mentenanță": "Mentenanță și filtre",
+  "Evenimente private — rulotă": "Eveniment — rulotă",
+  "Evenimente private — bar mobil": "Eveniment — bar mobil",
+};
+
+export function contactWhatsAppHref(interest: string, team: string) {
+  return `https://wa.me/40744524728?text=${encodeURIComponent(`Bună! Mă interesează: ${interest}. ${isEventService(interest) ? "Invitați" : "Echipa"}: ${team}. Aș dori o ofertă Makeon.`)}`;
+}
+
 /** Preserve the request ID and inputs after an uncertain send so the same request can be retried. */
 export default function ContactRequestForm({
   interest,
   onInterestChange,
+  onTeamChange,
+  showWhatsApp = true,
 }: {
   interest: string;
   onInterestChange: (value: string) => void;
+  onTeamChange?: (value: string) => void;
+  showWhatsApp?: boolean;
 }) {
   const eventRequest = isEventService(interest);
-  const [team, setTeam] = useState(teams[1]);
+  const [team, setTeam] = useState(contactTeams[1]);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
   );
   const [error, setError] = useState("");
   const requestId = useRef<string | null>(null);
   const busy = useRef(false);
+  useEffect(() => { onTeamChange?.(team); }, [onTeamChange, team]);
   if (status === "sent")
     return (
       <div className="contact-summary" role="status">
@@ -156,7 +177,7 @@ export default function ContactRequestForm({
             label="Ce soluție cauți?"
             value={interest}
             onChange={onInterestChange}
-            options={serviceOptions.map((value) => ({ value, label: value }))}
+            options={serviceOptions.map((value) => ({ value, label: serviceLabels[value] ?? value }))}
           />
           </div>
           <div className="contact-field">
@@ -166,7 +187,7 @@ export default function ContactRequestForm({
             label={eventRequest ? "Câți invitați estimezi?" : "Câți oameni sunt în echipă?"}
             value={team}
             onChange={setTeam}
-            options={teams.map((value) => ({ value, label: value }))}
+            options={contactTeams.map((value) => ({ value, label: value }))}
           />
           </div>
           <div className="contact-field contact-field-wide">
@@ -178,8 +199,10 @@ export default function ContactRequestForm({
             name="message"
             rows={3}
             maxLength={3000}
-            placeholder={eventRequest ? "Data evenimentului, localitatea și alte detalii utile…" : undefined}
+            placeholder={eventRequest ? "Data evenimentului, localitatea, durata și formatul dorit…" : undefined}
+            aria-describedby={eventRequest ? "contact-event-hint" : undefined}
           />
+          {eventRequest && <p id="contact-event-hint" className="contact-data-note">Include data, localitatea, durata și formatul: bar mobil sau rulotă. Poți adăuga detalii despre spațiu și acces.</p>}
           </div>
           <div className="contact-trap" aria-hidden="true">
             <label htmlFor="contact-website">Website</label>
@@ -208,18 +231,18 @@ export default function ContactRequestForm({
           className="primary-button"
           disabled={status === "sending"}
         >
-          {status === "sending" ? "Se trimite…" : "Solicită o ofertă"}
-          <ArrowRight size={18} />
+          {status === "sending" ? "Se trimite…" : "Trimite solicitarea"}
+          <ArrowRight size={18} aria-hidden="true" />
         </button>
       </form>
-      <a
+      {showWhatsApp && <a
         className="text-link contact-whatsapp"
         target="_blank"
         rel="noopener noreferrer"
-        href={`https://wa.me/40744524728?text=${encodeURIComponent(`Bună! Mă interesează: ${interest}. ${eventRequest ? "Invitați" : "Echipa"}: ${team}. Aș dori o ofertă Makeon.`)}`}
+        href={contactWhatsAppHref(interest, team)}
       >
         Preferi WhatsApp? <ArrowUpRight size={15} />
-      </a>
+      </a>}
     </>
   );
 }

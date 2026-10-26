@@ -21,6 +21,7 @@ export default function BrandLogo({
           width={240}
           height={80}
           priority={priority}
+          draggable={false}
         />
         {/* Separate layers align the lettering with the emblem and adapt its contrast. */}
         <Image
@@ -30,6 +31,7 @@ export default function BrandLogo({
           aria-hidden="true"
           width={240}
           height={80}
+          draggable={false}
         />
       </span>
     </Link>

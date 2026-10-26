@@ -1,0 +1,35 @@
+/* Original 3:4 and 4:3 photographs share one height at a 9:16 column ratio. */
+.home-events.event-pair-home { background:var(--makeon-surface-muted,#f1f0eb); color:var(--makeon-ink,#292621); }
+.event-pair-header { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); align-items:end; gap:24px 64px; max-inline-size:1280px; margin-inline:auto; margin-block-end:30px; }
+.event-pair-header .b2b-heading { margin:0; font-size:clamp(32px,3vw,44px); }
+.event-pair-header > p { max-inline-size:60ch; margin:0; color:var(--makeon-muted,#625e56); font-size:17px; line-height:1.65; }
+.event-photo-pair { display:grid; grid-template-columns:minmax(0,9fr) minmax(0,16fr); align-items:stretch; gap:clamp(20px,2.2vw,32px); max-inline-size:1280px; margin-inline:auto; }
+.event-photo-pair .event-pair-card { display:flex; flex-direction:column; min-inline-size:0; margin:0; padding:0; border:0; scroll-margin-block-start:108px; }
+.event-pair-media { position:relative; flex:none; inline-size:100%; overflow:hidden; }
+.event-pair-media-stand { aspect-ratio:3 / 4; }
+.event-pair-media-trailer { aspect-ratio:4 / 3; }
+.event-pair-media img { object-fit:contain; object-position:center; }
+.event-pair-copy { display:flex; flex:1; flex-direction:column; align-items:start; max-inline-size:50ch; padding-block-start:20px; }
+.b2b-site .event-pair-copy .b2b-heading { margin:0; font:550 clamp(22px,2vw,28px)/1.2 var(--font-body); letter-spacing:-.035em; }
+.event-pair-copy > p { margin:12px 0 18px; color:var(--makeon-muted,#625e56); font-size:16px; line-height:1.65; }
+.event-pair-action { margin-block-start:auto; }
+.event-pair-link { display:inline-flex; align-items:center; justify-content:space-between; gap:20px; min-block-size:44px; border-block-end:1px solid var(--makeon-border,#d8d5cc); color:var(--makeon-ink,#292621); font-size:15px; }
+.event-pair-formats > .b2b-heading { max-inline-size:1280px; margin:0 auto 30px; font-size:clamp(30px,3vw,42px); }
+.event-pair-practical { margin:0 0 22px; }
+.event-pair-practical dt { margin:0 0 5px; color:var(--makeon-ink,#292621); font-size:15px; font-weight:550; line-height:1.6; }
+.event-pair-practical dd { margin:0; color:var(--makeon-muted,#625e56); font-size:16px; line-height:1.65; }
+.event-pair-copy > .b2b-btn { min-block-size:52px; gap:16px; padding:14px 18px; font-size:15px; }
+@media (min-width:701px) and (max-width:1000px) {
+  .event-pair-copy > .b2b-btn { min-block-size:48px; gap:12px; padding:12px; font-size:14px; }
+}
+@media (max-width:700px) {
+  .event-pair-header { grid-template-columns:minmax(0,1fr); gap:14px; margin-block-end:26px; }
+  .event-pair-header .b2b-heading { font-size:34px; }
+  .event-photo-pair { grid-template-columns:minmax(0,1fr); gap:38px; }
+  .event-photo-pair .event-pair-card-stand { max-inline-size:420px; }
+  .event-pair-copy { max-inline-size:50ch; padding-block-start:18px; }
+  .b2b-site .event-pair-copy .b2b-heading { font-size:26px; }
+  .event-pair-copy > .b2b-btn { align-self:stretch; }
+  .event-pair-formats > .b2b-heading { margin-block-end:26px; font-size:32px; }
+  .event-photo-pair .event-pair-card { scroll-margin-block-start:92px; }
+}

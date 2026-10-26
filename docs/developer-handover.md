@@ -55,37 +55,69 @@ Business copy and catalog fallback data also live in `src/lib/coffee-catalog.ts`
 and the relevant public components. Product data from the CMS takes precedence
 once the CMS is configured.
 
-The company landing is shared through `src/components/makeon-landing.tsx`.
-The `/` route starts with coffee and retains the coffee/water switches. The
-`/apa` route renders water from the initial response, removes those switches,
-and reuses the water equipment, services, business offer, FAQ, and contact form.
-Its offer form defaults to water filtration. `SiteHeader.sectionBase` keeps
-section links on the current landing; the brand overview links back to `/`.
-The standalone water hero retains its Three.js scene. The homepage also uses
-`ElementScene` again: `CombinedHero` shows the coffee bean or water drop according
-to the current world. Its hero switch uses the same world state and transition
-as the other selectors. The shared coffee/water headline remains, with a compact
-service label above it. The homepage hero omits brand logos; its copy and model
-are balanced in two columns, with a compact stacked arrangement on phones.
-The hero selector changes worlds only on activation, with no hover preview or
-pulse. The headline pairs a warm copper accent on energy with blue hydration.
-The local video experiments remain as inactive assets and build scripts.
-The navbar has a solid dark background from first render and stays sticky above
-the page. The homepage hero accounts for the navbar's normal-flow height. The
-dialog menu is used through 1000px to keep navigation from crowding on tablets.
+The company landing is dispatched through `src/components/makeon-landing.tsx`.
+`HomeOverview` composes `/`; `CoffeeOfficeLanding` and `WaterLanding` render
+`/cafea-pentru-birouri` and `/apa`. `EventLanding` renders the dedicated
+`/cafea-la-evenimente` route. These pages show their service immediately, without
+coffee/water switches or Three.js scenes. Legacy animation experiments remain
+inactive and have not been removed.
 
-The homepage hero presents coffee and water together: its primary action opens
-the contact form with coffee and water selected, while the secondary action
-scrolls to the `#ecosistem` overview. Service switches remain in the business
-and solutions sections. The business offer appears immediately after the brand
-overview, followed by solutions, roasting services, private events, and the store. Product cards
-link to shopping for beans and to an enquiry for equipment or subscriptions.
+The home hero introduces coffee and water together. On wide, tall windows with
+motion enabled, one ScrollTrigger timeline changes the panorama into a 55%/45%
+image/offer composition. The stage uses native CSS sticky positioning and 0.75
+viewport heights of extra scene length; no DOM reparenting or forced wheel/snap
+behavior is added. On smaller windows, reduced motion and no-JavaScript renders,
+the complete static composition remains in normal flow. The image at
+`public/images/makeon-office-hero-v2.webp` was generated from equipment references;
+it is illustrative, not evidence of a customer installation. A masked title
+entrance settles within 800ms on desktop or 650ms on mobile, and completes when
+scrolling starts. Text stays anchored; keyboard access and the solutions anchor
+expose the actual offer controls at the readable end of the scene. A compact
+support module follows, then the photographic event chapter and shop selection.
+Actual event photographs show the mobile Coffee Corner bar and the trailer in
+their original portrait/landscape proportions. The product selection reuses
+`CoffeeProductCard`, the catalog provider and the existing cart action.
 
-`PrivateEvents` presents the caravan and mobile bar only in the coffee world;
-switching to water removes it, and the standalone water page does not show it.
-Its WebP photographs show the client's caravan and mobile bar. Each enquiry preselects its
-own entry in `eventServices`; the shared contact form and email use guest counts
-for these entries. Date and location are collected through the message field.
+`business.css` isolates service typography and surfaces under `.b2b-site`;
+`home.css` controls the continuation and shared `SiteFooter`;
+`opening.css` and `use-home-opening-motion.ts` own the opening and entrance;
+`service-compositions.css` adapts the service compositions, and
+`office-service-pages.css` scopes the compact reading layouts, with
+`service-editorial.css` providing the photographic coffee hero, equipment offer,
+three-zone water hero and large water-context/inclusions composition.
+`use-presentation-entrance.ts` owns service heroes, while
+`use-site-choreography.ts` owns coordinated sections, products and event pairs.
+Their scopes and animated layers remain separate. The shop keeps
+its original product typography, cards, filters and checkout UI. `SiteHeader`
+provides a light sticky header with five direct service/company/store links.
+Below 1280px it uses the existing native-dialog menu. The menu closes before
+opening the cart or offer form. The shared footer provides identity and contact
+on the left, two small navigation groups on the right and the
+existing legal/cookie-policy/ANPC links. No cookie-settings manager exists in the
+project; the footer retains the existing policy link.
+
+The home hero opens the unchanged contact form with coffee and water selected;
+its secondary link opens the dedicated events page. Existing home anchors `#despre`,
+`#ecosistem`, `#servicii`, `#evenimente`, `#magazin` and `#abonamente` are
+retained. The latter targets the compact footer enquiry access. Coffee and water
+pages keep their detailed equipment, service, subscription and FAQ information,
+with supplementary specifications, services and FAQs initially closed;
+the old coffee-page event anchor links to the dedicated event page.
+
+`src/lib/business-content.ts` centralizes approved water conditions and service
+copy. The water offer is 31 EUR + VAT/month/apparatus for 36 months, total 1,116 EUR
++ VAT/apparatus. Coffee costs, installation and maintenance are confirmed in a
+personalized offer. Do not invent equipment capacities, coffee subscription
+prices, event capacities, transport inclusions or package prices: those details
+still require client confirmation. Vero's four stages + UV and three water
+temperatures describe the presented apparatus rather than every filtration system.
+
+Event enquiries retain the existing `eventServices` values and `/api/contact`
+payload. Guest count uses the existing team field; date, locality, duration and
+format use the message field with a persistent input hint. Contact validation,
+idempotent retry, provider submission and success/error behavior are unchanged.
+`CatalogProvider` and `CartProvider` stay mounted in the public layout. No
+commerce APIs, stock/variant/price rules, storage keys or payment logic changed.
 
 ## 3. Accounts, access, and environment
 
@@ -327,6 +359,31 @@ Playwright expects the application to be running at `http://127.0.0.1:3000` and
 uses installed Google Chrome. Run `npm run test:e2e`. Browser commerce tests use
 mocked catalog/payment responses and do not replace real Stripe end-to-end testing.
 Check mobile layouts and reduced motion when changing navigation or animations.
+
+The current presentation refinement passed a production build, TypeScript and
+124 selected Playwright cases across smooth scrolling, the panoramic home opening,
+office offers/navigation, water, events, contact, services, catalog loading,
+commerce UI, unavailable cart, cart layout and shop suites. Checks include
+resize, reduced motion, JavaScript-disabled rendering, overlay locks,
+anchor offsets, history/focus restoration, native mobile touch scrolling,
+header/menu alignment, modal focus boundaries, contextual form payloads,
+measured disclosures, photographic pairs and product catalog loading/retry.
+The additional frame-sampled choreography checks cover service hero masks/title
+lines, water conditions/inclusions, product stagger, section completion,
+native sticky scene progress and an early pointer gesture during hydration.
+The six mocked contact-provider tests passed during the preceding redesign. This is not
+a claim that every historical visual/animation suite passes. No real order,
+payment or customer email was created. Current home/office captures cover
+390 and 1440px, with an additional 320px water check; the browser suites also
+cover intermediate widths and 1920px. Earlier shop comparisons matched the
+saved baseline at 390 and 1440px. The current comparison is
+`artifacts/service-choreography/review.html` (gitignored), with current captures
+and four actual Chromium interaction recordings encoded as animated WebP;
+earlier directions remain in `artifacts/polish/`, `artifacts/clarity/`,
+`artifacts/hero-transfer/`, `artifacts/offers/` and `artifacts/motion/`. See
+[opening motion](opening-motion.md) and [presentation design](presentation-design.md) for image roles, motion, references and
+commercial constraints. The latest component changes and verification limits
+are recorded in [presentation polish](presentation-polish.md).
 
 ## 10. Operational troubleshooting and current limits
 

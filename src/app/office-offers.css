@@ -1,0 +1,82 @@
+/* Adjoining service choices, fully usable before any scroll. */
+.opening-services { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; padding:0; background:var(--makeon-surface); scroll-margin-block-start:106px; }
+.opening-offer-surface { display:flex; min-width:0; padding:44px clamp(24px,3.5vw,56px); transition:background-color 320ms ease; }
+.opening-offer-surface:first-child { padding-left:var(--page-gutter); }
+.opening-offer-surface:last-child { padding-right:var(--page-gutter); }
+.opening-offer-surface-coffee { background:#f0ece4; }
+.opening-offer-surface-water { background:var(--makeon-surface-muted); }
+.opening-service { display:grid; grid-template-columns:minmax(0,1.62fr) minmax(0,1fr); align-items:center; gap:22px; min-width:0; width:100%; }
+.opening-service-copy { min-width:0; }
+.opening-service:focus-within { opacity:1 !important; transform:none !important; }
+.opening-offer-brand { display:flex; align-items:center; height:56px; margin-bottom:12px; }
+.opening-offer-brand img { display:block; height:auto; max-width:100%; object-fit:contain; }
+.opening-offer-brand .opening-logo-coffee { width:52px; }
+.opening-offer-brand .opening-logo-water { width:128px; }
+.b2b-site .opening-service h2 { margin:0 0 12px; font:600 clamp(28px,2.2vw,35px)/1.15 var(--font-body); letter-spacing:-.055em; text-wrap:balance; }
+.opening-offer-continuation { display:inline; }
+.opening-service-description { color:var(--makeon-muted); font-size:16px; line-height:1.65; }
+.opening-commercial { margin-top:18px; }
+.opening-quote { margin:0 0 6px; color:var(--makeon-ink); font-size:22px; font-weight:550; line-height:1.3; letter-spacing:-.025em; }
+.opening-condition { margin:0; color:var(--makeon-muted); font-size:15px; line-height:1.6; }
+.opening-price { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 9px; margin:0; color:var(--makeon-ink); line-height:1.1; font-variant-numeric:tabular-nums; }
+.opening-price > strong { font-size:40px; font-weight:600; letter-spacing:-.055em; }
+.opening-price-unit { white-space:nowrap; font-size:15px; line-height:1.5; }
+.opening-price-unit > span { font-size:22px; }
+.opening-water-term { margin-top:6px; }
+.opening-service-link { position:relative; display:inline-flex; align-items:center; justify-content:space-between; gap:20px; max-width:100%; min-height:46px; margin-top:18px; padding-block:9px; border-bottom:1px solid #a69d8b; color:var(--makeon-ink); font-size:16px; line-height:1.5; }
+.opening-service-link:focus-visible { outline:2px solid #765b1c; outline-offset:5px; }
+.opening-equipment { position:relative; min-width:0; height:290px; }
+.opening-equipment-water { height:350px; }
+.opening-product-mask,.opening-product-scroll { position:absolute; inset:0; }
+.opening-product-scroll { transform-origin:50% 100%; }
+.opening-product-interaction { position:absolute; inset:0; transform-origin:50% 100%; transition:transform 320ms cubic-bezier(.23,1,.32,1); }
+.opening-product-interaction img { object-fit:contain; object-position:center bottom; mix-blend-mode:normal; }
+.opening-service:focus-within .opening-service-copy { opacity:1 !important; transform:none !important; }
+.opening-service:focus-within :is(.opening-offer-word,.opening-offer-continuation,.opening-offer-brand,.opening-offer-details) { opacity:1 !important; transform:none !important; }
+.opening-service:focus-within :is(.opening-product-mask,.opening-product-scroll) { opacity:1 !important; transform:none !important; clip-path:none !important; }
+.opening-service-link svg { transition:transform 320ms cubic-bezier(.23,1,.32,1); }
+.opening-offer-surface .opening-service-link::after { transition-duration:320ms; }
+.opening-offer-surface:focus-within .opening-product-interaction { transform:translateY(-5px) scale(1.025); }
+.opening-offer-surface:focus-within .opening-service-link svg { transform:translateX(4px); }
+.opening-offer-surface:focus-within .opening-service-link::after { transform:scaleX(1); }
+.opening-offer-surface-coffee:focus-within { background:#ece7dd; }
+.opening-offer-surface-water:focus-within { background:#eae8e1; }
+@media (hover:hover) and (pointer:fine) {
+  .opening-offer-surface:hover .opening-service:not([inert]) .opening-product-mask { clip-path:none !important; }
+  .opening-offer-surface:hover .opening-product-interaction { transform:translateY(-5px) scale(1.025); }
+  .opening-offer-surface:hover .opening-service-link svg { transform:translateX(4px); }
+  .opening-offer-surface:hover .opening-service-link::after { transform:scaleX(1); }
+  .opening-offer-surface-coffee:hover { background:#ece7dd; }
+  .opening-offer-surface-water:hover { background:#eae8e1; }
+}
+@media (min-width:541px) and (max-width:1000px) {
+  .opening-offer-surface { padding-block:36px; padding-inline:28px; }
+  .opening-service { display:flex; flex-direction:column; align-items:stretch; gap:24px; }
+  .opening-equipment { order:-1; height:260px; width:100%; }
+  .opening-equipment-water { height:320px; }
+  .opening-service-copy { flex:1; }
+  .b2b-site .opening-service h2 { font-size:30px; }
+}
+@media (max-width:540px) {
+  .opening-services { grid-template-columns:minmax(0,1fr); }
+  .opening-offer-surface,.opening-offer-surface:first-child,.opening-offer-surface:last-child { padding:32px 20px; }
+  .opening-service { grid-template-columns:minmax(0,1.62fr) minmax(0,1fr); gap:18px; }
+  .opening-offer-brand { height:50px; margin-bottom:10px; }
+  .opening-offer-brand .opening-logo-coffee { width:48px; }
+  .opening-offer-brand .opening-logo-water { width:118px; }
+  .b2b-site .opening-service h2 { font-size:28px; margin-bottom:12px; }
+  .opening-service-description { font-size:15.5px; line-height:1.65; }
+  .opening-commercial { margin-top:16px; }
+  .opening-quote { font-size:21px; }
+  .opening-condition { font-size:14.5px; }
+  .opening-price > strong { font-size:38px; }
+  .opening-price-unit { font-size:14.5px; }
+  .opening-service-link { min-height:46px; margin-top:16px; font-size:15px; gap:12px; }
+  .opening-equipment-coffee { height:220px; }
+  .opening-equipment-water { height:280px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .opening-offer-surface,.opening-product-interaction,.opening-service-link svg,.opening-service-link::after { transition:none; }
+  .opening-offer-surface .opening-service-link::after { transition:none; }
+  .opening-offer-surface:is(:hover,:focus-within) .opening-product-interaction,.opening-offer-surface:is(:hover,:focus-within) .opening-service-link svg { transform:none; }
+}

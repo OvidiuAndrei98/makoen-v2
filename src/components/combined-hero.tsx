@@ -1,55 +1,33 @@
 "use client";
 
-import dynamic from 'next/dynamic';
-import { ArrowDown, ArrowUpRight, Coffee, Droplets } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { useRef } from "react";
+import OfficeOffers from "./office-offers";
+import useHomeOpeningMotion from "./use-home-opening-motion";
 
-const ElementScene = dynamic(() => import('./element-scene'), { ssr: false });
-type World = 'coffee' | 'water';
-const worlds = {
-  coffee: { label: 'Cafea', detail: 'AROMĂ & ENERGIE', brand: 'SwitchMORN Coffee', title: 'Totul începe cu un bob.', description: 'Cafea de specialitate, espressoare și aprovizionare pentru echipa ta.' },
-  water: { label: 'Apă', detail: 'PURITATEA APEI', brand: 'Vero Aqua', title: 'Echilibru, în fiecare picătură.', description: 'Apă filtrată, aparate și mentenanță. Hidratare bună, în fiecare zi.' },
-};
-
-export default function CombinedHero({ world, transitionId, onChange, onOffer }: {
-  world: World;
-  transitionId: number;
-  onChange: (world: World, source: HTMLElement) => void;
-  onOffer: () => void;
-}) {
-  const data = worlds[world];
-
-  return (
-    <section className="hero hero-combined hero-elements" aria-labelledby="hero-title">
-      <div className="hero-copy">
-        <p className="hero-service-label">CAFEA & APĂ · UN SINGUR PARTENER</p>
-        <h1 id="hero-title"><span className="hero-energy-word">Energie</span> și <em>hidratare</em> premium{' '}
-          <span className="hero-combined-audience">pentru tine și echipa ta!</span>
-        </h1>
-        <p className="hero-description">{data.description}</p>
-        <div className="hero-switch-wrap">
-          <div className="world-switch hero-world-switch" role="group" aria-label="Alege lumea Makeon">
-            <span className={`switch-slider ${world}`} aria-hidden="true" />
-            {(['coffee', 'water'] as const).map(value => {
-              const Icon = value === 'coffee' ? Coffee : Droplets;
-              return <button key={value} type="button" aria-label={`Lumea ${value === 'coffee' ? 'cafelei' : 'apei'}`}
-                aria-pressed={world === value}
-                onClick={event => onChange(value, event.currentTarget)}>
-                <Icon size={22} aria-hidden="true" />
-                <span>{worlds[value].label}<small>{worlds[value].detail}</small></span>
-              </button>;
-            })}
+export default function CombinedHero({ onOffer }: { onOffer: () => void }) {
+  const opening = useRef<HTMLElement>(null);
+  useHomeOpeningMotion(opening);
+  return <section ref={opening} className="home-opening" aria-labelledby="hero-title">
+    <div className="opening-stage">
+      <div className="opening-atmosphere">
+        <div className="opening-photo-mask"><div className="opening-photo-pan"><div className="opening-photo-enter">
+          <Image src="/images/makeon-office-hero-v2.webp" alt="Espressor SwitchMORN și dozator Vero Aqua într-un spațiu de birou" fill preload sizes="100vw" />
+        </div></div></div>
+        <div className="opening-copy">
+          <h1 id="hero-title"><span className="opening-line-mask"><span className="opening-title-line">Cafea și apă </span></span><span className="opening-line-mask"><span className="opening-title-line">pentru biroul tău.</span></span></h1>
+          <div className="opening-copy-follow">
+          <p className="opening-description">Espressoare SwitchMORN și dozatoare Vero Aqua pentru companii.</p>
+          <div className="opening-actions">
+            <button type="button" className="b2b-btn" onClick={onOffer}>Cere ofertă pentru birou<ArrowUpRight size={18} aria-hidden="true" /></button>
+            <Link href="/cafea-la-evenimente">Cafea la evenimente</Link>
+          </div>
           </div>
         </div>
-        <div className="hero-actions">
-          <button className="primary-button" onClick={onOffer}>Solicită ofertă pentru echipa ta <ArrowUpRight size={19} /></button>
-          <a className="hero-shop-link" href="#ecosistem">Descoperă soluțiile <ArrowDown size={16} /></a>
-        </div>
       </div>
-      <div className="hero-art">
-        <div className="element-orbit" /><div className="element-orbit orbit-inner" />
-        <ElementScene world={world} transitionId={transitionId} />
-        <div className="element-identity"><span>{data.brand}</span><strong>{data.title}</strong><p>{world === 'coffee' ? 'O origine. O aromă. Ritualul tău.' : 'Un gest simplu. Un ritm mai bun.'}</p></div>
-      </div>
-    </section>
-  );
+      <OfficeOffers />
+    </div>
+  </section>;
 }

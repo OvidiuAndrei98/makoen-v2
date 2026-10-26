@@ -1,0 +1,120 @@
+/* Local service support band. Brand logos belong to the office offers above. */
+.home-support-band {
+  padding-block: 44px 26px;
+  background: var(--makeon-graphite);
+  color: var(--makeon-surface);
+  scroll-margin-block-start: 106px;
+}
+
+.home-support-band-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, .95fr) minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(24px, 2.6vw, 40px);
+}
+
+.b2b-site .home-support-band h2 {
+  max-width: 260px;
+  margin: 0;
+  color: #fffdf7;
+  font: 550 clamp(28px, 2.45vw, 36px)/1.16 var(--font-body);
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.b2b-site .home-support-band h3 {
+  margin: 0 0 13px;
+  color: #fffdf7;
+  font: 550 18px/1.4 var(--font-body);
+  letter-spacing: -.015em;
+}
+
+.home-support-band-service p {
+  max-width: 42ch;
+  margin: 0;
+  color: #d7d2c8;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.home-support-band-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 32px;
+  margin-top: 25px;
+  padding-top: 14px;
+  border-top: 1px solid #625d53;
+  scroll-margin-block-start: 106px;
+}
+
+.home-support-band-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 8px;
+  color: #f0d27f;
+  font-size: 15px;
+  line-height: 1.6;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+.home-support-band-links a:hover {
+  color: #fffdf7;
+}
+
+.b2b-site .home-support-band-links a:focus-visible {
+  outline: 2px solid #f0d27f;
+  outline-offset: 4px;
+}
+
+@media (max-width: 1100px) {
+  .home-support-band-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px 30px;
+  }
+
+  .home-support-band-heading {
+    grid-column: 1 / -1;
+  }
+
+  .b2b-site .home-support-band h2 {
+    max-width: 620px;
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-support-band {
+    padding-block: 34px 24px;
+  }
+
+  .home-support-band-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 25px;
+  }
+
+  .b2b-site .home-support-band h2 {
+    max-width: 360px;
+    margin-bottom: 2px;
+    font-size: 31px;
+  }
+
+  .b2b-site .home-support-band h3 {
+    margin-bottom: 10px;
+    font-size: 19px;
+  }
+
+  .home-support-band-service p {
+    max-width: 48ch;
+  }
+
+  .home-support-band-links {
+    align-items: start;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 26px;
+    padding-top: 14px;
+  }
+}

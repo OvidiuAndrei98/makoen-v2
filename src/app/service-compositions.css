@@ -1,0 +1,111 @@
+/* Service compositions adapt to the equipment and the available photographs. */
+.coffee-intro { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; padding-block:40px 48px; }
+.coffee-intro .b2b-hero-copy { max-width:590px; }
+.service-equipment { min-width:0; margin:0; }
+.service-equipment figcaption { display:flex; align-items:center; gap:22px; min-height:90px; padding-block:14px 0; }
+.service-equipment figcaption span { max-width:260px; color:#656b5e; font-size:15px; line-height:1.7; }
+.service-equipment .service-equipment-brand { display:block; width:auto; height:54px; max-width:140px; object-fit:contain; padding:0; }
+.coffee-machine-display { height:650px; background:transparent; border-bottom:1px solid #e0e2d9; border-radius:0; }
+.coffee-machine-display img { padding:0 22px 20px; object-position:center bottom; }
+.coffee-equipment-info .b2b-heading { max-width:670px; font-size:36px; }
+.coffee-equipment-info .b2b-section-head { align-items:start; }
+.coffee-equipment-info .b2b-section-head > div { flex:1.2; }
+.coffee-equipment-info .b2b-section-head > p { flex:1; }
+.coffee-offer-section { padding-block:66px; background:#f0eee8; scroll-margin-block-start:108px; }
+.coffee-offer-grid { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr); gap:90px; align-items:start; }
+.coffee-offer-grid .b2b-heading { max-width:700px; font-size:42px; }
+.coffee-plan-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 34px; margin:34px 0 0; }
+.coffee-plan-details > div { padding-top:16px; border-top:1px solid #d7d9d0; }
+.coffee-plan-details dt { font-size:18px; font-weight:550; }
+.coffee-plan-details dd { margin:12px 0 0; color:#64675e; font-size:17px; line-height:1.75; }
+.coffee-offer-conditions { padding-top:8px; }
+.coffee-offer-conditions .b2b-price-title { font-size:32px; }
+.coffee-offer-conditions .b2b-btn { margin-top:24px; }
+.coffee-filtration .b2b-heading { font-size:34px; }
+.water-intro { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:75px; padding-block:40px 48px; }
+.water-intro .b2b-hero-copy { max-width:650px; }
+.water-intro .b2b-product-hero-water { height:690px; background:transparent; border-bottom:1px solid #e0e2d9; border-radius:0; }
+.water-intro .b2b-product-hero-water img { padding:0 45px 14px; }
+.water-hero-condition { margin-top:25px; font-size:20px; color:#30372c; line-height:1.6; }
+.water-hero-condition strong { font-weight:550; }
+.water-hero-condition span { display:block; margin-top:5px; color:#666b5f; font-size:15px; }
+.water-subscription-grid { display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(48px,8vw,130px); align-items:start; }
+.water-subscription .b2b-price { margin-top:22px; }
+.water-subscription .b2b-price strong { font-size:88px; }
+.water-price .b2b-btn { margin-top:26px; }
+.water-price .b2b-note { max-width:420px; margin-top:16px; }
+.water-inclusions ul { margin:24px 0; padding:0; list-style:none; }
+.water-inclusions li { display:flex; justify-content:space-between; align-items:baseline; gap:24px; padding-block:17px; border-bottom:1px solid #dcded5; font-size:18px; line-height:1.6; }
+.water-inclusions li span { flex-shrink:0; color:#656e5b; font-size:15px; }
+.water-apparatus-section { border-block:1px solid #dddfd6; }
+.water-apparatus-section .b2b-heading { font-size:36px; }
+.b2b-water #filtre .b2b-filter-media { min-height:440px; align-self:center; background:#f5f5f0; }
+.event-intro { display:grid; grid-template-columns:minmax(0,7fr) minmax(0,5fr); align-items:center; gap:clamp(40px,5vw,80px); padding-block:46px 56px; }
+.event-intro-copy { grid-column:2; grid-row:1; min-width:0; }
+.event-intro-copy .b2b-title { margin-bottom:26px; font-size:clamp(48px,3.5vw,64px); }
+.event-intro-photo { grid-column:1; grid-row:1; position:relative; aspect-ratio:4/3; overflow:hidden; border-radius:3px; }
+.event-intro-photo img { object-fit:cover; object-position:center; }
+.event-intro .b2b-actions { align-items:start; flex-direction:column; gap:15px; }
+.event-intro .b2b-btn { font-size:15px; }
+.event-formats-grid { display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); align-items:start; gap:clamp(45px,7vw,110px); margin-top:36px; }
+.event-formats-grid .b2b-event-format { display:flex; flex-direction:column; align-items:stretch; gap:28px; padding:0; border:0; }
+.event-formats-grid .b2b-event-format > .b2b-event-format-media { order:-1; height:auto; aspect-ratio:3/4; background:transparent; }
+.event-formats-grid .b2b-event-format-media img { object-fit:contain; }
+.event-formats-grid #rulota { padding-top:85px; }
+.event-formats-grid #rulota > .b2b-event-format-media { aspect-ratio:4/3; }
+.event-formats-grid .b2b-event-format .b2b-heading { margin-top:0; font-size:32px; }
+.event-formats-grid .b2b-details { margin-block:20px 25px; }
+.event-enquiry-section { padding-block:66px; background:#f0f0eb; scroll-margin-block-start:108px; }
+.event-enquiry-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; gap:90px; }
+.event-enquiry-grid .b2b-heading { margin-bottom:24px; }
+.event-enquiry-grid .b2b-btn { margin-top:30px; }
+.event-enquiry-grid .b2b-details { margin:0; }
+.b2b-faq-layout .b2b-heading { font-size:34px; }
+.water-contract { margin-block:12px; font-size:17px; line-height:1.6; }
+@media (max-width:1279px) {
+  .coffee-machine-display { height:560px; }
+  .coffee-offer-grid { gap:45px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .coffee-offer-grid .b2b-heading { font-size:36px; }
+  .water-intro { gap:40px; }
+  .water-intro .b2b-product-hero-water { height:620px; }
+  .event-intro { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:35px; }
+  .event-intro-copy .b2b-title { font-size:46px; }
+}
+@media (max-width:800px) {
+  .coffee-intro,.water-intro,.coffee-offer-grid,.water-subscription-grid,.event-intro,.event-enquiry-grid { grid-template-columns:minmax(0,1fr); gap:32px; }
+  .coffee-machine-display { height:520px; }
+  .water-intro .b2b-product-hero-water { height:560px; }
+  .water-intro .b2b-product-hero-water img { padding-inline:30px; }
+  .water-inclusions { padding-top:26px; border-top:1px solid #dddfd6; }
+  .event-intro-copy,.event-intro-photo { grid-column:auto; grid-row:auto; }
+  .event-intro-copy .b2b-title { max-width:17ch; font-size:52px; }
+  .event-intro .b2b-actions { flex-direction:row; align-items:center; gap:20px; }
+  .event-formats-grid { gap:32px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .event-formats-grid #rulota { padding-top:50px; }
+  .event-formats-grid .b2b-details > div { grid-template-columns:minmax(0,1fr); gap:6px; }
+  .event-enquiry-section,.coffee-offer-section { padding-block:50px; }
+}
+@media (max-width:540px) {
+  .coffee-intro .b2b-title { max-width:15ch; }
+  .coffee-machine-display { height:400px; }
+  .coffee-machine-display img { padding:20px; }
+  .coffee-equipment-info .b2b-heading,.water-apparatus-section .b2b-heading { font-size:30px; }
+  .coffee-offer-grid .b2b-heading { font-size:34px; }
+  .coffee-plan-details { grid-template-columns:minmax(0,1fr); gap:22px; }
+  .coffee-offer-conditions { padding-top:24px; border-top:1px solid #d7d9d0; }
+  .water-intro .b2b-product-hero-water { height:500px; }
+  .water-intro .b2b-product-hero-water img { padding-inline:20px; }
+  .water-hero-condition { font-size:21px; }
+  .water-subscription .b2b-price strong { font-size:76px; }
+  .water-price .b2b-btn { width:100%; }
+  .water-inclusions li { font-size:17px; gap:18px; }
+  .b2b-water #filtre .b2b-filter-media { min-height:280px; }
+  .event-intro { padding-block:28px 40px; }
+  .event-intro-copy .b2b-title { font-size:40px; }
+  .event-intro .b2b-actions { align-items:stretch; }
+  .event-intro-photo { aspect-ratio:4/3; }
+  .event-formats-grid { grid-template-columns:minmax(0,1fr); gap:40px; }
+  .event-formats-grid #rulota { padding-top:0; }
+  .event-formats-grid .b2b-details > div { grid-template-columns:minmax(90px,.65fr) minmax(0,1.35fr); gap:16px; }
+  .event-enquiry-section,.coffee-offer-section { padding-block:44px; }
+}

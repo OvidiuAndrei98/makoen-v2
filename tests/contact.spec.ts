@@ -24,7 +24,7 @@ for (const width of [320, 390, 430])
     });
     await page.goto("/");
     await page
-      .getByRole("button", { name: "Găsim soluția potrivită", exact: true })
+      .getByRole("button", { name: "Cere ofertă pentru birou", exact: true }).first()
       .click();
     const dialog = page.getByRole("dialog");
     await dialog.locator("#contact-name").fill("Client Test");
@@ -33,7 +33,7 @@ for (const width of [320, 390, 430])
       .locator("#contact-message")
       .fill("O ofertă pentru echipa noastră.");
     await dialog
-      .getByRole("button", { name: "Solicită o ofertă", exact: true })
+      .getByRole("button", { name: "Trimite solicitarea", exact: true })
       .click();
     await expect(dialog.getByRole("alert")).toContainText("Trimiterea a eșuat");
     await expect(dialog.locator("#contact-email")).toHaveValue(
@@ -43,7 +43,7 @@ for (const width of [320, 390, 430])
       await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
     await dialog
-      .getByRole("button", { name: "Solicită o ofertă", exact: true })
+      .getByRole("button", { name: "Trimite solicitarea", exact: true })
       .click();
     await expect(dialog.getByRole("status")).toContainText(
       "Solicitarea a fost trimisă",

@@ -1,0 +1,13 @@
+/* Motion feedback is restricted to presentation links and fine-pointer hover. */
+:is(.opening-service-link,.opening-actions > a,.home-event-links .b2b-link,.home-event-dominant figcaption > a,.b2b-service-hero .b2b-link,.event-intro .b2b-link) { position:relative; }
+:is(.opening-service-link,.opening-actions > a,.home-event-links .b2b-link,.home-event-dominant figcaption > a,.b2b-service-hero .b2b-link,.event-intro .b2b-link)::after { content:''; position:absolute; inset-inline:0; bottom:-1px; height:1px; background:currentColor; transform:scaleX(0); transform-origin:left; transition:transform 200ms cubic-bezier(.23,1,.32,1); }
+:is(.home-event-links,.home-event-dominant,.b2b-service-hero,.event-intro) .b2b-link svg { transition:transform 200ms cubic-bezier(.23,1,.32,1); }
+:is(.opening-service-link,.opening-actions > a,.home-event-links .b2b-link,.home-event-dominant figcaption > a,.b2b-service-hero .b2b-link,.event-intro .b2b-link):focus-visible::after { transform:scaleX(1); }
+@media (hover:hover) and (pointer:fine) {
+  :is(.opening-service-link,.opening-actions > a,.home-event-links .b2b-link,.home-event-dominant figcaption > a,.b2b-service-hero .b2b-link,.event-intro .b2b-link):hover::after { transform:scaleX(1); }
+  :is(.home-event-links,.home-event-dominant,.b2b-service-hero,.event-intro) .b2b-link:hover svg { transform:translateX(4px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  :is(.opening-service-link,.opening-actions > a,.home-event-links .b2b-link,.home-event-dominant figcaption > a,.b2b-service-hero .b2b-link,.event-intro .b2b-link)::after { transition:none; }
+  :is(.home-event-links,.home-event-dominant,.b2b-service-hero,.event-intro) .b2b-link svg { transition:none; transform:none; }
+}

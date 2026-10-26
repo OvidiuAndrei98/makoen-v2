@@ -1,0 +1,98 @@
+/* Contact/offer only. The cart and navigation dialogs keep their own lifecycle. */
+.contact-dialog.contact-offer-dialog { position:fixed; inset:0; width:100vw; width:100dvw; height:100vh; height:100dvh; max-width:none; max-height:none; margin:0; padding:24px; border:0; border-radius:0; background:transparent; color:var(--makeon-ink,#292621); box-shadow:none; overflow:auto; overscroll-behavior:contain; isolation:isolate; scrollbar-gutter:stable both-edges; scroll-padding-block:24px; }
+.contact-offer-dialog[open] { display:grid; align-items:safe center; justify-items:center; }
+.contact-offer-dialog::backdrop { background:transparent; backdrop-filter:none; }
+.contact-offer-dialog .contact-offer-shade { position:fixed; z-index:0; inset:0; background:rgb(25 23 20 / .54); backdrop-filter:blur(3px); pointer-events:none; }
+.contact-offer-dialog .dialog-content { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); align-items:stretch; gap:0; width:min(1024px,100%); padding:0; border-radius:10px; background:var(--makeon-surface,#faf9f6); box-shadow:0 22px 70px rgb(25 23 20 / .2); overflow:clip; transition:none; }
+.contact-offer-dialog .dialog-intro { grid-column:1; grid-row:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; min-height:100%; padding:36px; background:var(--makeon-graphite,#25231f); color:#faf9f6; border-radius:0; }
+.contact-offer-dialog .dialog-intro .b2b-eyebrow { margin:0 0 20px; color:#efd28a; font-size:12px; font-weight:500; line-height:1.5; letter-spacing:.045em; }
+.contact-offer-dialog .dialog-intro h2 { max-width:12ch; margin:0 0 20px; color:#faf9f6; font:550 34px/1.14 var(--font-body); letter-spacing:-.035em; }
+.contact-offer-dialog .dialog-intro .dialog-description { margin:0; color:#dfdcd5; font-size:16px; line-height:1.65; }
+.contact-offer-dialog .dialog-description-compact { display:none; }
+.contact-offer-dialog .dialog-contact-links { display:grid; gap:5px; margin-top:32px; }
+.contact-offer-dialog .dialog-intro :is(.dialog-phone,.dialog-email,.contact-whatsapp) { display:flex; align-items:center; justify-content:space-between; gap:14px; width:fit-content; max-width:100%; min-height:44px; margin:0; padding-block:8px; color:#efd28a; border:0; font-size:15px; line-height:1.5; text-decoration:none; }
+.contact-offer-dialog .dialog-intro .dialog-phone { font-size:17px; font-weight:500; }
+.contact-offer-dialog .dialog-contact-links svg { flex-shrink:0; }
+.contact-offer-dialog .dialog-contact-links a:focus-visible { outline:2px solid #efd28a; outline-offset:4px; border-radius:2px; }
+.contact-offer-dialog .dialog-form-panel { grid-column:2; grid-row:1; min-width:0; padding:36px; background:var(--makeon-surface,#faf9f6); color:var(--makeon-ink,#292621); }
+.contact-offer-dialog .dialog-form-panel form { display:flex; flex-direction:column; gap:18px; margin:0; }
+.contact-offer-dialog .contact-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; min-width:0; margin:0; padding:0; border:0; }
+.contact-offer-dialog .contact-field { display:flex; flex-direction:column; gap:7px; min-width:0; }
+.contact-offer-dialog .contact-field-wide { grid-column:1 / -1; }
+.contact-offer-dialog .contact-field > label { display:block; margin:0; color:#494337; font-size:13px; font-weight:500; line-height:1.5; }
+.contact-offer-dialog .contact-field label span { color:#6b6356; font-weight:400; }
+.contact-offer-dialog .contact-fields :is(input,.custom-select-trigger,textarea) { width:100%; min-width:0; border:1px solid #91897c; border-radius:6px; background:#fff; color:var(--makeon-ink,#292621); font:400 16px/1.5 var(--font-body); box-shadow:none; }
+.contact-offer-dialog .contact-fields :is(input,.custom-select-trigger) { height:50px; min-height:50px; padding:12px 13px; }
+.contact-offer-dialog .contact-fields textarea { height:96px; min-height:96px; padding:12px 13px; resize:vertical; scroll-margin-block:24px; }
+.contact-offer-dialog .contact-field .custom-select { margin:0; }
+.contact-offer-dialog .contact-fields .custom-select-trigger { display:flex; align-items:center; gap:12px; text-align:start; }
+.contact-offer-dialog .custom-select-trigger > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.contact-offer-dialog .custom-select-trigger svg { flex-shrink:0; }
+.contact-offer-dialog .contact-fields :is(input,.custom-select-trigger,textarea):focus-visible { outline:2px solid var(--makeon-focus,#8d681d); outline-offset:2px; border-color:var(--makeon-focus,#8d681d); }
+.contact-offer-dialog .contact-fields .custom-select-trigger[aria-expanded="true"] { border-color:var(--makeon-focus,#8d681d); box-shadow:0 0 0 3px rgb(190 148 47 / .14); }
+.contact-offer-dialog .contact-fields :is(input,textarea):user-invalid { border-color:#9b4739; }
+.contact-offer-dialog .custom-select-panel { z-index:3; padding:5px; border:1px solid #91897c; border-radius:8px; background:var(--makeon-surface,#faf9f6); color:var(--makeon-ink,#292621); box-shadow:0 12px 30px rgb(37 35 31 / .17); }
+.contact-offer-dialog .custom-select-option { min-height:46px; padding:10px 11px; border-radius:4px; color:var(--makeon-ink,#292621); font-size:16px; line-height:1.5; }
+.contact-offer-dialog .custom-select-option.active { background:#eee8dc; }
+.contact-offer-dialog .custom-select-option[aria-selected="true"] { color:var(--makeon-ink,#292621); font-weight:550; }
+.contact-offer-dialog .custom-select-option svg { flex-shrink:0; color:#8d681d; }
+.contact-offer-dialog .contact-data-note { margin:0; color:#675f53; font-size:13px; line-height:1.6; }
+.contact-offer-dialog .contact-data-note a { color:inherit; text-decoration:underline; text-underline-offset:3px; }
+.contact-offer-dialog .contact-field .contact-data-note { margin-top:1px; }
+.contact-offer-dialog .contact-error { margin:0; padding:12px 14px; border:1px solid #d9ab9e; border-radius:6px; background:#fcf0eb; color:#7b3023; font-size:14px; line-height:1.55; }
+.contact-offer-dialog .dialog-content form .primary-button { display:flex; align-items:center; justify-content:space-between; gap:20px; width:100%; height:50px; min-height:50px; margin:0; padding:12px 18px; border:1px solid var(--makeon-action,#ebbf50); border-radius:6px; background:var(--makeon-action,#ebbf50); color:var(--makeon-ink,#292621); font:500 16px/1.4 var(--font-body); letter-spacing:0; text-transform:none; }
+.contact-offer-dialog .dialog-content form .primary-button svg { flex-shrink:0; }
+.contact-offer-dialog .dialog-content form .primary-button:focus-visible { outline:2px solid var(--makeon-focus,#8d681d); outline-offset:4px; }
+.contact-offer-dialog .dialog-content form .primary-button:disabled { opacity:.7; cursor:wait; }
+.contact-offer-dialog .dialog-close { position:sticky; z-index:4; top:12px; right:auto; grid-column:2; grid-row:1; align-self:start; justify-self:end; display:grid; place-items:center; width:44px; height:44px; min-height:44px; margin:12px 12px 0 0; padding:0; border:1px solid #d4cfc4; border-radius:6px; background:var(--makeon-surface-muted,#f1f0eb); color:var(--makeon-ink,#292621); }
+.contact-offer-dialog .dialog-close:focus-visible { outline:2px solid var(--makeon-focus,#8d681d); outline-offset:3px; }
+.contact-offer-dialog[data-keyboard-focus="false"] .dialog-close:focus-visible { outline:none; }
+.contact-offer-dialog .contact-summary { display:flex; align-items:start; gap:14px; margin:28px 0 0; padding:22px; border:1px solid #cfc7b6; border-radius:6px; background:var(--makeon-surface-muted,#f1f0eb); color:var(--makeon-ink,#292621); }
+.contact-offer-dialog .contact-summary > svg { flex-shrink:0; margin-top:3px; color:#8d681d; }
+.contact-offer-dialog .contact-summary strong { font-size:19px; line-height:1.4; }
+.contact-offer-dialog .contact-summary p { margin-top:10px; color:#61594e; font-size:16px; line-height:1.6; }
+.contact-offer-dialog .contact-summary .text-link { display:inline-flex; align-items:center; gap:12px; min-height:44px; margin-top:16px; font-size:15px; }
+@media (hover:hover) and (pointer:fine) {
+  .contact-offer-dialog .dialog-contact-links a:hover { color:#fff5d8; text-decoration:underline; text-underline-offset:5px; }
+  .contact-offer-dialog .dialog-content form .primary-button:hover { background:var(--makeon-action-hover,#f0cd72); border-color:var(--makeon-action-hover,#f0cd72); }
+  .contact-offer-dialog .dialog-close:hover { border-color:#9b907b; background:#e7e2d8; color:var(--makeon-ink,#292621); }
+}
+@media (max-width:899px) {
+  .contact-dialog.contact-offer-dialog { padding:16px; align-items:start; scroll-padding-block:16px; }
+  .contact-offer-dialog .dialog-content { grid-template-columns:minmax(0,1fr); }
+  .contact-offer-dialog .dialog-intro { grid-column:1; grid-row:1; min-height:0; padding:26px 30px; }
+  .contact-offer-dialog .dialog-intro h2 { max-width:none; padding-right:46px; margin-bottom:14px; font-size:30px; }
+  .contact-offer-dialog .dialog-intro .b2b-eyebrow { margin-bottom:12px; }
+  .contact-offer-dialog .dialog-intro .dialog-description { max-width:52ch; font-size:15px; line-height:1.6; }
+  .contact-offer-dialog .dialog-contact-links { display:flex; flex-wrap:wrap; gap:0 22px; margin-top:14px; }
+  .contact-offer-dialog .dialog-intro :is(.dialog-phone,.dialog-email,.contact-whatsapp) { min-height:40px; font-size:14px; }
+  .contact-offer-dialog .dialog-form-panel { grid-column:1; grid-row:2; padding:28px 30px; }
+  .contact-offer-dialog .dialog-close { grid-column:1; grid-row:1 / 3; border-color:#ffffff38; background:var(--makeon-graphite,#25231f); color:#faf9f6; }
+  .contact-offer-dialog .dialog-close:focus-visible { outline-color:#efd28a; }
+}
+@media (max-width:620px) {
+  .contact-dialog.contact-offer-dialog { padding:12px; scroll-padding-block:12px; }
+  .contact-offer-dialog .dialog-intro { padding:20px 24px; }
+  .contact-offer-dialog .dialog-intro .b2b-eyebrow { padding-right:46px; margin-bottom:20px; }
+  .contact-offer-dialog .dialog-intro h2 { max-width:none; padding-right:0; margin-bottom:12px; font-size:28px; }
+  .contact-offer-dialog .dialog-description-full { display:none; }
+  .contact-offer-dialog .dialog-description-compact { display:inline; }
+  .contact-offer-dialog .dialog-contact-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; margin-top:10px; }
+  .contact-offer-dialog .dialog-contact-links :is(.dialog-phone,.dialog-email) { white-space:nowrap; }
+  .contact-offer-dialog .dialog-contact-links :is(.dialog-phone,.dialog-email) svg { display:none; }
+  .contact-offer-dialog .dialog-contact-links .contact-whatsapp { grid-column:1 / -1; }
+  .contact-offer-dialog .dialog-form-panel { padding:24px; }
+  .contact-offer-dialog .contact-fields { grid-template-columns:minmax(0,1fr); gap:16px; }
+  .contact-offer-dialog .contact-field-wide { grid-column:auto; }
+  .contact-offer-dialog .contact-fields textarea { height:104px; min-height:104px; }
+  .contact-offer-dialog .contact-summary { margin-top:0; padding:18px; }
+}
+@media (max-height:740px) and (min-width:900px) {
+  .contact-dialog.contact-offer-dialog { align-items:start; padding-block:16px; }
+  .contact-offer-dialog .dialog-intro { padding:32px; }
+  .contact-offer-dialog .dialog-form-panel { padding:32px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .contact-offer-dialog .custom-select-panel { animation:none; }
+  .contact-offer-dialog .custom-select-trigger svg { transition:none; }
+}

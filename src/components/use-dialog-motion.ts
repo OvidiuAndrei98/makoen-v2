@@ -34,6 +34,7 @@ export default function useDialogMotion(
       el.dataset.keyboardFocus = "false";
     };
     if (opened) {
+      const entering = !el.open;
       if (!el.open) {
         previousOverflow.current = document.body.style.overflow;
         // Native dialogs mark autofocus as focus-visible even after a tap.
@@ -46,29 +47,35 @@ export default function useDialogMotion(
       el.addEventListener("pointerdown", pointerFocus);
       document.body.style.overflow = "hidden";
       if (kind === "menu") {
+        // Keep the top-row controls in the same position as the header.
+        // Retarget the current values when an opening/closing is interrupted.
+        if (entering) {
+          el.dataset.menuRevealed = "false";
+          gsap.set(el, { opacity: 0, clearProps: "transform" });
+          gsap.set(el.querySelectorAll(".mobile-menu-link,.mobile-menu-bottom"), { y: reduced ? 0 : 12, opacity: .5 });
+          el.getBoundingClientRect();
+        }
+        el.dataset.menuRevealed = "true";
         timeline
-          .fromTo(
+          .to(
             el,
-            { yPercent: -100 },
-            { yPercent: 0, duration: reduced ? 0 : 0.55, ease: "power3.inOut" },
+            { opacity: 1, "--menu-backdrop": .28, duration: reduced ? 0 : .2, ease: "power3.out" },
           )
-          .fromTo(
+          .to(
             el.querySelectorAll(".mobile-menu-link"),
-            { y: 28, opacity: 0 },
             {
               y: 0,
               opacity: 1,
-              duration: reduced ? 0 : 0.5,
-              stagger: reduced ? 0 : 0.06,
+              duration: reduced ? 0 : .26,
+              stagger: reduced ? 0 : .025,
               ease: "power3.out",
             },
-            reduced ? 0 : 0.2,
+            0,
           )
-          .fromTo(
+          .to(
             el.querySelector(".mobile-menu-bottom"),
-            { y: 10, opacity: 0 },
-            { y: 0, opacity: 1, duration: reduced ? 0 : 0.35 },
-            reduced ? 0 : 0.5,
+            { y: 0, opacity: 1, duration: reduced ? 0 : .26, ease: "power3.out" },
+            reduced ? 0 : .08,
           );
       } else {
         timeline.fromTo(
@@ -77,19 +84,21 @@ export default function useDialogMotion(
           {
             xPercent: 0,
             "--overlay-opacity": 0.48,
-            duration: reduced ? 0 : 0.48,
+            duration: reduced ? 0 : 0.36,
             ease: "power3.out",
           },
         );
       }
     } else if (el.open) {
+      if (kind === "menu") el.dataset.menuRevealed = "false";
       timeline.to(
         el,
         kind === "menu"
           ? {
-              yPercent: -100,
-              duration: reduced ? 0 : 0.35,
-              ease: "power3.inOut",
+              opacity: 0,
+              "--menu-backdrop": 0,
+              duration: reduced ? 0 : .25,
+              ease: "power3.out",
               onComplete: () => {
                 el.close();
                 restore();

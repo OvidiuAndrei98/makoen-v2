@@ -1,0 +1,75 @@
+/* A complete opening: both services are available without a scroll sequence. */
+.home-opening { position:relative; scroll-margin-block-start:100px; }
+.opening-stage { position:relative; }
+.opening-atmosphere { position:relative; isolation:isolate; min-height:620px; background:#303b32; color:#fffaf2; }
+.opening-photo-mask { position:absolute; z-index:-1; inset:0; overflow:hidden; }
+.opening-photo-pan,.opening-photo-enter { position:absolute; inset:0; }
+.opening-line-mask { display:block; overflow:clip; padding-bottom:.08em; margin-bottom:-.08em; }
+.opening-title-line { display:block; }
+.opening-copy-follow { width:100%; }
+.opening-photo-enter img { object-fit:cover; object-position:100% 50%; }
+.opening-photo-mask::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,#172018a6,transparent 75%),linear-gradient(0deg,#16201799,transparent 75%); pointer-events:none; }
+.opening-copy { display:flex; flex-direction:column; align-items:start; justify-content:end; min-height:620px; max-width:650px; padding:54px 30px 48px var(--page-gutter); }
+.b2b-site .opening-copy h1 { margin:0; font:550 clamp(44px,3.7vw,54px)/1.08 var(--font-body); letter-spacing:-.05em; text-wrap:balance; }
+.opening-description { max-width:390px; margin-top:20px; color:#fff9ef; font-size:17px; line-height:1.65; }
+.opening-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; margin-top:24px; }
+.opening-actions > a { display:inline-flex; align-items:center; min-height:44px; padding-block:8px; border-bottom:1px solid #c6b99e; color:#fff8e9; font-size:15px; }
+.opening-actions .b2b-btn { font-size:15px; gap:22px; }
+.opening-actions svg { transition:transform 200ms cubic-bezier(.23,1,.32,1); }
+.opening-atmosphere :is(a,button):focus-visible { outline-color:#fff0b6; }
+@media (min-width:1280px) and (min-height:900px) {
+  .opening-stage { display:grid; grid-template-columns:minmax(0,55fr) minmax(0,45fr); min-height:clamp(780px,calc(100svh - 86px),1000px); }
+  .opening-atmosphere { min-height:100%; }
+  .opening-photo-enter img { object-position:85% 50%; }
+  .opening-copy { min-height:100%; max-width:calc(var(--page-gutter) + 450px); padding-bottom:48px; }
+  .opening-copy h1 { max-width:420px; }
+  .opening-stage .opening-services { display:flex; flex-direction:column; }
+  .opening-stage .opening-offer-surface { flex:1 1 50%; padding:26px clamp(24px,2.6vw,44px); }
+  .opening-stage .opening-service { height:100%; gap:20px; }
+  .opening-stage .opening-offer-brand { height:46px; margin-bottom:10px; }
+  .opening-stage .opening-logo-coffee { width:44px; }
+  .opening-stage .opening-logo-water { width:118px; }
+  .opening-stage .opening-service h2 { font-size:clamp(28px,2.1vw,35px); }
+  .opening-stage .opening-commercial { margin-top:15px; }
+  .opening-stage .opening-quote { font-size:21px; }
+  .opening-stage .opening-price > strong { font-size:38px; }
+  .opening-stage .opening-service-link { margin-top:14px; min-height:44px; font-size:15px; }
+  .opening-stage .opening-equipment-coffee { height:clamp(235px,27svh,280px); }
+  .opening-stage .opening-equipment-water { height:clamp(265px,32svh,330px); }
+}
+@media (hover:hover) and (pointer:fine) { .opening-actions button:hover svg { transform:translate(3px,-3px); } }
+@media (max-width:1000px) {
+  .opening-atmosphere { display:flex; flex-direction:column; min-height:0; background:#ebe6dc; color:#262927; }
+  .opening-photo-mask { position:relative; z-index:0; height:360px; }
+  .opening-photo-enter img { object-position:78% 50%; }
+  .opening-photo-mask::after { display:none; }
+  .opening-copy { min-height:0; max-width:680px; padding:30px var(--page-gutter) 36px; }
+  .b2b-site .opening-copy h1 { font-size:clamp(40px,5.4vw,54px); }
+  .opening-description { color:#58624f; }
+  .opening-actions > a { color:#405139; border-color:#9ba48d; }
+  .opening-atmosphere :is(a,button):focus-visible { outline-color:#765b1c; }
+}
+@media (max-width:540px) {
+  .opening-photo-mask { height:260px; }
+  .opening-copy { padding:26px 20px 28px; }
+  .b2b-site .opening-copy h1 { font-size:clamp(36px,9.8vw,44px); }
+  .opening-description { margin-top:16px; font-size:16px; }
+  .opening-actions { width:100%; margin-top:20px; }
+  .opening-actions .b2b-btn { width:100%; }
+  .opening-actions > a { align-self:start; }
+}
+@media (prefers-reduced-motion:reduce) { .opening-actions svg { transition:none; transform:none; } }
+/* One shared moving edge, enabled only when the full composition fits. */
+.home-opening.is-scroll-scene { --opening-height:min(1000px,calc(100svh - 86px)); height:calc(var(--opening-height) + 75svh); }
+.home-opening.is-scroll-scene .opening-stage { position:sticky; top:86px; display:block; height:var(--opening-height); min-height:0; max-height:1000px; overflow:hidden; }
+.home-opening.is-scroll-scene .opening-atmosphere { position:absolute; z-index:2; inset:0; min-height:0; }
+.home-opening.is-scroll-scene .opening-copy { min-height:100%; max-width:calc(var(--page-gutter) + 450px); }
+.home-opening.is-scroll-scene .opening-services { position:absolute; z-index:1; inset:0 0 0 55%; display:flex; flex-direction:column; }
+.home-opening.is-scroll-scene .opening-offer-surface { min-height:0; flex:1 1 50%; padding-block:18px; }
+.home-opening.is-scroll-scene .opening-offer-brand { height:42px; margin-bottom:8px; }
+.home-opening.is-scroll-scene .opening-service h2 { margin-bottom:10px; font-size:30px; }
+.home-opening.is-scroll-scene .opening-service-description { font-size:15.5px; line-height:1.55; }
+.home-opening.is-scroll-scene .opening-commercial { margin-top:12px; }
+.home-opening.is-scroll-scene .opening-quote { font-size:20px; }
+.home-opening.is-scroll-scene .opening-condition { font-size:14.5px; line-height:1.5; }
+.home-opening.is-scroll-scene .opening-service-link { margin-top:12px; }

@@ -26,7 +26,9 @@ import GrindGuide, { grindDescriptions } from "./grind-guide";
 import { productDescription } from '@/lib/product-description';
 
 export default function CoffeeDetail({ product }: { product: CoffeeProduct }) {
-  const { products: coffeeProducts } = useCatalog();
+  const { products: coffeeProducts, ready, unavailable, refresh } = useCatalog();
+  const catalogHasProduct = coffeeProducts.some(item => item.slug === product.slug);
+  const canAdd = ready && !unavailable && catalogHasProduct;
   const [quantity, setQuantity] = useState(1),
     [grind, setGrind] = useState(defaultProductFormat(product));
   const complementary = product.category === "complementare";
@@ -141,12 +143,20 @@ export default function CoffeeDetail({ product }: { product: CoffeeProduct }) {
             </div>
             <button
               className="primary-button"
+              disabled={!canAdd}
+              aria-describedby={!canAdd ? "product-catalog-status" : undefined}
               onClick={() => add(product.slug, grind, quantity)}
             >
               {product.stock != null && quantity > product.stock ? "Comandă la cerere" : "Adaugă în coș"}
               <ShoppingBag size={18} />
             </button>
           </div>
+          {!canAdd && <div className="detail-catalog-status">
+            <p id="product-catalog-status" role={ready ? "alert" : "status"}>
+              {!ready ? "Verificăm disponibilitatea produsului…" : unavailable ? "Nu putem verifica produsul momentan." : "Produsul nu este disponibil în catalogul curent."}
+            </p>
+            {ready && <button type="button" className="text-link" onClick={refresh}>Reîncearcă verificarea</button>}
+          </div>}
           <p className="detail-order-note">
             {product.price == null ? "Adaugă produsele preferate și solicită oferta pentru selecția ta." : "Adaugă produsul în coș și finalizează cumpărăturile prin Stripe."}
             {product.stock != null && <span className="stock-note">{product.stock > 0 ? `${product.stock} unități / ambalaje disponibile` : "Disponibil la cerere. Te contactăm telefonic pentru confirmare; pregătirea începe după plată."}</span>}

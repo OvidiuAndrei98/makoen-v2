@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/cormorant-garamond";
+import "lenis/dist/lenis.css";
+import "../smooth-scroll.css";
 import "../globals.css";
 import "../elements.css";
 import "../shop.css";
@@ -15,22 +17,37 @@ import "../commerce.css";
 import "../legal.css";
 import "../typography.css";
 import "../layout-spacing.css";
-import "../hero-combined.css";
+import "../business.css";
+import "../home.css";
+import "../home-support.css";
+import "../service-compositions.css";
+import "../presentation-motion.css";
+import "../office-offers.css";
+import "../opening.css";
+import "../office-service-pages.css";
+import "../disclosures.css";
+import "../offer-dialog.css";
+import "../interface-polish.css";
+import "../event-photo-pair.css";
+import "../service-editorial.css";
+import "../site-choreography.css";
 import CartProvider from "@/components/cart-provider";
 import CatalogProvider from "@/components/catalog-provider";
+import SmoothScroll from "@/components/smooth-scroll";
 
 export const metadata: Metadata = {
-  title: "Makeon — Cafea bună. Apă pură. Zile mai bune.",
+  title: "Makeon — Cafea, apă și echipamente pentru companii",
   description:
-    "Cafea de specialitate, espressoare, apă filtrată și abonamente pentru biroul tău. Două lumi, aceeași grijă. Descoperă Makeon.",
+    "Cafea SwitchMORN, espressoare și apă Vero Aqua pentru birouri. Echipamente, aprovizionare, filtrare și cafea la evenimente. Cere o ofertă Makeon.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ro">
+    <html lang="ro" data-scroll-behavior="smooth">
       <body>
+        <SmoothScroll />
         <CatalogProvider>
           <CartProvider>{children}</CartProvider>
         </CatalogProvider>
