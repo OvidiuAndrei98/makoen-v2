@@ -22,7 +22,7 @@ export default function CombinedHero({ onOffer }: { onOffer: () => void }) {
           <p className="opening-description">Espressoare SwitchMORN și dozatoare Vero Aqua pentru companii.</p>
           <div className="opening-actions">
             <button type="button" className="b2b-btn" onClick={onOffer}>Cere ofertă pentru birou<ArrowUpRight size={18} aria-hidden="true" /></button>
-            <Link href="/cafea-la-evenimente">Cafea la evenimente</Link>
+            <Link href="#solutii">Descoperă cafeaua și apa</Link>
           </div>
           </div>
         </div>

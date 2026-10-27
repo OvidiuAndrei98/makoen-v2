@@ -67,14 +67,41 @@ for (const path of ['/', '/cafea-la-evenimente']) {
   }
 }
 
-test('home has one destination per event format and the event hero retains the night photograph', async ({ page }) => {
+test('home shows coffee and water, then the coffee shop, then both event formats', async ({ page }) => {
+  await page.setViewportSize({ width:1280, height:900 });
   await page.goto('/');
-  const section = page.locator('.home-events');
-  await expect(section.locator('a')).toHaveCount(2);
-  await expect(section.getByRole('link', { name: 'Vezi standul', exact: true })).toHaveAttribute('href', '/cafea-la-evenimente#bar-mobil');
-  await expect(section.getByRole('link', { name: 'Vezi rulota', exact: true })).toHaveAttribute('href', '/cafea-la-evenimente#rulota');
-  await section.getByRole('link', { name: 'Vezi standul', exact: true }).click();
-  await expect(page).toHaveURL(/\/cafea-la-evenimente#bar-mobil$/);
+  await expect(page.locator('.home-events .event-pair-card')).toHaveCount(2);
+  const catalog = page.locator('#magazin');
+  await expect(catalog.locator('.shop-product-card')).toHaveCount(3);
+  expect(await catalog.evaluate(section => section.previousElementSibling?.id)).toBe('despre');
+  expect(await catalog.evaluate(section => section.nextElementSibling?.className)).toContain('home-events');
+  await expect(page.locator('.home-events').getByRole('link', { name:'Vezi standul', exact:true })).toHaveAttribute('href', '/cafea-la-evenimente#bar-mobil');
+  await expect(page.locator('.home-events').getByRole('link', { name:'Vezi rulota', exact:true })).toHaveAttribute('href', '/cafea-la-evenimente#rulota');
+  await expect(page.locator('#despre')).toContainText('Cafea pentru echipă');
+  await expect(page.locator('#despre')).toContainText('Apă filtrată, la îndemână');
+  const top = await catalog.evaluate(section => section.getBoundingClientRect().top + scrollY - innerHeight * .8);
+  await page.evaluate(async top => {
+    const from = scrollY, start = performance.now();
+    let progress = 0;
+    while (progress < 1) {
+      progress = Math.min(1, (performance.now() - start) / 1000);
+      scrollTo({ top:from + (top - from) * progress, behavior:'instant' });
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    }
+  }, top);
+  await expect(catalog).toHaveAttribute('data-choreography-state', 'running');
+  const action = catalog.getByRole('link', { name: 'Deschide magazinul', exact: true });
+  const box = (await action.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  const pressed = (await action.boundingBox())!;
+  await page.waitForTimeout(180); // A real held pointer must freeze its clickable surface.
+  const held = (await action.boundingBox())!;
+  expect(Math.abs(held.y - pressed.y)).toBeLessThanOrEqual(1);
+  await page.mouse.up();
+  await expect(page).toHaveURL(/\/cafea$/);
+  await page.locator('.desktop-nav').getByRole('link', { name: 'Evenimentul tău', exact: true }).click();
+  await expect(page).toHaveURL(/\/cafea-la-evenimente$/);
   await expect(page.locator('.event-intro-photo img')).toHaveAttribute('src', /rulota-makeon/);
   await expect(page.locator('#bar-mobil')).toBeAttached();
   await expect(page.locator('#rulota')).toBeAttached();

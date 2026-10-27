@@ -23,7 +23,7 @@ test("mobile menu fills the screen, animates, traps focus and restores scrolling
   await expect(opener).toBeFocused();
   await expect(page.locator("body")).not.toHaveCSS("overflow","hidden");
   await opener.click();
-  await menu.getByRole("link",{name:"Magazin cafea",exact:true}).click();
+  await menu.getByRole("link",{name:"Prăjitoria ta",exact:true}).click();
   await expect(page).toHaveURL(/\/cafea$/);
   await expect(page.getByRole("dialog",{name:"Meniul Makeon"})).not.toBeVisible();
   await expect(page.locator("body")).not.toHaveCSS("overflow","hidden");

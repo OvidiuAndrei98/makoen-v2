@@ -26,7 +26,7 @@ async function expectCompleteOpening(page: Page) {
   await expect(opening.locator('h1')).toHaveText(/Cafea și apă\s*pentru biroul tău\./);
   await expect(opening.locator('.opening-description')).toHaveText('Espressoare SwitchMORN și dozatoare Vero Aqua pentru companii.');
   await expect(opening.getByRole('button', { name: 'Cere ofertă pentru birou', exact: true })).toBeEnabled();
-  await expect(opening.getByRole('link', { name: 'Cafea la evenimente', exact: true })).toHaveAttribute('href', '/cafea-la-evenimente');
+  await expect(opening.getByRole('link', { name: 'Descoperă cafeaua și apa', exact: true })).toHaveAttribute('href', '#solutii');
   await expect(opening.getByRole('link', { name: 'Vezi soluția de cafea', exact: true })).toHaveAttribute('href', '/cafea-pentru-birouri');
   await expect(opening.getByRole('link', { name: 'Vezi aparatul și abonamentul', exact: true })).toHaveAttribute('href', '/apa');
   await expect(opening.locator('.opening-price')).toHaveText('31 € + TVA / lună');

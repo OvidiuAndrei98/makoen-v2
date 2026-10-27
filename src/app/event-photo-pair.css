@@ -10,7 +10,7 @@
 .event-pair-media-trailer { aspect-ratio:4 / 3; }
 .event-pair-media img { object-fit:contain; object-position:center; }
 .event-pair-copy { display:flex; flex:1; flex-direction:column; align-items:start; max-inline-size:50ch; padding-block-start:20px; }
-.b2b-site .event-pair-copy .b2b-heading { margin:0; font:550 clamp(22px,2vw,28px)/1.2 var(--font-body); letter-spacing:-.035em; }
+.b2b-site .event-pair-copy .b2b-heading { margin:0; font:500 clamp(22px,2vw,28px)/1.2 var(--font-heading); letter-spacing:-.025em; }
 .event-pair-copy > p { margin:12px 0 18px; color:var(--makeon-muted,#625e56); font-size:16px; line-height:1.65; }
 .event-pair-action { margin-block-start:auto; }
 .event-pair-link { display:inline-flex; align-items:center; justify-content:space-between; gap:20px; min-block-size:44px; border-block-end:1px solid var(--makeon-border,#d8d5cc); color:var(--makeon-ink,#292621); font-size:15px; }

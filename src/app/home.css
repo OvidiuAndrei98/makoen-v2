@@ -7,16 +7,18 @@
 .home-event-links .b2b-link { gap:18px; }
 .home-event-secondary { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1fr); align-items:center; gap:24px; margin:32px 0 0; }
 .home-event-secondary > img { display:block; width:100%; height:auto; }
-.b2b-site .home-event-secondary h3 { font:550 23px/1.25 var(--font-body); letter-spacing:-.025em; }
+.b2b-site .home-event-secondary h3 { font:500 23px/1.25 var(--font-heading); letter-spacing:-.025em; }
 .home-event-secondary p { margin-top:13px; color:#62665d; font-size:15px; line-height:1.75; }
 .home-event-dominant { grid-column:1; grid-row:1; min-width:0; margin:0; }
 .home-event-reveal { position:relative; aspect-ratio:4/3; overflow:hidden; }
 .home-event-photo { position:absolute; inset:-18px 0; }
 .home-event-photo img { object-fit:cover; }
 .home-event-dominant figcaption { display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; gap:10px 24px; padding-top:18px; }
-.b2b-site .home-event-dominant h3 { font:500 20px/1.4 var(--font-body); letter-spacing:-.02em; }
+.b2b-site .home-event-dominant h3 { font:500 20px/1.4 var(--font-heading); letter-spacing:-.02em; }
 .home-event-dominant figcaption > a { display:inline-flex; align-items:center; gap:20px; min-height:44px; color:#3f4b36; border-bottom:1px solid #a7ae9c; font-size:15px; }
 .b2b-home #magazin { padding-top:64px; }
+.b2b-home #magazin .b2b-product-selection .shop-product-card { display:block; }
+@media (max-width:600px) { .b2b-home #magazin .b2b-product-selection { grid-template-columns:minmax(0,1fr); gap:30px; } .b2b-home #magazin .shop-product-art { height:280px; } }
 /* One clear closing: identity/contact at left and two small navigation groups. */
 .site-footer { padding-block:54px 24px; background:#f3f3ee; border-top:1px solid #dedfd7; color:#2a3027; scroll-margin-block-start:108px; }
 .site-footer-top { display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:80px; padding-bottom:42px; }

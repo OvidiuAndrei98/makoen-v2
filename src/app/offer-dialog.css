@@ -6,7 +6,7 @@
 .contact-offer-dialog .dialog-content { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); align-items:stretch; gap:0; width:min(1024px,100%); padding:0; border-radius:10px; background:var(--makeon-surface,#faf9f6); box-shadow:0 22px 70px rgb(25 23 20 / .2); overflow:clip; transition:none; }
 .contact-offer-dialog .dialog-intro { grid-column:1; grid-row:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; min-height:100%; padding:36px; background:var(--makeon-graphite,#25231f); color:#faf9f6; border-radius:0; }
 .contact-offer-dialog .dialog-intro .b2b-eyebrow { margin:0 0 20px; color:#efd28a; font-size:12px; font-weight:500; line-height:1.5; letter-spacing:.045em; }
-.contact-offer-dialog .dialog-intro h2 { max-width:12ch; margin:0 0 20px; color:#faf9f6; font:550 34px/1.14 var(--font-body); letter-spacing:-.035em; }
+.contact-offer-dialog .dialog-intro h2 { max-width:12ch; margin:0 0 20px; color:#faf9f6; font:500 34px/1.14 var(--font-heading); letter-spacing:-.025em; }
 .contact-offer-dialog .dialog-intro .dialog-description { margin:0; color:#dfdcd5; font-size:16px; line-height:1.65; }
 .contact-offer-dialog .dialog-description-compact { display:none; }
 .contact-offer-dialog .dialog-contact-links { display:grid; gap:5px; margin-top:32px; }

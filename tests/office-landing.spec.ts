@@ -78,13 +78,13 @@ test('main services have direct keyboard-accessible links and indicate the curre
   await page.goto('/apa');
   const nav=page.locator('.desktop-nav');
   await expect(nav.getByRole('link')).toHaveCount(5);
-  await expect(nav.getByRole('link',{name:'Apă & filtrare',exact:true})).toHaveAttribute('aria-current','page');
-  const coffee=nav.getByRole('link',{name:'Cafea pentru birouri',exact:true});
+  await expect(nav.getByRole('link',{name:'Pauza ta de hidratare',exact:true})).toHaveAttribute('aria-current','page');
+  const coffee=nav.getByRole('link',{name:'Cafeaua ta',exact:true});
   await coffee.focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/cafea-pentru-birouri$/);
   await expect(coffee).toHaveAttribute('aria-current','page');
-  await expect(nav.getByRole('link',{name:'Evenimente',exact:true})).toHaveAttribute('href','/cafea-la-evenimente');
+  await expect(nav.getByRole('link',{name:'Evenimentul tău',exact:true})).toHaveAttribute('href','/cafea-la-evenimente');
 });
 
 test('header stays visible and skip link reaches the main content',async({page})=>{

@@ -35,7 +35,7 @@ for (const [format, service] of [['bar-mobil', eventServices.bar], ['rulota', ev
     await route.fulfill({json:{ok:true}});
   });
   await page.goto('/');
-  await page.locator('.desktop-nav').getByRole('link', {name: 'Evenimente', exact: true}).click();
+  await page.locator('.desktop-nav').getByRole('link', {name: 'Evenimentul tău', exact: true}).click();
   await page.locator(`#${format}`).getByRole('button').click();
   await page.locator('#contact-name').fill('Client eveniment');
   await page.locator('#contact-email').fill('event@example.test');

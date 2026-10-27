@@ -4,7 +4,7 @@
 .office-service-page .water-service-brand { width:148px; }
 .office-service-page .coffee-editorial-hero.office-service-hero { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr); align-items:center; gap:clamp(36px,4vw,64px); padding-block:48px 54px; }
 .office-service-page .coffee-editorial-hero .b2b-hero-copy { max-width:500px; }
-.office-service-page .coffee-editorial-hero .b2b-title { max-width:none; margin:0 0 24px; font-size:clamp(50px,5vw,76px); line-height:1.04; letter-spacing:-.055em; }
+.office-service-page .coffee-editorial-hero .b2b-title { max-width:none; margin:0 0 24px; font-size:clamp(50px,5vw,76px); line-height:1.08; letter-spacing:-.025em; }
 .office-service-page .coffee-editorial-hero .b2b-lead { max-width:37ch; font-size:18px; line-height:1.65; }
 .office-service-page .coffee-editorial-hero .b2b-actions { margin-top:28px; }
 .office-service-page .service-office-photograph { justify-self:end; width:100%; max-width:720px; min-width:0; margin:0; }
@@ -38,7 +38,7 @@
 .office-service-page .office-related-section { padding-block:28px; }
 .office-service-page .water-editorial-hero.office-service-hero { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(0,1.05fr); align-items:center; column-gap:clamp(24px,2.7vw,42px); row-gap:24px; padding-block:44px 32px; }
 .office-service-page .water-editorial-hero .water-editorial-intro { grid-column:1; grid-row:1; display:block; min-width:0; max-width:390px; }
-.office-service-page .water-editorial-hero .b2b-title { max-width:none; margin:0 0 24px; font-size:clamp(50px,4.3vw,72px); line-height:1.04; letter-spacing:-.055em; }
+.office-service-page .water-editorial-hero .b2b-title { max-width:none; margin:0 0 24px; font-size:clamp(50px,4.3vw,72px); line-height:1.08; letter-spacing:-.025em; }
 .office-service-page .water-editorial-hero .b2b-lead { max-width:29ch; margin:0; font-size:18px; line-height:1.65; }
 .office-service-page .water-editorial-hero > .water-editorial-product { grid-column:2; grid-row:1; min-width:0; margin:0; }
 .office-service-page .water-editorial-hero .water-product-stage { position:relative; width:100%; height:clamp(470px,60svh,620px); border:0; border-radius:0; overflow:hidden; background:var(--makeon-surface-muted,#f1f0eb); }
@@ -170,4 +170,154 @@
   .office-service-page .water-editorial-hero .office-water-price .b2b-btn { margin-top:16px; }
   .office-service-page .water-editorial-hero .water-product-stage { height:480px; }
   .office-service-page .water-editorial-hero .water-temperature-note { padding-top:16px; }
+}
+
+/* Service content is visible on the page; disclosures are reserved for FAQs. */
+.office-service-page .office-overline { margin:0 0 22px; color:var(--makeon-muted); font-size:14px; line-height:1.5; }
+.office-service-page .office-coffee-showcase { padding-block:40px 64px; }
+.office-service-page .office-showcase-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:clamp(40px,6vw,96px); }
+.office-service-page .office-machine-stage { display:flex; flex-direction:column; grid-row:auto; min-width:0; margin:0; padding:30px 30px 24px; background:#eae5db; }
+.office-service-page .office-visual-label { color:var(--makeon-muted); font-size:14px; line-height:1.5; }
+.office-service-page .office-machine-stage .coffee-plan-product-image { position:relative; height:490px; margin-block:26px; }
+.office-service-page .office-machine-stage img { object-fit:contain; object-position:center; }
+.office-service-page .office-machine-specs { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px 20px; color:#554e43; font-size:13px; line-height:1.5; }
+.office-service-page .office-machine-specs span { padding-block:4px; }
+.office-service-page .office-showcase-copy { min-width:0; padding-block:24px; }
+.office-service-page .office-showcase-copy .b2b-heading { max-width:12ch; margin:0; font-size:clamp(38px,3.8vw,58px); line-height:1.08; }
+.office-service-page .office-plan-points { display:grid; gap:18px; margin:32px 0; padding:0; list-style:none; }
+.office-service-page .office-plan-points li { display:flex; align-items:flex-start; gap:13px; color:var(--makeon-ink); font-size:17px; line-height:1.55; }
+.office-service-page .office-plan-points svg { flex:0 0 20px; width:20px; height:20px; margin-top:3px; color:#86631a; }
+.office-service-page .office-quote-note { max-width:44ch; margin-block:0 26px; }
+.office-service-page .office-quote-note h3 { margin:0 0 8px; font-size:23px; font-weight:500; line-height:1.3; letter-spacing:-.02em; }
+.office-service-page :is(.office-quote-note,.office-craft-facts,.office-water-services) :is(h3,h4) { font-family:var(--font-heading); }
+.office-service-page .office-quote-note p { margin:0; color:var(--makeon-muted); font-size:15px; line-height:1.65; }
+.office-service-page .office-catalog-section { padding-block:40px 68px; }
+.office-service-page .office-catalog-section .b2b-heading { font-size:clamp(34px,3vw,46px); }
+.office-service-page .office-catalog-section .b2b-section-head .b2b-body { margin-top:14px; }
+.office-service-page .office-craft-band { margin-block:0 56px; background:var(--makeon-graphite); color:var(--makeon-surface); }
+.office-service-page .office-craft-section { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(40px,6vw,96px); align-items:center; padding-block:64px; }
+.office-service-page .office-craft-visual { min-width:0; margin:0; }
+.office-service-page .office-coffee-closeup { position:relative; aspect-ratio:1; overflow:hidden; background:#e8dfcf; }
+.office-service-page .office-coffee-closeup img { object-fit:cover; object-position:center 5%; }
+.office-service-page .office-craft-copy { min-width:0; }
+.office-service-page .office-craft-copy .b2b-heading { margin:0 0 32px; font-size:clamp(36px,3.5vw,54px); line-height:1.12; }
+.office-service-page .office-craft-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px 28px; }
+.office-service-page .office-craft-facts h3 { margin:0 0 9px; font-size:21px; font-weight:550; line-height:1.3; letter-spacing:-.015em; }
+.office-service-page .office-craft-facts p { margin:0; color:var(--makeon-muted); font-size:15px; line-height:1.65; }
+.office-service-page .office-craft-band :is(.office-overline,.office-craft-facts p,.service-photo-caption) { color:#c9c3b8; }
+.office-service-page .office-craft-band :is(.b2b-heading,.office-craft-facts h3) { color:var(--makeon-surface); }
+.office-service-page .office-craft-band .b2b-link { color:var(--makeon-surface); border-color:#8c857a; }
+.office-service-page .office-craft-band .b2b-link:hover { color:var(--makeon-gold); border-color:var(--makeon-gold); }
+.office-service-page .office-craft-band button:focus-visible { outline-color:var(--makeon-gold); }
+.office-service-page .office-craft-actions { display:flex; align-items:flex-start; flex-wrap:wrap; gap:16px 28px; margin-top:30px; }
+.office-service-page .office-filter-note { display:grid; grid-template-columns:minmax(160px,.55fr) minmax(0,1.1fr) auto; gap:24px 40px; align-items:center; padding:30px 36px; background:var(--makeon-surface-muted); }
+.office-service-page .office-filter-note-image { position:relative; height:150px; }
+.office-service-page .office-filter-note-image img { object-fit:contain; }
+.office-service-page .office-filter-note .b2b-h3 { margin:0 0 14px; font-size:28px; }
+.office-service-page .office-filter-note .b2b-body { margin:0; max-width:44ch; font-size:16px; line-height:1.6; }
+.office-service-page .office-filter-note > .b2b-link { align-self:center; }
+.office-service-page .water-office-context.office-water-experience { display:block; padding-block:44px 72px; }
+.office-service-page .office-water-experience-heading { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); align-items:end; gap:40px 80px; margin-bottom:32px; }
+.office-service-page .office-water-experience-heading .b2b-heading { margin:0; font-size:clamp(36px,3.8vw,58px); line-height:1.1; }
+.office-service-page .office-water-experience-heading .b2b-body { max-width:39ch; margin:0; justify-self:end; }
+.office-service-page .office-water-experience .water-context-photo { aspect-ratio:1.85; }
+.office-service-page .office-water-experience .water-context-photo img { object-position:100% 57%; }
+.office-service-page .water-office-context.office-water-experience .office-water-inclusions { display:block; padding:0; margin:32px 0 0; }
+.office-service-page .water-office-context.office-water-experience .office-water-inclusions ul { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:24px; padding:0; }
+.office-service-page .water-office-context.office-water-experience .office-water-inclusions li { display:flex; flex-direction:column; align-items:flex-start; gap:18px; padding:0; border:0; font-size:17px; line-height:1.5; }
+.office-service-page .office-water-experience .office-water-inclusions li svg { flex-shrink:0; color:#86631a; }
+.office-service-page .water-office-context.office-water-experience .office-water-inclusions .b2b-note { max-width:90ch; margin-top:28px; font-size:14px; }
+.office-service-page .office-filtration-section { padding-block:64px; background:var(--makeon-surface-muted); }
+.office-service-page .office-filtration-heading { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr); align-items:end; gap:36px 80px; }
+.office-service-page .office-filtration-heading .b2b-heading { margin:0; font-size:clamp(36px,3.8vw,58px); line-height:1.1; }
+.office-service-page .office-filtration-heading .b2b-body { max-width:43ch; margin:0; font-size:16px; line-height:1.65; }
+.office-service-page .office-filter-system { max-width:1000px; margin:38px auto 48px; }
+.office-service-page .office-filtration-section .b2b-filter-media { position:relative; width:100%; min-height:0; height:auto; aspect-ratio:2; background:transparent; }
+.office-service-page .office-filtration-section .b2b-filter-media img { object-fit:contain; padding:0; }
+.office-service-page .office-filter-system figcaption { width:75%; margin-inline:auto; }
+.office-service-page .office-filter-labels { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:14px 0 0; padding:0 4% 0 8%; list-style:none; }
+.office-service-page .office-filter-labels li { padding:0; border:0; color:var(--makeon-ink); font-size:16px; line-height:1.45; text-align:center; }
+.office-service-page .office-existing-system { padding-top:36px; border-top:1px solid var(--makeon-border); }
+.office-service-page .office-existing-system-heading { display:flex; align-items:end; justify-content:space-between; gap:24px 64px; }
+.office-service-page .office-existing-system-heading .b2b-h3 { max-width:20ch; margin:0; font-size:32px; line-height:1.2; }
+.office-service-page .office-existing-system-heading .b2b-body { max-width:43ch; margin:0; font-size:16px; line-height:1.65; }
+.office-service-page .office-water-services { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; margin:30px 0; padding:0; list-style:none; }
+.office-service-page .office-water-services li { display:flex; align-items:flex-start; gap:16px; padding:24px; background:var(--makeon-surface); }
+.office-service-page .office-water-services svg { flex:0 0 24px; margin-top:1px; color:#86631a; }
+.office-service-page .office-water-services h4 { margin:0 0 9px; font-size:21px; font-weight:550; line-height:1.3; letter-spacing:-.015em; }
+.office-service-page .office-water-services p { margin:0; max-width:30ch; color:var(--makeon-muted); font-size:15px; line-height:1.6; }
+.office-service-page .office-existing-system-action { display:flex; align-items:center; justify-content:space-between; gap:24px 64px; }
+.office-service-page .office-existing-system-action .b2b-note { max-width:63ch; margin:0; }
+.office-service-page .office-existing-system-action .b2b-btn { flex-shrink:0; }
+.office-service-page .b2b-faq-layout { padding-block:64px; }
+@media (max-width:1100px) {
+  .office-service-page .office-showcase-grid,.office-service-page .office-craft-section { gap:36px; }
+  .office-service-page .office-machine-stage { padding-inline:22px; }
+  .office-service-page .office-machine-stage .coffee-plan-product-image { height:410px; }
+  .office-service-page .office-showcase-copy .b2b-heading { font-size:42px; }
+  .office-service-page .office-filter-note { grid-template-columns:minmax(140px,.5fr) minmax(0,1fr); gap:16px 28px; }
+  .office-service-page .office-filter-note > .b2b-link { grid-column:2; justify-self:start; }
+  .office-service-page .office-filter-note-image { grid-row:1 / span 2; }
+  .office-service-page .office-water-services li { padding:20px; gap:12px; }
+}
+@media (max-width:800px) {
+  .office-service-page .office-coffee-showcase { padding-block:12px 40px; }
+  .office-service-page .office-showcase-grid,.office-service-page .office-craft-section { grid-template-columns:minmax(0,1fr); gap:30px; }
+  .office-service-page .office-machine-stage .coffee-plan-product-image { height:420px; }
+  .office-service-page .office-showcase-copy { padding-block:0; }
+  .office-service-page .office-showcase-copy .b2b-heading { max-width:17ch; font-size:42px; }
+  .office-service-page .office-catalog-section { padding-block:30px 48px; }
+  .office-service-page .office-craft-band { margin-bottom:40px; }
+  .office-service-page .office-craft-section { padding-block:40px; }
+  .office-service-page .office-coffee-closeup { aspect-ratio:1.3; }
+  .office-service-page .office-craft-copy .b2b-heading { font-size:42px; }
+  .office-service-page .office-water-experience-heading,.office-service-page .office-filtration-heading { grid-template-columns:minmax(0,1fr); gap:20px; }
+  .office-service-page .office-water-experience-heading .b2b-body { max-width:45ch; justify-self:start; }
+  .office-service-page .office-water-experience .water-context-photo { aspect-ratio:1.45; }
+  .office-service-page .water-office-context.office-water-experience { padding-block:32px 48px; }
+  .office-service-page .water-office-context.office-water-experience .office-water-inclusions ul { grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px 24px; }
+  .office-service-page .office-filtration-section { padding-block:42px; }
+  .office-service-page .office-existing-system-heading { display:block; }
+  .office-service-page .office-existing-system-heading .b2b-body { margin-top:16px; }
+  .office-service-page .office-water-services { gap:16px; }
+  .office-service-page .office-water-services li { display:block; padding:18px; }
+  .office-service-page .office-water-services svg { margin-bottom:16px; }
+  .office-service-page .office-existing-system-action { gap:24px; align-items:flex-start; }
+  .office-service-page .b2b-faq-layout { padding-block:44px; }
+}
+@media (max-width:540px) {
+  .office-service-page .office-overline { margin-bottom:16px; }
+  .office-service-page .office-machine-stage { padding:22px 20px; }
+  .office-service-page .office-machine-stage .coffee-plan-product-image { height:340px; margin-block:24px; }
+  .office-service-page .office-machine-specs { gap:8px 16px; font-size:12px; }
+  .office-service-page .office-showcase-copy .b2b-heading { font-size:38px; }
+  .office-service-page .office-plan-points { gap:16px; margin-block:24px; }
+  .office-service-page .office-plan-points li { font-size:16px; }
+  .office-service-page .office-showcase-copy > .b2b-btn,.office-service-page .office-craft-actions .b2b-btn { width:100%; }
+  .office-service-page .office-craft-copy .b2b-heading { font-size:36px; margin-bottom:26px; }
+  .office-service-page .office-craft-facts { gap:24px 20px; }
+  .office-service-page .office-craft-facts h3 { font-size:20px; }
+  .office-service-page .office-craft-facts p { font-size:14px; line-height:1.6; }
+  .office-service-page .office-craft-actions { gap:14px; margin-top:26px; }
+  .office-service-page .office-filter-note { grid-template-columns:minmax(0,1fr); padding:24px; gap:22px; }
+  .office-service-page .office-filter-note-image { grid-row:auto; height:150px; }
+  .office-service-page .office-filter-note > .b2b-link { grid-column:auto; }
+  .office-service-page .office-filter-note .b2b-h3 { font-size:27px; }
+  .office-service-page .office-water-experience-heading .b2b-heading,.office-service-page .office-filtration-heading .b2b-heading { font-size:36px; }
+  .office-service-page .office-water-experience-heading .b2b-body { font-size:16px; line-height:1.65; }
+  .office-service-page .office-water-experience .water-context-photo { aspect-ratio:1.15; }
+  .office-service-page .water-office-context.office-water-experience .office-water-inclusions ul { grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px 24px; }
+  .office-service-page .water-office-context.office-water-experience .office-water-inclusions li { font-size:16px; gap:13px; }
+  .office-service-page .office-filter-system { margin-block:26px 34px; }
+  .office-service-page .office-filtration-section .b2b-filter-media { aspect-ratio:1.6; }
+  .office-service-page .office-filter-system figcaption { width:93.75%; }
+  .office-service-page .office-filter-labels { gap:8px; }
+  .office-service-page .office-filter-labels li { font-size:12px; }
+  .office-service-page .office-existing-system { padding-top:28px; }
+  .office-service-page .office-existing-system-heading .b2b-h3 { font-size:28px; }
+  .office-service-page .office-water-services { grid-template-columns:minmax(0,1fr); gap:12px; margin-block:24px; }
+  .office-service-page .office-water-services li { display:flex; padding:20px; gap:18px; }
+  .office-service-page .office-water-services svg { margin:1px 0 0; }
+  .office-service-page .office-existing-system-action { flex-direction:column; }
+  .office-service-page .office-existing-system-action .b2b-btn { width:100%; }
 }

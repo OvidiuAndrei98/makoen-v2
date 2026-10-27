@@ -1,0 +1,63 @@
+/* Editorial panels: neutral space around an image, with one fine structural edge. */
+:root {
+  --makeon-media-mat:#eeece7;
+  --makeon-media-edge:rgb(41 38 33 / .12);
+  --makeon-media-radius:4px;
+  --makeon-media-inset:20px;
+}
+
+.site.b2b-site :is(.service-coffee-photo,.water-context-photo,.office-coffee-closeup,.event-intro-photo,.event-pair-media,.b2b-filter-media) {
+  border:0;
+  border-radius:2px;
+  outline:0;
+  background:var(--makeon-media-mat);
+  box-shadow:none;
+}
+
+.site.b2b-site :is(.service-office-photograph,.water-context-visual,.office-craft-visual,.event-intro-frame,.event-photo-frame,.office-filter-system,.home-solution-visual) {
+  padding:var(--makeon-media-inset);
+  border:0;
+  border-radius:var(--makeon-media-radius);
+  outline:1px solid var(--makeon-media-edge);
+  outline-offset:-1px;
+  background:var(--makeon-media-mat);
+}
+
+.site.b2b-site :is(.event-intro-photo,.event-pair-media) > img {
+  outline:1px solid oklch(0 0 0 / .1);
+  outline-offset:-1px;
+  border-radius:2px;
+}
+
+.site.b2b-site .event-intro-frame { grid-column:1; grid-row:1; min-width:0; }
+/* Equal inline proportions preserve both original photo ratios and shared height. */
+.site.b2b-site .event-photo-frame { padding-inline:4%; }
+.site.b2b-site .office-coffee-closeup { aspect-ratio:4 / 3; }
+/* 1200×900 window at x800/y300 in the 2048×1365 original, without distortion. */
+.site.b2b-site .office-coffee-photo-crop { position:absolute; inset:auto; left:-66.666667%; top:-33.333333%; width:170.666667%; height:151.666667%; }
+.site.b2b-site .office-coffee-closeup img { object-fit:cover; object-position:center; }
+.site.b2b-site .office-craft-visual .service-photo-caption { color:var(--makeon-muted); }
+
+.site.b2b-site :is(.office-machine-stage,.water-product-stage,.office-filter-note-image,.opening-product-mask) {
+  border:1px solid var(--makeon-media-edge);
+  border-radius:var(--makeon-media-radius);
+  background:var(--makeon-media-mat);
+  box-shadow:none;
+}
+
+.site.b2b-site .opening-product-mask { overflow:hidden; }
+.site.b2b-site .opening-product-interaction img { padding:12px 8px; object-position:center; }
+
+.site :is(.shop-product-art,.detail-product-gallery) {
+  border:1px solid var(--makeon-media-edge);
+  border-radius:var(--makeon-media-radius);
+  background:var(--makeon-media-mat);
+  box-shadow:none;
+}
+
+@media (max-width:800px) {
+  .site.b2b-site .event-intro-frame { grid-column:auto; grid-row:auto; }
+}
+@media (max-width:600px) {
+  :root { --makeon-media-inset:12px; }
+}

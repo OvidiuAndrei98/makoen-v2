@@ -41,7 +41,7 @@ export default function usePresentationEntrance(ref: RefObject<HTMLElement | nul
       if (products.length) timeline.fromTo(products, { y: mobile ? 28 : 44 }, { y: 0, duration: mobile ? .52 : .72 }, .02);
       if (lines.length) timeline.fromTo(lines, { y: mobile ? 24 : 36 }, { y: 0, duration: mobile ? .45 : .64, stagger: mobile ? .045 : .065 }, .025);
       if (copy.length) timeline.fromTo(copy, { y: mobile ? 10 : 16, opacity: .65 }, { y: 0, opacity: 1, duration: mobile ? .35 : .45, stagger: .045 }, mobile ? .1 : .13);
-      if (actions.length) timeline.fromTo(actions, { y: mobile ? 10 : 14, opacity: .75 }, { y: 0, opacity: 1, duration: mobile ? .36 : .46 }, mobile ? .16 : .2);
+      if (actions.length) timeline.fromTo(actions, { opacity: .75 }, { opacity: 1, duration: mobile ? .36 : .46 }, mobile ? .16 : .2);
 
       const finish = () => {
         enteredHeroes.add(key);

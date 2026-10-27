@@ -141,7 +141,7 @@ test('same-page anchors and Back preserve CSS offsets, focus and ordinary hash h
   await expectPosition(page, about);
   await expect(page.locator('#despre')).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(page.locator('#despre a').first()).toBeFocused();
+  await expect(page.locator('#despre').locator('button,a').first()).toBeFocused();
   await expect(page.locator('#despre')).not.toHaveAttribute('tabindex');
   expect(await page.evaluate(() => history.length)).toBe(historyLength + 1);
   await page.getByRole('link', { name: 'Sari la conținut', exact: true })
@@ -173,7 +173,7 @@ test('route changes, Back and keyboard focus discard momentum instead of carryin
   const departure = page.evaluate(() => new Promise<number>(resolve => {
     document.addEventListener('click', () => resolve(scrollY), { capture: true, once: true });
   }));
-  await clickVisible(page, page.locator('.desktop-nav').getByRole('link', { name: 'Apă & filtrare', exact: true }));
+  await clickVisible(page, page.locator('.desktop-nav').getByRole('link', { name: 'Pauza ta de hidratare', exact: true }));
   const savedPosition = await departure;
   await expect(page).toHaveURL(/\/apa$/);
   await expect(page.locator('.b2b-water')).toBeVisible();

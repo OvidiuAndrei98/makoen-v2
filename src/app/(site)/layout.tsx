@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/cormorant-garamond";
+import "@fontsource-variable/cormorant-garamond/wght-italic.css";
 import "lenis/dist/lenis.css";
 import "../smooth-scroll.css";
 import "../globals.css";
@@ -31,6 +32,7 @@ import "../interface-polish.css";
 import "../event-photo-pair.css";
 import "../service-editorial.css";
 import "../site-choreography.css";
+import "../media-frames.css";
 import CartProvider from "@/components/cart-provider";
 import CatalogProvider from "@/components/catalog-provider";
 import SmoothScroll from "@/components/smooth-scroll";

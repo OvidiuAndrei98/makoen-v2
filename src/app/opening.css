@@ -10,7 +10,7 @@
 .opening-photo-enter img { object-fit:cover; object-position:100% 50%; }
 .opening-photo-mask::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,#172018a6,transparent 75%),linear-gradient(0deg,#16201799,transparent 75%); pointer-events:none; }
 .opening-copy { display:flex; flex-direction:column; align-items:start; justify-content:end; min-height:620px; max-width:650px; padding:54px 30px 48px var(--page-gutter); }
-.b2b-site .opening-copy h1 { margin:0; font:550 clamp(44px,3.7vw,54px)/1.08 var(--font-body); letter-spacing:-.05em; text-wrap:balance; }
+.b2b-site .opening-copy h1 { margin:0; font:500 clamp(44px,3.7vw,54px)/1.08 var(--font-heading); letter-spacing:-.025em; text-wrap:balance; }
 .opening-description { max-width:390px; margin-top:20px; color:#fff9ef; font-size:17px; line-height:1.65; }
 .opening-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; margin-top:24px; }
 .opening-actions > a { display:inline-flex; align-items:center; min-height:44px; padding-block:8px; border-bottom:1px solid #c6b99e; color:#fff8e9; font-size:15px; }

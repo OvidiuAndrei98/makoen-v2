@@ -5,6 +5,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/catalog', route => route.fulfill({ json: {
     products: coffeeProducts, managed: false, checkout: false, shippingBani: 0,
   } }));
+  await page.route('**/api/contact', route => route.abort());
 });
 
 async function controlledPanel(page: Page, trigger: Locator) {
@@ -24,16 +25,18 @@ async function expectOpen(panel: Locator) {
   await expect(panel).toBeVisible();
 }
 
-test('service panels occupy continuously measured height and reverse from their current position', async ({ page }) => {
+test('FAQ panels occupy continuously measured height and reverse from their current position', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/apa#servicii');
-  const triggers = page.locator('#servicii .makeon-disclosure-trigger');
+  await page.goto('/apa');
+  const rows = page.locator('.b2b-faq-layout > div').last();
+  const triggers = rows.locator('.makeon-disclosure-trigger');
   const trigger = triggers.first();
+  await trigger.scrollIntoViewIfNeeded();
   const panel = await controlledPanel(page, trigger);
-  const nextTop = await triggers.nth(1).evaluate(element => element.getBoundingClientRect().top - element.closest('.b2b-service-rows')!.getBoundingClientRect().top);
-  const recording = page.locator('#servicii .b2b-service-rows').evaluate(async rows => {
+  const nextTop = await rows.evaluate(rows => rows.querySelectorAll('.makeon-disclosure-trigger')[1].getBoundingClientRect().top - rows.getBoundingClientRect().top);
+  const recording = rows.evaluate(async rows => {
     const panel = rows.querySelector('.makeon-disclosure-panel')!;
     const next = rows.querySelectorAll('.makeon-disclosure-trigger')[1];
     const samples = [];
@@ -73,17 +76,15 @@ test('service panels occupy continuously measured height and reverse from their 
   expect(errors).toEqual([]);
 });
 
-test('FAQ and services use independent single-open groups with keyboard-operable reversible headings', async ({ page }) => {
+test('FAQ keeps one open answer and keyboard focus on the activated heading', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/apa#servicii');
-  const service = page.locator('#servicii .makeon-disclosure-trigger').first();
-  await service.click();
-  await expectOpen(await controlledPanel(page, service));
+  await page.goto('/apa');
   const faq = page.locator('.b2b-faq-layout');
   const first = faq.locator('.makeon-disclosure-trigger').nth(0);
   const second = faq.locator('.makeon-disclosure-trigger').nth(1);
   await first.focus();
   await page.keyboard.press('Enter');
+  await expectOpen(await controlledPanel(page, first));
   await second.focus();
   await page.keyboard.press('Enter');
   await expect(first).toHaveAttribute('aria-expanded', 'false');
@@ -91,60 +92,36 @@ test('FAQ and services use independent single-open groups with keyboard-operable
   await expect(faq.locator('.makeon-disclosure-trigger[aria-expanded="true"]')).toHaveCount(1);
   await expect(await controlledPanel(page, first)).toBeHidden();
   await expectOpen(await controlledPanel(page, second));
-  await expect(service).toHaveAttribute('aria-expanded', 'true');
-  await second.focus();
-  await page.keyboard.press('Enter');
+  await expect(second).toBeFocused();
+  await page.keyboard.press('Space');
   await expect(await controlledPanel(page, second)).toBeHidden();
-  await expect(service).toHaveAttribute('aria-expanded', 'true');
+  await expect(second).toBeFocused();
 });
 
 for (const config of [{ width: 320, height: 568, motion: 'reduce' }, { width: 390, height: 640, motion: 'no-preference' }] as const) {
-  test(`short mobile panels keep hidden links out of Tab and one contextual action after the group at ${config.width}px`, async ({ page }) => {
+  test(`short mobile keeps filtration visible and FAQ and offer usable at ${config.width}px`, async ({ page }) => {
     await page.setViewportSize({ width: config.width, height: config.height });
     await page.emulateMedia({ reducedMotion: config.motion });
     await page.goto('/apa#filtre');
-    const filters = page.locator('#filtre').getByRole('button', { name: 'Filtre și compatibilitate', exact: true });
-    await expect(filters).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.getByRole('link', { name: 'Filtre pentru espressor', exact: true })).toHaveCount(0);
-    await filters.focus();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#servicii .makeon-disclosure-trigger').first()).toBeFocused();
-    await filters.focus();
+    await expect(page.locator('#filtre .b2b-filter-media img')).toBeVisible();
+    const trigger = page.locator('.b2b-faq-layout .makeon-disclosure-trigger').first();
+    await trigger.focus();
     await page.keyboard.press('Enter');
-    const filterPanel = await controlledPanel(page, filters);
-    await expectOpen(filterPanel);
-    await filters.focus();
-    await page.keyboard.press('Tab');
-    await expect(page.getByRole('button', { name: 'Cere un filtru compatibil', exact: true })).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.getByRole('link', { name: 'Filtre pentru espressor', exact: true })).toBeFocused();
-    await filters.focus();
-    await page.keyboard.press('Enter');
-    await expect(filterPanel).toBeHidden();
-
-    const services = page.locator('#servicii');
-    const maintenance = services.getByRole('button', { name: 'Mentenanță și schimb de filtre', exact: true });
-    await maintenance.focus();
-    await page.keyboard.press('Enter');
-    const panel = await controlledPanel(page, maintenance);
+    const panel = await controlledPanel(page, trigger);
     if (config.motion === 'reduce') {
       await nextFrames(page, 2);
       expect(await panel.evaluate(element => Math.abs(element.getBoundingClientRect().height - element.firstElementChild!.getBoundingClientRect().height))).toBeLessThanOrEqual(1);
     }
     await expectOpen(panel);
-    const action = services.locator('.office-service-action button');
-    await expect(action).toHaveCount(1);
-    await expect(action).toHaveAccessibleName('Solicită mentenanță și filtre');
-    await expect(services.locator('.makeon-disclosure-panel button')).toHaveCount(0);
-    const [rows, cta] = await Promise.all([services.locator('.b2b-service-rows').boundingBox(), action.boundingBox()]);
-    expect(cta!.y).toBeGreaterThanOrEqual(rows!.y + rows!.height - 1);
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.b2b-faq-layout .makeon-disclosure-trigger').nth(1)).toBeFocused();
+    const action = page.locator('#servicii').getByRole('button', { name: 'Cere ofertă pentru apă', exact: true });
     await action.click();
     const dialog = page.locator('.contact-dialog');
-    await expect(dialog.locator('#interest')).toHaveText('Mentenanță și filtre');
-    const whatsapp = await dialog.getByRole('link', { name: 'Preferi WhatsApp?' }).getAttribute('href');
-    expect(decodeURIComponent(whatsapp!)).toContain('Schimb filtre și mentenanță');
+    await expect(dialog.locator('#interest')).toHaveText('Consultanță pentru apă');
     await page.keyboard.press('Escape');
     await expect(dialog).not.toBeVisible();
+    await expect(action).toBeFocused();
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   });
 }
@@ -153,7 +130,6 @@ test('the visible office coffee preview uses working catalog cards and the exist
   await page.setViewportSize({ width: 390, height: 740 });
   await page.goto('/cafea-pentru-birouri#magazin');
   const catalog = page.locator('#magazin #office-shop-products');
-  await expect(catalog.locator('.shop-product-card').first()).toBeVisible();
   const card = catalog.locator('.shop-product-card').first();
   await expect(card.locator('.coffee-pack-art')).toBeVisible();
   await expect(card.getByRole('link', { name: 'Intense', exact: true })).toHaveAttribute('href', '/cafea/intense');

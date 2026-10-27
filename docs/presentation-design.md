@@ -1,8 +1,9 @@
 # Makeon presentation design
 
 The current presentation uses warm white (`#faf9f6`), light neutral (`#f1f0eb`),
-warm graphite (`#25231f`), DM Sans and the existing brand gold for primary actions.
-The support band and offer introduction use graphite; the water offer uses the
+warm graphite (`#25231f`), Cormorant Garamond Variable for headings, DM Sans
+Variable for body text and controls, and the existing brand gold for primary actions.
+The coffee craft band and offer introduction use graphite; the water offer uses the
 light neutral. Common colors are declared as `--makeon-*` tokens in `business.css`.
 The shop retains its serif
 product titles, product cards, spacing, filters, artwork and commercial behavior.
@@ -15,14 +16,39 @@ The shared header and footer are the only intentional visual changes in the shop
 | Home opening | `images/makeon-office-hero-v2.webp`, 1672 x 941 | Panorama changes to 55% image / 45% offers through one scroll timeline and native CSS sticky positioning on sufficiently large windows. Text stays anchored. Complete static layouts cover smaller windows, reduced motion and no JavaScript. See [opening motion](opening-motion.md). |
 | Home coffee | `images/coffee-machine-switchmorn.png`, 1015 x 1549; original SwitchMORN logo | Warm adjoining offer surface, with optically sized circular logo, larger apparatus zone, distinct personalized-quote label and existing service link. |
 | Home water | `images/vero-aqua-dispenser.webp`, 430 x 1200; original Vero Aqua logo | Light neutral adjoining surface separates the white apparatus from its background. Price is prominent with VAT, monthly/apparatus unit and term kept together. |
-| Home support | Text only | Compact graphite `HomeSupport` band with equipment selection, installation/maintenance, coffee supply and existing specialist links. No repeated brand logos or cards. |
-| Home events | `events/bar-mobil-makeon.webp`, 1500 x 2000; `events/rulota-exterior.webp`, 2000 x 1500 | Stand first, trailer second. Original proportions share a desktop height in a 9:16 grid, capped at 1280px, with aligned captions/actions. Full format blocks stack on mobile. |
-| Coffee service | Dedicated crop of the existing office illustration; original espresso-machine cutout | 40% introduction / 60% contextual image, followed by one equipment/offer frame, three real catalog products and compact services. Specifications and FAQs open on demand. |
-| Water service | Original dispenser cutout and existing office illustration | Wide three-zone title/equipment/price composition; mobile puts the price/conditions/action before the product. A large contextual image and all five inclusions form the next composition. Compact filtration, additional services and FAQ follow. |
+| Home service summaries | Client's cropped SwitchMORN photograph; original Vero Aqua dispenser and both brand marks | Two branded campaign panels: coffee uses a graphite surround, large serif heading and a restrained dark photo mount; water uses a blue-gray product stage with the actual dispenser, temperatures and filtration information. Commercial details and one contextual action share a separate lower rail. Mobile follows title/copy, image, then offer/action. |
+| Home shop | Live catalog and `CoffeeProductCard` | Appears before events, after the coffee/water support band. Three actual products remain visible on desktop and mobile, using the shared catalog and cart. |
+| Home events | Original stand and trailer photographs | Follows the shop with two complete format blocks and direct links to the dedicated events page. The original photo ratios share a desktop height; neutral panels match the service pages. |
+| Coffee service | Dedicated crop of the office illustration; original espresso-machine cutout; client-provided SwitchMORN photograph | 40% introduction / 60% contextual hero. Below it: equipment/quote, three live catalog products, a graphite service band with the client's photograph framed to 4:3, and one illustrated compatibility enquiry. Only FAQ answers collapse. |
+| Water service | Original dispenser cutout and existing office illustration | Existing title/equipment/price hero retained. Below it: a wide contextual image, five visible inclusions with icons, a large four-filter illustration and visible existing-system services with one enquiry action. Only FAQ answers collapse. |
 | Filtration | `filtration/four-filters.webp` | Existing illustration, qualified as one depicted configuration, with compatibility checked for the chosen equipment. |
 | Events introduction | `events/rulota-makeon.webp`, 1600 x 1200 | Actual nighttime setup, large photograph beside live text; text precedes it on mobile. |
 | Events formats | Existing bar and exterior trailer photographs | Same aligned photographic pair as home, with separate enquiry actions using the original service identifiers. No additional crop, zoom or parallax. The trailer wheel is already cropped in the original file. |
 | Product selection | Existing catalog and `CoffeeProductCard` | Same live data and add-to-cart action as the store; no duplicate static catalog. |
+
+Content photography uses neutral gallery panels (`#eeece7`), a fine structural
+edge, 4px outer corners and 20px space around the image (12px on narrow screens).
+Photographs have a 2px inner corner and no colored border or shadow. Event panels
+use equal percentage insets horizontally to retain the paired photographs' exact
+proportions and shared height. Equipment and product galleries share the surface
+and edge with their existing interior spacing. These rules live in
+`media-frames.css`, leave source image colors intact, and preserve
+`object-fit: contain` for apparatus and complete event photographs.
+The home opening keeps its full-bleed background photograph; brand marks retain
+their transparent artwork. Home's coffee campaign overrides the shared matte
+with a 10px dark mount and a fine light edge, keeping the source's 4:3 crop. The
+water campaign stages the original transparent dispenser with no image filter,
+shadow or additional generated image. Both campaigns use real variable italic
+Cormorant glyphs for their title accents. The photo's optional 2% hover zoom and
+button-arrow feedback apply only to hover-capable pointers without reduced motion.
+Current before/after captures are in
+`artifacts/home-media-refresh/`.
+
+`images/switchmorn-coffee-corner.webp` is the actual photograph supplied by the
+client, compressed from the 2048×1365 original. Its 4:3 display uses a 1200×900
+window at x800/y300: water bottles, upper empty space and the lower table edge
+are outside the visible crop. The full source is retained; no equipment or
+background was generated or retouched.
 
 The office hero is an existing generated illustration, not evidence of a customer
 installation. No new images, clients, installations or equipment were generated
@@ -89,7 +115,52 @@ No competitor assets, copy or commercial promises were imported.
 
 ## Local validation
 
-Production build and TypeScript passed. The selected Playwright suites passed
+The branded campaign revision passed production build (including TypeScript) and
+43 affected browser cases for home, offers, events, contextual forms and smooth
+scrolling. The home was checked at nine widths from 320 to 1920px, retaining both
+campaigns, all three products, working cart actions, events and footer without
+horizontal overflow or browser errors. Rendered campaign captures at 390 and
+1440px are under `artifacts/home-media-refresh/campaign/`; all images are loaded
+and unfiltered. The 4:3 coffee crop still excludes the water bottles.
+
+The preceding editorial home rows and Cormorant heading update passed production build,
+TypeScript checking and 67 targeted browser cases covering the opening, service
+offers, events, disclosures, modal, smooth scrolling and contextual enquiries.
+Computed-font checks across seven public routes at 390 and 1440px confirm
+Cormorant headings, DM Sans body text, Romanian glyph loading and no horizontal
+overflow or browser errors. Font evidence is in `artifacts/heading-font/`.
+Both home buttons retain the correct interest and WhatsApp text
+and restore focus after closing. At nine widths (320, 390, 768, 900, 901, 1024,
+1280, 1440 and 1920px), the final home has two visible service summaries, three
+catalog products, one event section, working cart actions, and no overflowing
+summary text or browser errors. Current summary captures are
+`artifacts/home-media-refresh/after/home-solutions-390.png` and
+`home-solutions-1440.png`.
+
+On 28 October, production build and the full selected 120-case browser suite
+passed for the home/shop/media changes. After restoring the home events below
+the shop, the build and 38 affected home, offer and event cases passed again.
+The final home was checked at 320, 390, 768, 1024, 1280, 1440 and 1920px:
+all three live coffee cards, working add-to-cart, one event section, visible
+footer contacts and no horizontal overflow or browser errors. Six public pages
+were captured at 390 and 1440px with all images loaded and no image filters.
+Evidence is in `artifacts/home-media-refresh/home-audit.json` and its `after/`
+directory. Browser coverage is Chrome with emulated mobile viewports.
+
+The 27 October service-body refinement passed production build and 64 targeted
+Playwright cases covering both pages, service enquiries/WhatsApp selections,
+catalog loading/retry, cart/checkout UI, FAQ height/reversal, modal focus and
+hero/section choreography. Existing-system installation, maintenance and filter
+interests remain selectable in the shared offer form. No real requests or orders
+were submitted. At 320, 390, 768, 1024, 1440 and 1920px both pages have no
+horizontal overflow, broken content images or browser errors. Hero pixel crops
+match the pre-change captures at 390 and 1440px. The comparison is
+`artifacts/service-body-refresh/review.html`; measurements are in
+`artifacts/service-body-refresh/layout-audit.json`. Tests use Chromium, with
+emulated mobile widths; physical devices, other engines, browser zoom and RTL
+were not verified in this pass.
+
+The preceding production build and TypeScript passed. Its selected Playwright suites passed
 124 tests: smooth wheel/native touch, overlay locks, anchors/history/focus,
 the panoramic opening, resize, no-JavaScript rendering, offer geometry,
 commercial details, hover/focus, navigation, office pages,
@@ -116,7 +187,7 @@ original saved baseline at 390 and 1440px. Screenshots of all five pages at
 `artifacts/complete/qa.json` contains responsive measurements. These artifacts
 are local and gitignored. The implementation has not been deployed.
 
-The current comparison is `artifacts/service-choreography/review.html`, with
+The preceding comparison is `artifacts/service-choreography/review.html`, with
 before/after service heroes and water-context compositions at 390px and 1440px,
 plus four actual Chromium recordings of entrances, home scrolling and
 interactions encoded as animated WebP. Current captures show no horizontal

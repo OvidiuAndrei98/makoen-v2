@@ -16,7 +16,8 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Apă pentru birouri.');
     await expect(page.locator(".world-switch, .mini-switch, .business-switch")).toHaveCount(0);
     await expect(page.locator("#ecosistem")).toHaveCount(0);
-    await expect(page.getByRole('navigation', { name: 'Pe pagina de apă' }).locator('a[href="#solutii"]')).toBeVisible();
+    await expect(page.locator('.b2b-anchor-nav')).toHaveCount(0);
+    await expect(page.locator('#filtre .b2b-filter-media img')).toBeVisible();
     await expect(page.locator("#solutii")).toBeAttached();
     await expect(page.locator("#abonamente")).toBeAttached();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

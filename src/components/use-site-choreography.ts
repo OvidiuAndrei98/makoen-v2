@@ -42,6 +42,8 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
       let refreshFrame = 0;
       let refreshTimer = 0;
       let previousY = scrollY;
+      let heldSequence: Sequence | null = null;
+      let releaseFrame = 0;
       const reduced = !context.conditions?.motion || !!context.conditions.reduced;
       const owns = (element: HTMLElement, group: HTMLElement) => {
         let owner = element.closest<HTMLElement>("[data-choreography]");
@@ -121,7 +123,7 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
             if (sequence.started || sequence.playFrame) return;
             sequence.playFrame = requestAnimationFrame(() => {
               sequence.playFrame = 0;
-              if (disposed || !group.isConnected) return;
+              if (disposed || !group.isConnected || heldSequence === sequence) return;
               sequence.started = true;
               markRead();
               sequence.cards.forEach(card => readCards.current.add(card));
@@ -157,6 +159,11 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
         const lines = targets(group, "[data-choreo-line]");
         const items = targets(group, "[data-choreo-item]");
         const captions = targets(group, "[data-choreo-caption]");
+        const containsControl = (element: HTMLElement) => element.matches("a,button,input,select,textarea") || !!element.querySelector("a,button,input,select,textarea");
+        const movingItems = items.filter(element => !containsControl(element));
+        const actions = items.filter(containsControl);
+        const movingCaptions = captions.filter(element => !containsControl(element));
+        const actionCaptions = captions.filter(containsControl);
         const pair = group.dataset.choreography === "event-pair" || group.dataset.choreography === "event-card";
         const timeline = gsap.timeline({ paused: true, defaults: { ease: "power3.out" }, onComplete: () => {
           sequence.completed = true;
@@ -169,11 +176,17 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
         }, 0);
         if (headings.length) timeline.fromTo(headings, { yPercent: 105 }, { yPercent: 0, duration: mobile ? .42 : .52, stagger: .045 }, .035);
         if (lines.length) timeline.fromTo(lines, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: mobile ? .4 : .5 }, .08);
-        if (items.length) timeline.fromTo(items, { y: mobile ? 16 : 24, opacity: .65 }, {
+        if (movingItems.length) timeline.fromTo(movingItems, { y: mobile ? 16 : 24, opacity: .65 }, {
           y: 0, opacity: 1, duration: mobile ? .36 : .44, stagger: mobile ? .04 : .06,
         }, .12);
-        if (captions.length) timeline.fromTo(captions, { y: mobile ? 12 : 18, opacity: .65 }, {
+        if (actions.length) timeline.fromTo(actions, { opacity: .65 }, {
+          opacity: 1, duration: mobile ? .36 : .44, stagger: mobile ? .04 : .06,
+        }, .12);
+        if (movingCaptions.length) timeline.fromTo(movingCaptions, { y: mobile ? 12 : 18, opacity: .65 }, {
           y: 0, opacity: 1, duration: mobile ? .3 : .42, stagger: mobile ? .08 : .1,
+        }, mobile ? .25 : .32);
+        if (actionCaptions.length) timeline.fromTo(actionCaptions, { opacity: .65 }, {
+          opacity: 1, duration: mobile ? .3 : .42, stagger: mobile ? .08 : .1,
         }, mobile ? .25 : .32);
         addCards(sequence);
         if (!timeline.duration()) { sequence.finish(); return; }
@@ -219,11 +232,39 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
           if (bounds.bottom <= 0 || jump && bounds.top < innerHeight) sequence.finish();
         });
       };
+      const interactionSequence = (target: Element | null) => {
+        if (!target?.closest("button,a,input,select,textarea")) return undefined;
+        let group = target.closest<HTMLElement>("[data-choreography]");
+        while (group && !groups.has(group)) group = group.parentElement?.closest<HTMLElement>("[data-choreography]") ?? null;
+        return group ? groups.get(group) : undefined;
+      };
+      const onPointerDown = (event: PointerEvent) => {
+        const sequence = interactionSequence(event.target as Element | null);
+        if (!sequence || sequence.completed) return;
+        cancelAnimationFrame(releaseFrame);
+        heldSequence = sequence;
+        sequence.timeline?.pause();
+        sequence.extras.forEach(timeline => timeline.pause());
+      };
+      const releasePointer = () => {
+        cancelAnimationFrame(releaseFrame);
+        releaseFrame = requestAnimationFrame(() => {
+          if (heldSequence && !heldSequence.completed) {
+            if (heldSequence.started) heldSequence.timeline?.play();
+            else heldSequence.play();
+            heldSequence.extras.forEach(timeline => timeline.play());
+          }
+          heldSequence = null;
+        });
+      };
       const onInteraction = (event: Event) => {
         const target = event.target as Element | null;
-        let group = target?.closest<HTMLElement>("[data-choreography]");
-        while (group && !groups.has(group)) group = group.parentElement?.closest<HTMLElement>("[data-choreography]");
-        if (group && (event.type === "focusin" || target?.closest("button,a,input,select,textarea"))) groups.get(group)?.finish();
+        // Pointer focus follows pointerdown; keep the pressed control in place
+        // until its click has been dispatched. Keyboard focus may finish now.
+        if (event.type === "focusin" && !target?.matches(":focus-visible")) return;
+        const sequence = interactionSequence(target);
+        sequence?.finish();
+        if (heldSequence === sequence) heldSequence = null;
       };
       const onPageShow = (event: PageTransitionEvent) => {
         if (event.persisted) groups.forEach(sequence => { if (sequence.element.getBoundingClientRect().top < innerHeight) sequence.finish(); });
@@ -231,7 +272,10 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("pageshow", onPageShow);
       main.addEventListener("focusin", onInteraction);
-      main.addEventListener("pointerdown", onInteraction);
+      main.addEventListener("pointerdown", onPointerDown);
+      main.addEventListener("click", onInteraction);
+      window.addEventListener("pointerup", releasePointer);
+      window.addEventListener("pointercancel", releasePointer);
       document.fonts.ready.then(() => { if (!disposed) scheduleRefresh(); });
       return () => {
         disposed = true;
@@ -240,10 +284,14 @@ export default function useSiteChoreography(ref: RefObject<HTMLElement | null>) 
         cancelAnimationFrame(scanFrame);
         cancelAnimationFrame(refreshFrame);
         clearTimeout(refreshTimer);
+        cancelAnimationFrame(releaseFrame);
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("pageshow", onPageShow);
         main.removeEventListener("focusin", onInteraction);
-        main.removeEventListener("pointerdown", onInteraction);
+        main.removeEventListener("pointerdown", onPointerDown);
+        main.removeEventListener("click", onInteraction);
+        window.removeEventListener("pointerup", releasePointer);
+        window.removeEventListener("pointercancel", releasePointer);
         groups.forEach(sequence => {
           cancelAnimationFrame(sequence.playFrame);
           sequence.element.dataset.choreographyState = "complete";

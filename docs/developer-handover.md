@@ -72,12 +72,24 @@ the complete static composition remains in normal flow. The image at
 it is illustrative, not evidence of a customer installation. A masked title
 entrance settles within 800ms on desktop or 650ms on mobile, and completes when
 scrolling starts. Text stays anchored; keyboard access and the solutions anchor
-expose the actual offer controls at the readable end of the scene. A compact
-support module follows, then the photographic event chapter and shop selection.
-Actual event photographs show the mobile Coffee Corner bar and the trailer in
-their original portrait/landscape proportions. The product selection reuses
+expose the actual offer controls at the readable end of the scene.
+`HomeSupport` renders two branded campaign panels with one contextual enquiry per
+service. Coffee uses a graphite surround, original SwitchMORN photograph in a dark
+10px mount, and a large Cormorant title. Water uses a blue-gray stage with the
+original transparent dispenser, temperatures and qualified filtration information.
+Both put title/copy before media in the mobile reading order, followed by a lower
+commercial rail and action. The heading accents load Cormorant's real variable
+italic face through the public layout. The former six icon columns and specialist
+link strip are removed. Price/contract conditions are visible, then
+the shop selection takes the former event section's position. The photographic
+event chapter follows the shop; its two format links reach the dedicated events
+page, which is also accessible through the shared navigation.
+The product selection reuses
 `CoffeeProductCard`, the catalog provider and the existing cart action.
 
+`typography.css` assigns Cormorant Garamond Variable to public headings and DM Sans
+Variable to body text and controls. Disclosure titles, modal titles and service
+heading overrides use the same heading token; price numerals retain DM Sans.
 `business.css` isolates service typography and surfaces under `.b2b-site`;
 `home.css` controls the continuation and shared `SiteFooter`;
 `opening.css` and `use-home-opening-motion.ts` own the opening and entrance;
@@ -85,6 +97,10 @@ their original portrait/landscape proportions. The product selection reuses
 `office-service-pages.css` scopes the compact reading layouts, with
 `service-editorial.css` providing the photographic coffee hero, equipment offer,
 three-zone water hero and large water-context/inclusions composition.
+`media-frames.css` gives content photography a warm matte mount, fine edge and
+small rounded corners. Equipment, product cards and product-detail galleries
+share the same frame tokens. Original image colors and proportions are retained;
+brand marks and the full-bleed opening keep their existing presentation.
 `use-presentation-entrance.ts` owns service heroes, while
 `use-site-choreography.ts` owns coordinated sections, products and event pairs.
 Their scopes and animated layers remain separate. The shop keeps
@@ -97,12 +113,11 @@ existing legal/cookie-policy/ANPC links. No cookie-settings manager exists in th
 project; the footer retains the existing policy link.
 
 The home hero opens the unchanged contact form with coffee and water selected;
-its secondary link opens the dedicated events page. Existing home anchors `#despre`,
-`#ecosistem`, `#servicii`, `#evenimente`, `#magazin` and `#abonamente` are
-retained. The latter targets the compact footer enquiry access. Coffee and water
-pages keep their detailed equipment, service, subscription and FAQ information,
-with supplementary specifications, services and FAQs initially closed;
-the old coffee-page event anchor links to the dedicated event page.
+its secondary link reaches the actual offers at `#solutii`. Home anchors `#despre`,
+`#ecosistem`, `#servicii`, `#magazin`, `#evenimente` and `#abonamente` are retained. The latter
+targets the compact footer enquiry access. Coffee and water pages keep their
+equipment, services and subscription information visible. Only FAQ answers
+collapse, below a heading aligned above the questions in one centered column.
 
 `src/lib/business-content.ts` centralizes approved water conditions and service
 copy. The water offer is 31 EUR + VAT/month/apparatus for 36 months, total 1,116 EUR
@@ -360,7 +375,48 @@ uses installed Google Chrome. Run `npm run test:e2e`. Browser commerce tests use
 mocked catalog/payment responses and do not replace real Stripe end-to-end testing.
 Check mobile layouts and reduced motion when changing navigation or animations.
 
-The current presentation refinement passed a production build, TypeScript and
+The branded campaign revision passed production build (including TypeScript) and
+43 affected home/offer/event/form/scroll cases. Nine widths from 320 to 1920px
+retain the commercial actions, shop, events and footer without overflow or browser
+errors. The rendered campaign captures are at
+`artifacts/home-media-refresh/campaign/home-solutions-390.png` and
+`home-solutions-1440.png`. The original coffee photograph remains cropped to 4:3
+without water bottles; no new image generation or source retouching was used.
+
+The preceding editorial home rows and Cormorant heading update passed production build,
+TypeScript checking and 67 targeted cases, including contextual offers/WhatsApp
+selections, focus restoration, disclosures, modal layout, service choreography,
+anchors, smooth scrolling and the home/shop/event order. Font checks cover seven
+public routes at 390 and 1440px, with correct heading/body families and Romanian
+glyph loading; evidence is under `artifacts/heading-font/`.
+Nine-width checks from
+320 to 1920px include the exact 900/901px composition boundary and confirm both
+summaries, all three products, working cart actions and visible event/footer
+content without overflowing summary text. Current evidence is under
+`artifacts/home-media-refresh/` (gitignored).
+
+The preceding 28 October home/media update passed production build and 120 selected
+browser cases. After restoring events below the shop, build and the 38 affected
+home/offer/event cases passed again. Home checks at seven widths from 320 to
+1920px retain all three products, working cart actions, events and footer contact
+details. The final photo crop and responsive captures are saved under
+`artifacts/home-media-refresh/` (gitignored). Source photographs remain unretouched;
+the client-provided coffee photograph uses a CSS 4:3 crop without water bottles.
+Interactive section controls use opacity entrances to keep their click areas
+stationary. Pointer holds pause any remaining section movement until activation
+or release. Reduced motion explicitly retains native `scroll-behavior: auto`.
+
+The preceding service-body refinement keeps both heroes and replaces the service
+drawers/intermediate anchor menus with visible equipment, coffee, filtration and
+service compositions. Only FAQ answers collapse. The shared offer form retains
+all canonical service selections, including installation and maintenance.
+It passed production build and 64 targeted Playwright cases. Both service pages
+were checked from 320 through 1920px without overflow, broken images or browser
+errors; hero pixel crops match the baseline at 390 and 1440px. Current comparison:
+`artifacts/service-body-refresh/review.html` (gitignored). The pass uses Chrome
+and emulated mobile viewports, without physical-device, zoom or RTL verification.
+
+The preceding presentation refinement passed a production build, TypeScript and
 124 selected Playwright cases across smooth scrolling, the panoramic home opening,
 office offers/navigation, water, events, contact, services, catalog loading,
 commerce UI, unavailable cart, cart layout and shop suites. Checks include
@@ -376,7 +432,7 @@ a claim that every historical visual/animation suite passes. No real order,
 payment or customer email was created. Current home/office captures cover
 390 and 1440px, with an additional 320px water check; the browser suites also
 cover intermediate widths and 1920px. Earlier shop comparisons matched the
-saved baseline at 390 and 1440px. The current comparison is
+saved baseline at 390 and 1440px. That phase's comparison is
 `artifacts/service-choreography/review.html` (gitignored), with current captures
 and four actual Chromium interaction recordings encoded as animated WebP;
 earlier directions remain in `artifacts/polish/`, `artifacts/clarity/`,

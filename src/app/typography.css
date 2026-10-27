@@ -2,7 +2,7 @@
 :root {
   --font-display: "Cormorant Garamond Variable", Georgia, serif;
   --font-body: "DM Sans Variable", Arial, sans-serif;
-  --font-heading: var(--font-body);
+  --font-heading: var(--font-display);
 }
 body {
   font-size: 16px;
@@ -15,14 +15,15 @@ select,
 button {
   font-family: var(--font-body);
 }
-.site :is(h1, h2, h3, h4),
-.legal-document :is(h1, h2, h3, h4),
-dialog :is(h1, h2, h3, h4) {
+.site :is(h1, h2, h3, h4, h5, h6),
+.legal-document :is(h1, h2, h3, h4, h5, h6),
+dialog :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-display);
   font-weight: 500;
   font-optical-sizing: auto;
   letter-spacing: -.025em;
 }
+.b2b-site :is(.opening-quote,.home-coffee-quote) { font-family:var(--font-heading); font-weight:500; letter-spacing:-.02em; }
 .site .hero h1 {
   font-size: clamp(62px, 6.4vw, 98px);
   letter-spacing: -.035em;

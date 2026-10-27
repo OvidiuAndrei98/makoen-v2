@@ -1,20 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Check, Headphones, PackageCheck, Plug, RefreshCw, Wrench } from "lucide-react";
 import BusinessShell from "./business-shell";
-import { BusinessQuestions, BusinessShopPreview, ServiceDetails } from "./business-sections";
-import { coffeeCraftServices, coffeeQuestions, waterQuestions, waterServices, waterSubscription } from "@/lib/business-content";
-import { useRef, useState } from "react";
+import { BusinessQuestions, BusinessShopPreview } from "./business-sections";
+import { coffeeQuestions, waterQuestions, waterSubscription } from "@/lib/business-content";
+import { useRef } from "react";
 import usePresentationEntrance from "./use-presentation-entrance";
-import AnimatedDisclosure from "./animated-disclosure";
 
 const officeIllustration = "/images/makeon-office-hero-v2.webp";
+const inclusionIcons = [PackageCheck, Plug, Wrench, RefreshCw, Headphones];
 
 export function CoffeeOfficeLanding() {
   const hero = useRef<HTMLElement>(null);
-  const [equipmentOpen, setEquipmentOpen] = useState(false);
   usePresentationEntrance(hero, "service");
 
   return <BusinessShell className="b2b-coffee office-service-page" initialInterest="Cafea și espressoare">{onOffer => <>
@@ -37,38 +35,28 @@ export function CoffeeOfficeLanding() {
       </figure>
     </section>
 
-    <nav className="b2b-container b2b-anchor-nav" aria-label="Pe pagina de cafea">
-      <a href="#solutii">Soluția pentru birou</a><a href="#abonamente">Oferta</a><a href="#magazin">Cafeaua</a><a href="#servicii">Prăjire și blenduri</a>
-    </nav>
-
-    <section className="coffee-offer-section office-coffee-offer" id="abonamente" data-choreography="section" aria-labelledby="coffee-offer-title">
-      <div className="b2b-container office-coffee-offer-grid">
-        <figure className="coffee-plan-product" data-choreo-media>
+    <section className="office-coffee-showcase" id="abonamente" data-choreography="section" aria-labelledby="coffee-offer-title">
+      <div className="b2b-container office-showcase-grid">
+        <figure className="coffee-plan-product office-machine-stage" data-choreo-media>
+          <span className="office-visual-label">SwitchMORN Coffee</span>
           <div className="coffee-plan-product-image">
-            <Image src="/images/coffee-machine-switchmorn.png" alt="Espressor automat SwitchMORN cu ecran tactil și recipient pentru cafea boabe" fill sizes="(max-width: 800px) 65vw, 32vw" />
+            <Image src="/images/coffee-machine-switchmorn.png" alt="Espressor automat SwitchMORN cu ecran tactil și recipient pentru cafea boabe" fill sizes="(max-width: 800px) 80vw, 40vw" />
           </div>
+          <figcaption className="office-machine-specs"><span>Cafea boabe</span><span>Ecran tactil</span><span>Espresso & cappuccino</span></figcaption>
         </figure>
-        <div className="coffee-plan-copy">
-          <div className="coffee-offer-conditions" id="solutii" data-service="coffee">
-            <h2 className="b2b-heading" id="coffee-offer-title"><span className="choreography-heading-mask"><span data-choreo-heading>Ofertă personalizată.</span></span></h2>
-            <p className="b2b-body" data-choreo-item>Prețul depinde de echipament, consum și serviciile alese. Instalarea, mentenanța și costurile lor se confirmă în ofertă.</p>
+        <div className="office-showcase-copy" id="solutii" data-service="coffee">
+          <p className="office-overline" data-choreo-item>Soluția pentru echipa ta</p>
+          <h2 className="b2b-heading" id="coffee-offer-title"><span className="choreography-heading-mask"><span data-choreo-heading>Espressor, cafea și aprovizionare.</span></span></h2>
+          <ul className="office-plan-points">
+            <li data-choreo-item><Check aria-hidden="true" /><span>Espressor ales după consumul biroului.</span></li>
+            <li data-choreo-item><Check aria-hidden="true" /><span>Cafea SwitchMORN pe gustul echipei.</span></li>
+            <li data-choreo-item><Check aria-hidden="true" /><span>Aprovizionare adaptată consumului.</span></li>
+          </ul>
+          <div className="office-quote-note" data-choreo-item>
+            <h3>Ofertă personalizată.</h3>
+            <p>Prețul depinde de echipament, consum și servicii. Instalarea, mentenanța și costurile lor se confirmă în ofertă.</p>
           </div>
-          <div className="office-module-line" data-choreo-line aria-hidden="true" />
-          <dl className="office-service-facts">
-            <div data-choreo-item><dt>Cafea SwitchMORN</dt><dd>Aleasă după preferințele echipei.</dd></div>
-            <div data-choreo-item><dt>Espressor automat</dt><dd>Ales după consum și băuturile preparate.</dd></div>
-            <div data-choreo-item><dt>Aprovizionare</dt><dd>Plan adaptat consumului.</dd></div>
-          </dl>
-          <div className="coffee-equipment-secondary" data-choreo-item>
-            <AnimatedDisclosure id="coffee-equipment-details" className="office-equipment-details" title="Detalii despre espressor" compact open={equipmentOpen} onToggle={() => setEquipmentOpen(value => !value)}>
-              <dl className="b2b-details">
-                <div><dt>Preparare</dt><dd>Cafea boabe, preparată în espressor automat.</dd></div>
-                <div><dt>Băuturi</dt><dd>Espresso și cappuccino, în funcție de preferințele echipei.</dd></div>
-                <div><dt>Utilizare</dt><dd>Ecran tactil pentru selectarea băuturilor.</dd></div>
-              </dl>
-              <p className="b2b-note">Configurația finală și cerințele de instalare se confirmă în ofertă.</p>
-            </AnimatedDisclosure>
-          </div>
+          <button type="button" className="b2b-btn" onClick={() => onOffer("Abonament de cafea")} data-choreo-item>Cere oferta pentru birou<ArrowUpRight size={18} aria-hidden="true" /></button>
         </div>
       </div>
     </section>
@@ -77,25 +65,31 @@ export function CoffeeOfficeLanding() {
       <BusinessShopPreview title="Cafea SwitchMORN" description="Alege sortimentul, gramajul și măcinarea din catalog." showEyebrow={false} sectionId="office-shop-products" />
     </section>
 
-    <section className="b2b-container b2b-section office-service-complements" id="servicii" data-choreography="section" aria-labelledby="coffee-services-title">
-      <ServiceDetails services={coffeeCraftServices} onOffer={onOffer} title="Prăjire și blenduri." titleId="coffee-services-title"
-        description="Alege serviciul despre care vrei să discutăm." action="Cere detalii despre cafea" defaultInterest="Cafea și espressoare" />
-    </section>
+    <section className="office-craft-band" id="servicii" data-choreography="section" aria-labelledby="coffee-services-title"><div className="b2b-container office-craft-section">
+      <figure className="office-craft-visual">
+        <div className="office-coffee-closeup" data-choreo-media><div className="office-coffee-photo-crop"><Image src="/images/switchmorn-coffee-corner.webp" alt="Espressor SwitchMORN, pachete de cafea și accesorii pentru servire" fill sizes="(max-width: 800px) 160vw, 85vw" /></div></div>
+        <figcaption className="service-photo-caption">Espressor și cafea SwitchMORN.</figcaption>
+      </figure>
+      <div className="office-craft-copy">
+        <p className="office-overline" data-choreo-item>Dincolo de un sortiment</p>
+        <h2 className="b2b-heading" id="coffee-services-title"><span className="choreography-heading-mask"><span data-choreo-heading>Începe cu gustul.</span></span></h2>
+        <div className="office-craft-facts">
+          <div data-choreo-item><h3>Prăjire în loturi mici</h3><p>Profil de prăjire ajustat pentru metoda de preparare.</p></div>
+          <div data-choreo-item><h3>Blenduri personalizate</h3><p>O formulă aleasă după preferințele echipei.</p></div>
+          <div data-choreo-item><h3>Espresso sau filtru</h3><p>Cafea pentru espressor, V60, Chemex sau AeroPress.</p></div>
+          <div data-choreo-item><h3>Cafea de probă</h3><p>Stabilim împreună sortimentele, cantitățile și prețul.</p></div>
+        </div>
+        <div className="office-craft-actions" data-choreo-item>
+          <button type="button" className="b2b-btn" onClick={() => onOffer("Cafea de probă")}>Solicită cafea de probă<ArrowUpRight size={18} aria-hidden="true" /></button>
+          <button type="button" className="b2b-link" onClick={() => onOffer("Prăjire și blenduri personalizate")}>Discută un blend personalizat<ArrowUpRight size={18} aria-hidden="true" /></button>
+        </div>
+      </div>
+    </div></section>
 
-    <section className="b2b-container office-related-section coffee-filtration" id="filtre" aria-labelledby="coffee-filters-title">
+    <section className="b2b-container office-filter-note" id="filtre" aria-labelledby="coffee-filters-title" data-choreography="section">
+      <div className="office-filter-note-image" data-choreo-media><Image src="/images/filtration/four-filters.webp" alt="Exemplu de cartușe de filtrare; compatibilitatea cu espressorul se verifică înainte de ofertare" fill sizes="(max-width: 600px) 70vw, 240px" /></div>
       <div><h2 className="b2b-h3" id="coffee-filters-title">Filtrare pentru espressor.</h2><p className="b2b-body">Verificăm compatibilitatea cu aparatul tău și stabilim instalarea și întreținerea filtrului.</p></div>
-      <div className="b2b-actions">
-        <button type="button" className="b2b-link" onClick={() => onOffer("Filtre pentru apă și cafea")}>Cere detalii despre filtre<ArrowUpRight size={18} aria-hidden="true" /></button>
-        <Link className="b2b-link" href="/apa#filtre">Vezi serviciile de filtrare<ArrowUpRight size={18} aria-hidden="true" /></Link>
-      </div>
-    </section>
-
-    <section className="b2b-container office-related-section office-events-link" id="evenimente" aria-labelledby="coffee-events-title">
-      <div><h2 className="b2b-h3" id="coffee-events-title">Cafea la evenimente.</h2><p className="b2b-body">Stand Coffee Corner sau rulotă SwitchMORN.</p></div>
-      <div className="b2b-actions">
-        <Link className="b2b-link" href="/cafea-la-evenimente#bar-mobil">Stand / bar mobil<ArrowUpRight size={18} aria-hidden="true" /></Link>
-        <Link className="b2b-link" href="/cafea-la-evenimente#rulota">Rulotă<ArrowUpRight size={18} aria-hidden="true" /></Link>
-      </div>
+      <button type="button" className="b2b-link" onClick={() => onOffer("Filtre pentru apă și cafea")} data-choreo-item>Cere detalii despre filtre<ArrowUpRight size={18} aria-hidden="true" /></button>
     </section>
 
     <BusinessQuestions questions={coffeeQuestions} initialOpen={null} />
@@ -104,7 +98,6 @@ export function CoffeeOfficeLanding() {
 
 export function WaterLanding() {
   const hero = useRef<HTMLDivElement>(null);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   usePresentationEntrance(hero, "service");
 
   return <BusinessShell className="b2b-water office-service-page" initialInterest="Consultanță pentru filtrarea apei">{onOffer => <>
@@ -132,50 +125,44 @@ export function WaterLanding() {
         <p className="water-temperature-note">Rece · Caldă · Temperatura camerei</p>
       </div>
 
-      <section className="b2b-container water-office-context" data-choreography="section" aria-labelledby="water-offer-title">
+      <section className="b2b-container water-office-context office-water-experience" data-choreography="section" aria-labelledby="water-offer-title">
+        <div className="office-water-experience-heading">
+          <h2 className="b2b-heading" id="water-offer-title"><span className="choreography-heading-mask"><span data-choreo-heading>Un abonament.<br />Aparat și servicii incluse.</span></span></h2>
+          <p className="b2b-body" data-choreo-item>Instalare, întreținere și asistență pentru dozatorul de la birou.</p>
+        </div>
         <figure className="water-context-visual">
           <div className="water-context-photo" data-choreo-media>
-            <Image src={officeIllustration} alt="Ilustrație Makeon cu dozatorul Vero Aqua și zona de utilizare într-un spațiu de birou" fill sizes="(max-width: 800px) 100vw, 55vw" />
+            <Image src={officeIllustration} alt="Ilustrație Makeon cu dozatorul Vero Aqua și zona de utilizare într-un spațiu de birou" fill sizes="100vw" />
           </div>
           <figcaption className="service-photo-caption" data-choreo-item>Ilustrație de prezentare Makeon.</figcaption>
         </figure>
         <div className="office-water-inclusions water-inclusions">
-          <h2 className="b2b-heading" id="water-offer-title"><span className="choreography-heading-mask"><span data-choreo-heading>Abonamentul include</span></span></h2>
-          <div className="office-module-line" data-choreo-line aria-hidden="true" />
-          <ul>{waterSubscription.includes.map(item => <li key={item} data-choreo-item>{item}</li>)}</ul>
+          <ul>{waterSubscription.includes.map((item, index) => { const Icon = inclusionIcons[index]; return <li key={item} data-choreo-item><Icon size={28} strokeWidth={1.4} aria-hidden="true" /><span>{item}</span></li>; })}</ul>
           <p className="b2b-note" data-choreo-item>Oferta este exclusiv pentru apă. Configurația, cerințele de instalare și condițiile finale se confirmă la contractare.</p>
         </div>
       </section>
     </section>
 
-    <nav className="b2b-container b2b-anchor-nav" aria-label="Pe pagina de apă">
-      <a href="#solutii">Dozatorul de apă</a><a href="#abonamente">Abonamentul Vero Aqua</a><a href="#filtre">Filtre și compatibilitate</a><a href="#servicii">Instalare și mentenanță</a>
-    </nav>
-
-    <section className="b2b-container office-water-filtration">
-      <AnimatedDisclosure id="filtre" className="office-filter-disclosure" title="Filtre și compatibilitate" headingLevel={2} open={filtersOpen} onToggle={() => setFiltersOpen(value => !value)}>
-        <div className="office-filter-details">
-          <div>
-            <dl className="water-apparatus-details">
-              <div><dt>Comenzi</dt><dd>Distribuire separată.</dd></div>
-              <div><dt>Aparatul prezentat</dt><dd>Patru stadii de filtrare și lampă UV, pentru modelul din ofertă.</dd></div>
-            </dl>
-            <p className="b2b-body">Sistemul ilustrat mai jos are patru etape. Verificăm configurația și compatibilitatea pentru aparatul ales; schema nu descrie toate sistemele disponibile.</p>
-            <ul className="b2b-filter-stages"><li>Sediment</li><li>Cărbune activ</li><li>Carbon block</li><li>Membrană UF</li></ul>
-            <div className="b2b-actions">
-              <button type="button" className="b2b-link" onClick={() => onOffer("Filtre pentru apă și cafea")}>Cere un filtru compatibil<ArrowUpRight size={18} aria-hidden="true" /></button>
-              <Link className="b2b-link" href="/cafea-pentru-birouri#filtre">Filtre pentru espressor<ArrowUpRight size={18} aria-hidden="true" /></Link>
-            </div>
-          </div>
-          <div className="b2b-filter-media"><Image src="/images/filtration/four-filters.webp" alt="Sistemul ilustrat cu filtre pentru sediment, cărbune activ, carbon block și membrană UF" fill sizes="(max-width: 800px) 90vw, 45vw" /></div>
+    <section className="office-filtration-section" id="filtre" data-choreography="section" aria-labelledby="water-filters-title">
+      <div className="b2b-container">
+        <div className="office-filtration-heading">
+          <div><p className="office-overline" data-choreo-item>Vero Aqua · Filtrare</p><h2 className="b2b-heading" id="water-filters-title"><span className="choreography-heading-mask"><span data-choreo-heading>Filtrarea, la vedere.</span></span></h2></div>
+          <p className="b2b-body" data-choreo-item>Patru stadii de filtrare și lampă UV pentru modelul din ofertă. Verificăm configurația și compatibilitatea pentru aparatul ales.</p>
         </div>
-      </AnimatedDisclosure>
-    </section>
-
-    <section className="b2b-container b2b-section office-service-complements" id="servicii" data-choreography="section" aria-labelledby="water-services-title">
-      <ServiceDetails services={waterServices} onOffer={onOffer} title="Altă soluție pentru apă?" titleId="water-services-title"
-        description="Pentru alt aparat sau un sistem existent, stabilim configurația, lucrările și costurile în oferta personalizată."
-        action="Cere ofertă pentru apă" defaultInterest="Consultanță pentru filtrarea apei" />
+        <figure className="office-filter-system">
+          <div className="b2b-filter-media" data-choreo-media><Image src="/images/filtration/four-filters.webp" alt="Sistemul ilustrat cu filtre pentru sediment, cărbune activ, carbon block și membrană UF" fill sizes="(max-width: 800px) 90vw, 1000px" /></div>
+          <figcaption><ul className="office-filter-labels"><li>Sediment</li><li>Cărbune activ</li><li>Carbon block</li><li>Membrană UF</li></ul></figcaption>
+        </figure>
+        <div className="office-existing-system" id="servicii">
+          <div className="office-existing-system-heading"><h3 className="b2b-h3">Ai deja un sistem de filtrare?</h3><p className="b2b-body">Instalare, mentenanță sau un filtru compatibil, într-o ofertă pentru echipamentul tău.</p></div>
+          <ul className="office-water-services">
+            <li data-choreo-item><Plug size={24} strokeWidth={1.5} aria-hidden="true" /><div><h4>Instalare</h4><p>Montaj adaptat spațiului și aparatului.</p></div></li>
+            <li data-choreo-item><Wrench size={24} strokeWidth={1.5} aria-hidden="true" /><div><h4>Mentenanță</h4><p>Verificări și intervale stabilite în ofertă.</p></div></li>
+            <li data-choreo-item><RefreshCw size={24} strokeWidth={1.5} aria-hidden="true" /><div><h4>Schimb de filtre</h4><p>Compatibilitate verificată pentru sistemul existent.</p></div></li>
+          </ul>
+          <div className="office-existing-system-action" data-choreo-item><p className="b2b-note">Pentru alte sisteme, lucrările și costurile se stabilesc separat de abonamentul Vero Aqua.</p><button type="button" className="b2b-btn" onClick={() => onOffer("Consultanță pentru filtrarea apei")}>Cere ofertă pentru apă<ArrowUpRight size={18} aria-hidden="true" /></button></div>
+        </div>
+      </div>
     </section>
 
     <BusinessQuestions questions={waterQuestions} initialOpen={null} />

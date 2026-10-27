@@ -42,7 +42,9 @@ for(const width of [390,1440]) for(const service of ['coffee','water'] as const)
     await page.goto(service==='coffee'?'/cafea-pentru-birouri':'/apa');
     const hero=page.locator(`[data-presentation="${service}"]`);
     await expect(hero).toHaveAttribute('data-presentation-state','complete');
-    await page.evaluate(async()=>{for(let i=0;i<8;i++) await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));});
+    await expect.poll(() => page.evaluate(() =>
+      (window as typeof window & {__serviceMotionFrames:HeroFrame[]}).__serviceMotionFrames.filter(frame => frame.state === 'complete').length
+    )).toBeGreaterThan(3);
     const frames=await page.evaluate(()=>(window as typeof window & {__serviceMotionFrames:HeroFrame[]}).__serviceMotionFrames);
     const running=frames.filter(frame=>frame.state==='running');
     const complete=frames.filter(frame=>frame.state==='complete');

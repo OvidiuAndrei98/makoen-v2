@@ -12,7 +12,7 @@
 .opening-offer-brand img { display:block; height:auto; max-width:100%; object-fit:contain; }
 .opening-offer-brand .opening-logo-coffee { width:52px; }
 .opening-offer-brand .opening-logo-water { width:128px; }
-.b2b-site .opening-service h2 { margin:0 0 12px; font:600 clamp(28px,2.2vw,35px)/1.15 var(--font-body); letter-spacing:-.055em; text-wrap:balance; }
+.b2b-site .opening-service h2 { margin:0 0 12px; font:500 clamp(28px,2.2vw,35px)/1.15 var(--font-heading); letter-spacing:-.025em; text-wrap:balance; }
 .opening-offer-continuation { display:inline; }
 .opening-service-description { color:var(--makeon-muted); font-size:16px; line-height:1.65; }
 .opening-commercial { margin-top:18px; }

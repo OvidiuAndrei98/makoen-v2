@@ -22,7 +22,7 @@ export function BusinessContact({ onOffer, selection, id = "contact", title = "S
 export function BusinessQuestions({ questions, initialOpen = 0 }: { questions: readonly (readonly [string, string])[]; initialOpen?: number | null }) {
   const [opened, setOpened] = useState<number | null>(initialOpen);
   return <section className="b2b-container b2b-section b2b-faq-layout" aria-labelledby="business-faq-title" data-choreography="section">
-    <div className="choreography-line-host"><h2 className="b2b-heading" id="business-faq-title"><span className="choreography-heading-mask"><span data-choreo-heading>Întrebări utile.</span></span></h2><span className="choreography-separator" data-choreo-line aria-hidden="true" /></div>
+    <div className="b2b-faq-heading"><h2 className="b2b-heading" id="business-faq-title"><span className="choreography-heading-mask"><span data-choreo-heading>Întrebări utile.</span></span></h2></div>
     <div data-choreo-item>{questions.map(([question, answer], index) => <AnimatedDisclosure key={question} id={`faq-item-${index}`} className="b2b-faq-item" title={question}
       triggerId={`faq-trigger-${index}`} panelId={`faq-answer-${index}`} open={opened === index} onToggle={() => setOpened(opened === index ? null : index)}>
       <p className="b2b-body">{answer}</p>
