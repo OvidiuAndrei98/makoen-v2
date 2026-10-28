@@ -16,7 +16,7 @@ body { background:var(--makeon-surface); }
 .b2b-site button.b2b-link { padding-inline:0; border-radius:0; background:transparent; }
 .detail-catalog-status { margin-block:14px; font-size:14px; line-height:1.6; }
 .detail-catalog-status .text-link { min-height:44px; margin-top:4px; }
-.b2b-site .b2b-btn { background:var(--makeon-action); border-color:var(--makeon-action); color:var(--makeon-ink); }
+.b2b-site .b2b-btn { background:var(--makeon-action); border-color:var(--makeon-action); color:var(--makeon-ink); border-radius:10px; font-weight:550; }
 .site > .site-header-modern { --header-height:86px; height:var(--header-height); padding-inline:var(--page-gutter); gap:24px; color:var(--makeon-ink); background:var(--makeon-surface); border-color:var(--makeon-border); }
 .site-header-modern .header-actions,.modern-mobile-menu .mobile-menu-controls { display:flex; align-items:center; flex-shrink:0; gap:12px; }
 .site-header-modern .cart-button,.modern-mobile-menu .cart-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:48px; min-height:46px; padding:8px 4px; color:var(--makeon-ink); background:transparent; border-radius:6px; }
@@ -47,8 +47,8 @@ body { background:var(--makeon-surface); }
 .site-footer { background:var(--makeon-surface-muted); color:var(--makeon-ink); border-color:var(--makeon-border); }
 .site-footer :is(.site-footer-identity > p,.site-footer-navigation nav > p,.site-footer-utility p,.legal-footer-links a) { color:var(--makeon-muted); }
 .site-footer .site-footer-navigation :is(a,button) { color:var(--makeon-ink); }
-.opening-atmosphere { background:var(--makeon-graphite); }
-.opening-photo-mask::after { background:linear-gradient(90deg,#25231fa6,transparent 75%),linear-gradient(0deg,#25231f99,transparent 75%); }
+
+
 @media (hover:hover) and (pointer:fine) {
   .site-header-modern :is(.menu-button,.cart-button):hover,.modern-mobile-menu :is(.mobile-menu-close,.cart-button):hover { background:#ede9df; }
   .b2b-site .b2b-btn:hover { background:var(--makeon-action-hover); border-color:var(--makeon-action-hover); }
@@ -80,7 +80,7 @@ body { background:var(--makeon-surface); }
   .site-header-modern .header-actions { gap:12px; }
 }
 @media (max-width:1000px) {
-  .opening-atmosphere { background:#ebe7de; color:var(--makeon-ink); }
+
   .opening-description { color:var(--makeon-muted); }
   .opening-actions > a { color:var(--makeon-ink); border-color:#a69d8d; }
 }

@@ -1,0 +1,122 @@
+/* Water has a product-led composition within the shared Makeon system. */
+.water-service-page { --water-ink:#173f4a; --water-muted:#4e6870; --water-surface:#e9f1f2; --water-line:#cfdee1; }
+.water-page-opening { padding-top:28px; scroll-margin-top:100px; }
+.water-page-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:clamp(32px,6vw,88px); }
+.water-page-copy { min-width:0; padding-block:20px; }
+.water-page-logo { display:block; width:130px; height:auto; margin-bottom:28px; }
+.water-page-eyebrow { margin:0 0 16px; color:var(--water-muted); font-size:13px; font-weight:550; line-height:1.5; }
+.water-service-page .water-page-copy h1 { margin:0; font:600 clamp(44px,4.8vw,68px)/1.08 var(--font-heading); letter-spacing:-.025em; color:var(--water-ink); }
+.water-page-lead { max-width:43ch; margin-top:22px; color:var(--makeon-muted); font-size:17px; line-height:1.75; }
+.water-page-plan { margin-top:26px; padding-top:22px; border-top:1px solid var(--makeon-border); }
+.water-page-plan-label { margin-bottom:10px; font-size:13px; font-weight:550; color:var(--water-muted); }
+.water-page-plan .b2b-price { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin:0; color:var(--water-ink); }
+.water-page-plan .b2b-price strong { font:650 48px/1.15 var(--font-heading); letter-spacing:-.05em; }
+.water-page-plan .b2b-price > span { color:var(--makeon-muted); font-size:14px; }
+.water-page-plan .water-contract { margin-top:8px; font-size:13px; line-height:1.6; color:var(--makeon-muted); }
+.water-page-plan .b2b-btn { margin-top:20px; min-height:52px; font-size:14px; gap:28px; }
+.water-page-total { max-width:49ch; margin-top:12px; color:var(--makeon-muted); font-size:12px; line-height:1.65; }
+.water-page-showcase { min-width:0; margin:0; scroll-margin-top:106px; }
+.water-page-product-surface { position:relative; display:flex; flex-direction:column; align-items:center; height:640px; padding:26px; border-radius:24px; background:var(--water-surface); color:var(--water-ink); overflow:hidden; }
+.water-page-product-top { display:flex; justify-content:space-between; align-items:center; gap:20px; align-self:stretch; font-size:12px; }
+.water-page-product-top > span:first-child { display:flex; gap:8px; align-items:center; font-weight:600; }
+.water-page-product-top > span:last-child { padding:7px 10px; border-radius:30px; background:#fff; font-size:11px; }
+.water-page-apparatus { position:relative; width:min(100%,260px); min-height:0; flex:1; margin:18px 0 24px; }
+.water-page-apparatus img { object-fit:contain; }
+.water-page-temperatures { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
+.water-page-temperatures > span { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid var(--water-line); border-radius:10px; background:#f8fbfb; font-size:12px; }
+.water-page-reassurance { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px 24px; margin-top:24px; padding:18px 0; border-bottom:1px solid var(--makeon-border); }
+.water-page-reassurance p,.water-page-reassurance a { display:inline-flex; align-items:center; gap:10px; font-size:13px; line-height:1.6; color:var(--water-muted); }
+.water-page-reassurance a { min-height:44px; color:var(--water-ink); }
+.water-page-inclusions { padding-block:64px; scroll-margin-top:106px; }
+.water-page-section-head { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); align-items:end; gap:24px 64px; margin-bottom:30px; }
+.water-service-page :is(.water-page-section-head,.water-page-filter-copy) h2 { margin:0; font:600 clamp(28px,2.7vw,40px)/1.2 var(--font-heading); letter-spacing:-.04em; }
+.water-page-section-head > p { max-width:43ch; color:var(--makeon-muted); font-size:15px; line-height:1.75; }
+.water-page-inclusion-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; margin:0; padding:0; list-style:none; }
+.water-page-inclusion-grid > li { min-width:0; padding:22px 18px; border:1px solid #e2e7e4; border-radius:14px; background:#f4f6f3; }
+.water-page-icon { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; margin-bottom:20px; border-radius:12px; color:var(--water-ink); background:#e4edeb; }
+.water-service-page .water-page-inclusion-grid h3 { margin:0 0 10px; font:600 20px/1.25 var(--font-heading); letter-spacing:-.02em; }
+.water-page-inclusion-grid p { color:var(--makeon-muted); font-size:13px; line-height:1.65; }
+.water-page-fineprint { max-width:100ch; margin-top:20px; color:var(--makeon-muted); font-size:12px; line-height:1.7; }
+.water-page-filtration { padding-block:64px; background:#edf2f2; scroll-margin-top:86px; }
+.water-page-filter-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:clamp(32px,5vw,72px); }
+.water-page-filters { min-width:0; margin:0; }
+.water-page-filters .b2b-filter-media { position:relative; width:100%; height:360px; min-height:0; border:0; border-radius:18px; background:#fff; }
+.water-page-filters .b2b-filter-media img { object-fit:contain; padding:20px; }
+.water-page-filters figcaption { margin-top:12px; color:var(--water-muted); font-size:11px; line-height:1.5; }
+.water-page-filter-copy h2 { color:var(--water-ink); }
+.water-page-filter-copy > p:not(.water-page-eyebrow) { max-width:46ch; margin-top:20px; color:var(--water-muted); font-size:15px; line-height:1.75; }
+.water-page-filter-stages { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 24px; margin:28px 0 20px; padding:0; list-style:none; }
+.water-page-filter-stages li { display:flex; align-items:center; gap:10px; color:var(--water-ink); font-size:13px; }
+.water-page-filter-stages li > span { display:grid; place-items:center; width:28px; height:28px; flex-shrink:0; border:1px solid #bed0d4; border-radius:50%; font-size:10px; }
+.water-page-existing { padding-block:64px 16px; scroll-margin-top:86px; }
+.water-page-service-panel { padding:40px; border-radius:22px; background:#1d4149; color:#f6faf9; }
+.water-page-service-panel .water-page-eyebrow { color:#b7d6d9; }
+.water-page-service-panel .water-page-section-head > p { color:#c2d4d6; }
+.water-page-services { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; padding-block:28px; border-block:1px solid #ffffff26; }
+.water-page-services svg { margin-bottom:16px; color:#a9d1d5; stroke-width:1.5; }
+.water-service-page .water-page-services h3 { font:600 23px/1.25 var(--font-heading); letter-spacing:-.02em; }
+.water-page-services p { max-width:30ch; margin-top:10px; color:#c2d4d6; font-size:14px; line-height:1.7; }
+.water-page-service-action { display:flex; justify-content:space-between; align-items:center; gap:24px; padding-top:26px; }
+.water-page-service-action > p { max-width:60ch; color:#c2d4d6; font-size:12px; line-height:1.75; }
+.water-page-service-action .b2b-btn { flex-shrink:0; font-size:14px; }
+.water-page-service-panel :is(a,button):focus-visible { outline-color:#fff; }
+.water-service-page .b2b-faq-layout { padding-block:54px 64px; gap:48px; }
+.water-service-page .b2b-faq-heading h2 { font-size:32px; }
+.water-service-page .b2b-faq-item button { font-size:18px; line-height:1.5; }
+@media (max-width:1100px) {
+  .water-page-product-surface { height:610px; padding:22px; }
+  .water-page-temperatures { gap:6px; }
+  .water-page-temperatures > span { padding:9px 10px; gap:5px; font-size:11px; }
+  .water-page-inclusion-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .water-page-inclusion-grid > li { padding:22px; }
+}
+@media (max-width:800px) {
+  .water-page-opening { padding-top:12px; }
+  .water-page-hero { gap:28px; grid-template-columns:minmax(0,1fr); }
+  .water-page-copy { padding-block:20px 0; }
+  .water-page-logo { width:120px; margin-bottom:24px; }
+  .water-page-lead { max-width:50ch; }
+  .water-page-plan { max-width:520px; }
+  .water-page-product-surface { height:500px; }
+  .water-page-apparatus { width:210px; }
+  .water-page-section-head { grid-template-columns:minmax(0,1fr); gap:18px; }
+  .water-page-section-head > p { max-width:55ch; }
+  .water-page-inclusions { padding-block:44px; }
+  .water-page-filter-grid { grid-template-columns:minmax(0,1fr); gap:28px; }
+  .water-page-filter-copy { grid-row:1; }
+  .water-page-filtration { padding-block:44px; }
+  .water-page-filters .b2b-filter-media { height:320px; }
+  .water-page-service-panel { padding:28px; }
+  .water-page-service-action { align-items:start; flex-direction:column; }
+  .water-page-existing { padding-top:44px; }
+}
+@media (max-width:540px) {
+  .water-service-page .water-page-copy h1 { font-size:clamp(42px,11.5vw,58px); }
+  .water-page-lead { margin-top:18px; font-size:16px; }
+  .water-page-plan .b2b-btn { width:100%; gap:14px; font-size:13px; padding-inline:16px; }
+  .water-page-product-surface { height:460px; padding:18px 14px; border-radius:18px; }
+  .water-page-product-top { gap:10px; font-size:11px; }
+  .water-page-product-top > span:last-child { font-size:10px; }
+  .water-page-apparatus { width:180px; margin-block:18px; }
+  .water-page-temperatures > span { padding:9px; gap:5px; font-size:10px; }
+  .water-page-temperatures svg { width:15px; height:15px; }
+  .water-page-reassurance { gap:4px; margin-top:12px; }
+  .water-page-reassurance p { align-items:start; font-size:12px; }
+  .water-page-reassurance p svg { margin-top:2px; }
+  .water-page-inclusion-grid { grid-template-columns:minmax(0,1fr); gap:10px; }
+  .water-page-inclusion-grid > li { display:grid; grid-template-columns:42px minmax(0,1fr); gap:4px 14px; align-items:center; padding:18px; }
+  .water-page-inclusion-grid .water-page-icon { grid-column:1; grid-row:1 / span 2; margin:0; }
+  .water-service-page .water-page-inclusion-grid h3 { grid-column:2; margin:0; }
+  .water-page-inclusion-grid li > p { grid-column:2; }
+  .water-page-filters .b2b-filter-media { height:250px; }
+  .water-page-filter-stages { gap:16px 12px; }
+  .water-page-filter-stages li { font-size:12px; gap:8px; }
+  .water-page-service-panel { padding:24px; border-radius:18px; }
+  .water-page-services { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .water-page-services > div { display:grid; grid-template-columns:24px minmax(0,1fr); gap:6px 14px; }
+  .water-page-services svg { grid-row:1 / span 2; margin:0; }
+  .water-page-services p { grid-column:2; margin:0; max-width:none; font-size:13px; }
+  .water-page-service-action .b2b-btn { width:100%; gap:14px; font-size:13px; padding-inline:16px; }
+  .water-service-page .b2b-faq-layout { padding-block:40px 48px; gap:24px; }
+  .water-service-page .b2b-faq-item button { font-size:16px; }
+}

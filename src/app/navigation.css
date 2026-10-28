@@ -79,24 +79,8 @@
   width: 100%;
   height: auto;
 }
-.brand-horizontal > img:first-child {
-  clip-path: inset(0 68% 0 0);
-}
 .header > .brand-mark .brand-horizontal {
   width: 180px;
-}
-.brand-horizontal > .brand-horizontal-contrast {
-  display: block;
-  position: absolute;
-  inset: 0;
-  clip-path: inset(0 0 0 32%);
-  /* Align the wordmark's visual center with the emblem. */
-  transform: translateY(-7.866667%);
-  filter: brightness(0) invert(1);
-}
-.footer .brand-horizontal-contrast,
-.shop-footer .brand-horizontal-contrast {
-  filter: brightness(0);
 }
 @media (max-width: 650px) {
   .header .brand-horizontal,

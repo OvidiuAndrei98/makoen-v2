@@ -33,6 +33,7 @@ import "../event-photo-pair.css";
 import "../service-editorial.css";
 import "../site-choreography.css";
 import "../media-frames.css";
+import "../water-page.css";
 import CartProvider from "@/components/cart-provider";
 import CatalogProvider from "@/components/catalog-provider";
 import SmoothScroll from "@/components/smooth-scroll";

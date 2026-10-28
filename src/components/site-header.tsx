@@ -8,10 +8,10 @@ import BrandLogo from "./brand-logo";
 import useDialogMotion from "./use-dialog-motion";
 import { legal } from "@/lib/legal";
 const mainLinks = [
-  { label: "Cafeaua ta", href: "/cafea-pentru-birouri" },
-  { label: "Pauza ta de hidratare", href: "/apa" },
-  { label: "Prăjitoria ta", href: "/cafea" },
-  { label: "Evenimentul tău", href: "/cafea-la-evenimente" },
+  { label: "Cafea pentru birouri", href: "/cafea-pentru-birouri" },
+  { label: "Apă & filtrare", href: "/apa" },
+  { label: "Magazin cafea", href: "/cafea" },
+  { label: "Evenimente", href: "/cafea-la-evenimente" },
   { label: "Despre Makeon", href: "/#despre" },
 ];
 const extraLinks = [

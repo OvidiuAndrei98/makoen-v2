@@ -1,10 +1,8 @@
 /* Adjoining service choices, fully usable before any scroll. */
-.opening-services { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; padding:0; background:var(--makeon-surface); scroll-margin-block-start:106px; }
-.opening-offer-surface { display:flex; min-width:0; padding:44px clamp(24px,3.5vw,56px); transition:background-color 320ms ease; }
-.opening-offer-surface:first-child { padding-left:var(--page-gutter); }
-.opening-offer-surface:last-child { padding-right:var(--page-gutter); }
-.opening-offer-surface-coffee { background:#f0ece4; }
-.opening-offer-surface-water { background:var(--makeon-surface-muted); }
+.opening-services { position:relative; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin-top:28px; padding:0; background:var(--makeon-surface); scroll-margin-block-start:106px; }
+.opening-offer-surface { display:flex; min-width:0; padding:28px; border-radius:20px; transition:background-color 320ms ease; }
+.opening-offer-surface-coffee { background:#f0f1ec; }
+.opening-offer-surface-water { background:#eaf0f1; }
 .opening-service { display:grid; grid-template-columns:minmax(0,1.62fr) minmax(0,1fr); align-items:center; gap:22px; min-width:0; width:100%; }
 .opening-service-copy { min-width:0; }
 .opening-service:focus-within { opacity:1 !important; transform:none !important; }

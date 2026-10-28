@@ -1,128 +1,72 @@
-/* Two branded service spreads; photography and equipment carry the composition. */
-.home-solutions { padding-block:88px 32px; background:var(--makeon-surface); scroll-margin-block-start:106px; }
-.home-solutions-heading { display:flex; justify-content:space-between; align-items:end; gap:48px; margin-bottom:48px; }
-.home-solutions-heading h2 { margin:0; color:var(--makeon-ink); font:500 clamp(40px,3.8vw,58px)/1.07 var(--font-heading); letter-spacing:-.035em; }
-.home-solutions-heading > p { max-width:39ch; margin:0 0 4px; color:var(--makeon-muted); font-size:16px; line-height:1.7; }
-.home-solutions-grid { display:grid; gap:28px; scroll-margin-block-start:106px; }
-.home-solution { --story-ink:#faf6ec; --story-muted:#c2bdb1; --story-line:rgb(250 246 236 / .18); min-width:0; padding:32px clamp(28px,3.4vw,52px) 34px; border-radius:8px; color:var(--story-ink); }
-.home-solution-coffee { background:#252923; }
-.home-solution-masthead { display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:44px; padding-bottom:24px; border-bottom:1px solid var(--story-line); }
-.home-solution-brand { display:flex; align-items:center; gap:14px; font-size:14px; font-weight:500; letter-spacing:.015em; }
-.home-solution-brand > img { width:42px; height:42px; object-fit:contain; }
-.home-solution-category { margin:0; color:var(--story-muted); font-size:13px; line-height:1.5; }
-.home-solution-body { display:grid; grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr); align-items:center; gap:clamp(32px,4vw,60px); padding-block:36px; }
+/* Compact service cards share the same hierarchy and geometry. */
+.home-solutions { padding-block:80px 24px; background:var(--makeon-surface); scroll-margin-block-start:106px; }
+.home-solutions-heading { display:flex; justify-content:space-between; align-items:end; gap:40px; margin-bottom:32px; }
+.home-solutions-heading h2 { margin:0; font:600 clamp(30px,3vw,44px)/1.17 var(--font-heading); letter-spacing:-.045em; }
+.home-solutions-heading > p { max-width:43ch; color:var(--makeon-muted); font-size:15px; line-height:1.7; }
+.home-solutions-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; scroll-margin-block-start:106px; }
+.home-solution { --story-ink:#fafbf7; --story-muted:#c7cfc3; --story-line:rgb(250 246 236 / .16); display:flex; flex-direction:column; min-width:0; padding:28px; border-radius:20px; color:var(--story-ink); }
+.home-solution-coffee { background:#29332b; }
+.home-solution-masthead { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:44px; }
+.home-solution-brand { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:550; }
+.home-solution-brand > img { width:34px; height:34px; object-fit:contain; }
+.home-solution-category { max-width:16ch; text-align:right; color:var(--story-muted); font-size:12px; line-height:1.5; }
+.home-solution-body,.home-solution-water .home-solution-body { display:flex; flex:1; flex-direction:column; align-items:stretch; gap:24px; padding-block:28px; }
 .home-solution-copy { min-width:0; }
-.b2b-site .home-solution-copy h3 { margin:0; color:var(--story-ink); font:500 clamp(60px,5.8vw,86px)/1.03 var(--font-heading); letter-spacing:-.035em; }
-.home-solution-copy h3 em { font-weight:400; }
-.home-solution-description { max-width:35ch; margin:28px 0 0; color:var(--story-ink); font-size:18px; line-height:1.65; }
-.home-solution-detail { max-width:39ch; margin:18px 0 0; color:var(--story-muted); font-size:15px; line-height:1.7; }
-.site.b2b-site .home-solution-coffee .home-coffee-visual { min-width:0; width:100%; margin:0; padding:10px 10px 0; border:0; border-radius:3px; outline:1px solid rgb(255 255 255 / .17); outline-offset:-1px; background:#30352d; }
-.home-solution-media { position:relative; width:100%; aspect-ratio:4 / 3; overflow:hidden; border-radius:1px; }
-.home-solution-media img { object-fit:cover; object-position:center; }
-.home-coffee-visual figcaption { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 16px; padding-block:12px; color:#c2bdb1; font-size:11px; line-height:1.5; }
-.home-coffee-visual figcaption > :last-child { color:#e7c776; }
-.home-solution-footer { display:flex; justify-content:space-between; align-items:center; gap:32px; padding-top:26px; border-top:1px solid var(--story-line); }
-.home-solution-offer { min-width:0; max-width:530px; }
-.home-coffee-quote { margin:0; color:var(--story-ink); font-size:29px; line-height:1.2; }
-.home-solution-conditions { max-width:65ch; margin:9px 0 0; color:var(--story-muted); font-size:12px; line-height:1.65; }
-.home-solution-action { flex-shrink:0; }
-.home-solution-action .b2b-btn { min-height:56px; gap:32px; border-radius:3px; }
+.b2b-site .home-solution-copy h3 { margin:0; color:var(--story-ink); font:600 clamp(28px,2.6vw,38px)/1.2 var(--font-heading); letter-spacing:-.04em; }
+.home-solution-copy h3 em { font:inherit; }
+.home-solution-description { max-width:48ch; margin:18px 0 0; color:var(--story-ink); font-size:16px; line-height:1.7; }
+.home-solution-detail { max-width:52ch; margin:12px 0 0; color:var(--story-muted); font-size:14px; line-height:1.7; }
+.site.b2b-site .home-solution-coffee .home-coffee-visual { position:relative; min-width:0; width:100%; margin:auto 0 0; padding:0; border:0; border-radius:12px; outline:0; overflow:hidden; background:#354137; }
+.home-solution-media { position:relative; width:100%; height:300px; overflow:hidden; }
+.home-solution-media img { object-fit:cover; }
+.home-coffee-visual figcaption { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 16px; padding:12px 16px; color:var(--story-muted); font-size:11px; line-height:1.5; }
+.home-solution-footer { margin-top:auto; padding-top:24px; border-top:1px solid var(--story-line); }
+.home-coffee-quote { color:var(--story-ink); font-size:20px; line-height:1.4; }
+.home-solution-conditions { margin:10px 0 0; color:var(--story-muted); font-size:12px; line-height:1.7; }
+.home-solution-action { margin-top:22px; }
+.home-solution-action .b2b-btn { width:100%; min-height:52px; border-radius:10px; gap:20px; font-size:14px; }
 .home-solution :is(button,a):focus-visible { outline-color:var(--story-ink); }
-
-.home-solution-water { --story-ink:#233c46; --story-muted:#536a72; --story-line:rgb(35 60 70 / .19); background:#e6edef; }
+.home-solution-water { --story-ink:#243d43; --story-muted:#50666d; --story-line:rgb(35 60 70 / .16); background:#e8f0f1; }
 .home-water-brand { width:116px; height:38px; object-fit:contain; object-position:left center; }
-.home-solution-water .home-solution-body { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding-block:32px; }
-.home-solution-water h3 { max-width:11ch; }
-.home-water-showcase { position:relative; min-width:0; height:440px; overflow:hidden; border-radius:3px; background:#d4e0e3; }
-.home-water-temperatures { position:absolute; top:24px; inset-inline:24px; display:flex; justify-content:space-between; gap:12px; color:#49616b; font-size:11px; letter-spacing:.015em; }
-.home-water-temperatures > span { padding-top:9px; border-top:1px solid rgb(35 60 70 / .24); }
-.home-water-apparatus { position:absolute; top:66px; bottom:20px; right:10%; width:155px; }
+.home-water-showcase { position:relative; min-width:0; height:340px; margin-top:auto; overflow:hidden; border-radius:12px; background:#dce7e9; }
+.home-water-temperatures { position:absolute; top:20px; inset-inline:20px; display:flex; justify-content:space-between; gap:12px; color:#49616b; font-size:11px; }
+.home-water-temperatures > span { padding:6px 10px; border-radius:20px; background:#f3f7f8; }
+.home-water-apparatus { position:absolute; top:62px; bottom:18px; right:12%; width:130px; }
 .home-water-apparatus img { object-fit:contain; }
-.home-water-filtration { position:absolute; left:24px; bottom:28px; max-width:180px; color:var(--story-ink); }
-.home-water-filtration-number { display:block; margin-bottom:8px; font:500 82px/.9 var(--font-heading); letter-spacing:-.05em; }
-.home-water-filtration p { margin:0; font-size:13px; line-height:1.6; }
+.home-water-filtration { position:absolute; left:24px; bottom:26px; max-width:160px; color:var(--story-ink); }
+.home-water-filtration-number { display:block; margin-bottom:10px; font:600 60px/1 var(--font-heading); letter-spacing:-.05em; }
+.home-water-filtration p { font-size:13px; line-height:1.6; }
 .home-water-filtration p > span { color:var(--story-muted); }
-.home-water-filtration small { display:block; max-width:13ch; margin-top:12px; color:var(--story-muted); font-size:10px; line-height:1.5; }
-.home-water-summary-price { display:flex; align-items:center; flex-wrap:wrap; gap:16px; margin:0; color:var(--story-ink); font-variant-numeric:tabular-nums; }
-.home-water-summary-price strong { font-size:52px; font-weight:450; line-height:1.1; letter-spacing:-.055em; }
-.home-water-summary-price > span { color:var(--story-muted); font-size:12px; line-height:1.65; }
-
-@media (max-width:1100px) {
-  .home-solution { padding-inline:28px; }
-  .home-solution-body { gap:28px; }
-  .b2b-site .home-solution-copy h3 { font-size:62px; }
-  .home-solution-description { font-size:16px; margin-top:22px; }
-  .home-solution-detail { font-size:14px; }
-  .home-water-showcase { height:410px; }
-  .home-water-apparatus { right:5%; width:135px; }
-  .home-water-filtration { left:20px; max-width:145px; }
-  .home-water-filtration p { font-size:12px; }
-  .home-solution-footer { gap:28px; }
+.home-water-filtration small { display:block; max-width:16ch; margin-top:10px; color:var(--story-muted); font-size:10px; line-height:1.5; }
+.home-water-summary-price { display:flex; align-items:center; flex-wrap:wrap; gap:14px; color:var(--story-ink); font-variant-numeric:tabular-nums; }
+.home-water-summary-price strong { font-size:38px; font-weight:600; line-height:1.1; letter-spacing:-.05em; }
+.home-water-summary-price > span { color:var(--story-muted); font-size:12px; line-height:1.6; }
+@media (max-width:900px) {
+  .home-solutions-heading { display:block; }
+  .home-solutions-heading > p { margin-top:18px; max-width:54ch; }
+  .home-solutions-grid { grid-template-columns:minmax(0,1fr); }
+  .home-solution { padding:28px; }
+  .home-solution-media { height:350px; }
+  .home-water-showcase { height:350px; }
+  .home-water-apparatus { right:18%; }
 }
-@media (min-width:701px) and (max-width:850px) {
-  .home-solution { padding-inline:24px; }
-  .home-solution-body { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:24px; }
-  .b2b-site .home-solution-copy h3 { font-size:52px; }
-  .home-solution-description { font-size:15px; }
-  .home-solution-detail { font-size:13px; }
-  .home-water-showcase { height:390px; }
-  .home-water-apparatus { right:7%; width:116px; top:58px; bottom:60px; }
-  .home-water-filtration { left:16px; bottom:20px; max-width:130px; }
-  .home-water-filtration-number { font-size:64px; }
-  .home-water-filtration p { font-size:11px; }
-  .home-water-filtration small { font-size:9px; }
-  .home-water-temperatures { inset-inline:16px; top:18px; gap:8px; font-size:10px; }
-  .home-solution-action .b2b-btn { font-size:14px; gap:16px; padding-inline:16px; }
-  .home-coffee-quote { font-size:25px; }
-}
-@media (max-width:700px) {
-  .home-solutions { padding-block:48px 20px; }
-  .home-solutions-heading { display:block; margin-bottom:32px; }
-  .home-solutions-heading h2 { font-size:40px; }
-  .home-solutions-heading > p { max-width:42ch; margin-top:20px; font-size:15px; }
-  .home-solutions-grid { gap:20px; }
-  .home-solution { padding:24px; border-radius:6px; }
-  .home-solution-masthead { gap:16px; padding-bottom:20px; }
-  .home-solution-brand { gap:9px; font-size:12px; }
-  .home-solution-brand > img { width:32px; height:32px; }
-  .home-solution-category { max-width:15ch; text-align:right; font-size:11px; }
-  .home-solution-body,.home-solution-water .home-solution-body { grid-template-columns:minmax(0,1fr); gap:28px; padding-block:28px; }
-  .b2b-site .home-solution-copy h3 { font-size:clamp(50px,9.5vw,66px); }
-  .home-solution-description { max-width:39ch; margin-top:22px; font-size:16px; }
-  .home-solution-detail { max-width:45ch; margin-top:14px; font-size:14px; }
-  .home-coffee-visual figcaption { font-size:10px; }
+@media (max-width:540px) {
+  .home-solutions { padding-block:48px 16px; }
+  .home-solution { padding:22px; border-radius:16px; }
+  .home-solution-brand { font-size:12px; gap:8px; }
+  .home-solution-category { font-size:11px; }
+  .home-solution-body { padding-block:24px; }
+  .home-solution-media { height:240px; }
   .home-coffee-visual figcaption > :last-child { display:none; }
-  .home-solution-footer { display:block; padding-top:24px; }
-  .home-coffee-quote { font-size:26px; }
-  .home-solution-conditions { font-size:11px; }
-  .home-solution-action { margin-top:22px; }
-  .home-solution-action .b2b-btn { width:100%; font-size:14px; padding-inline:16px; gap:12px; }
-  .home-water-showcase { height:365px; }
-  .home-water-apparatus { top:54px; bottom:16px; right:12px; width:110px; }
-  .home-water-temperatures { inset-inline:18px; top:18px; font-size:10px; }
-  .home-water-filtration { left:18px; bottom:26px; max-width:128px; }
-  .home-water-filtration-number { font-size:70px; }
-  .home-water-filtration p { font-size:11px; }
-  .home-water-filtration small { font-size:9px; }
-  .home-water-summary-price strong { font-size:48px; }
-}
-@media (max-width:380px) {
-  .home-solution { padding:20px 18px; }
-  .home-solutions-heading h2 { font-size:36px; }
-  .home-solution-brand { max-width:130px; }
-  .home-solution-category { max-width:12ch; font-size:10px; }
-  .home-water-showcase { height:340px; }
-  .home-water-apparatus { right:12px; width:100px; bottom:30px; }
-  .home-water-filtration { left:14px; max-width:105px; }
-  .home-water-filtration p { font-size:10px; }
-  .home-water-filtration-number { font-size:64px; }
-  .home-water-temperatures { inset-inline:14px; font-size:9px; }
+  .home-water-showcase { height:320px; }
+  .home-water-apparatus { right:10px; width:105px; }
+  .home-water-filtration { left:16px; max-width:125px; }
+  .home-water-temperatures { inset-inline:12px; gap:6px; font-size:10px; }
+  .home-water-temperatures > span { padding-inline:8px; }
 }
 @media (prefers-reduced-motion:no-preference) {
-  .home-solution-action .b2b-btn svg { transition:transform 220ms var(--makeon-ease); }
-  .home-coffee-visual .office-coffee-photo-crop { transition:transform 600ms var(--makeon-ease); }
+  .home-solution-action .b2b-btn svg { transition:transform 200ms var(--makeon-ease); }
 }
 @media (hover:hover) and (prefers-reduced-motion:no-preference) {
   .home-solution-action .b2b-btn:hover svg { transform:translate(2px,-2px); }
-  .home-coffee-visual:hover .office-coffee-photo-crop { transform:scale(1.02); }
 }

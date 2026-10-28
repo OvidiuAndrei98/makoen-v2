@@ -165,3 +165,8 @@
     font-size: 13px;
   }
 }
+.event-section-nav { display:flex; flex-wrap:wrap; gap:10px; padding-block:0 8px; }
+.event-section-nav a { display:inline-flex; align-items:center; justify-content:space-between; gap:24px; min-height:46px; padding:12px 16px; border:1px solid var(--makeon-border); border-radius:10px; background:var(--makeon-surface-muted); color:var(--makeon-ink); font:500 14px/1.4 var(--font-body); }
+.event-section-nav a:hover { background:#e7e9e2; border-color:#a9b0a0; }
+.event-section-nav a:focus-visible { outline:2px solid var(--makeon-focus); outline-offset:4px; }
+

@@ -1,4 +1,4 @@
-/* Serif titles paired with readable sans serif body and interface text. */
+/* Cormorant headings paired with DM Sans body and interface text. */
 :root {
   --font-display: "Cormorant Garamond Variable", Georgia, serif;
   --font-body: "DM Sans Variable", Arial, sans-serif;
@@ -19,7 +19,7 @@ button {
 .legal-document :is(h1, h2, h3, h4, h5, h6),
 dialog :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   font-optical-sizing: auto;
   letter-spacing: -.025em;
 }
@@ -34,13 +34,13 @@ dialog :is(h1, h2, h3, h4, h5, h6) {
   letter-spacing: -.025em;
 }
 
-/* Cormorant's smaller letterforms need more size than the former sans serif. */
+/* Content titles remain subordinate to the page title. */
 .site :is(.ecosystem-heading, .solutions-heading, .shop-heading, .studio-heading, .events-heading, .business-copy, .how, .faq) h2 {
-  font-size: clamp(38px, 4.2vw, 62px);
+  font-size: clamp(32px, 3.2vw, 46px);
   line-height: 1.1;
 }
 .site .brand-card h3 {
-  font-size: clamp(32px, 3vw, 44px);
+  font-size: clamp(26px, 2.4vw, 34px);
   line-height: 1.1;
 }
 .site .event-card-copy h3 {

@@ -1,14 +1,14 @@
-/* Editorial panels: neutral space around an image, with one fine structural edge. */
+/* Media shares the rounded product surfaces without decorative matting. */
 :root {
-  --makeon-media-mat:#eeece7;
+  --makeon-media-mat:#eef0eb;
   --makeon-media-edge:rgb(41 38 33 / .12);
-  --makeon-media-radius:4px;
-  --makeon-media-inset:20px;
+  --makeon-media-radius:16px;
+  --makeon-media-inset:0px;
 }
 
 .site.b2b-site :is(.service-coffee-photo,.water-context-photo,.office-coffee-closeup,.event-intro-photo,.event-pair-media,.b2b-filter-media) {
   border:0;
-  border-radius:2px;
+  border-radius:var(--makeon-media-radius);
   outline:0;
   background:var(--makeon-media-mat);
   box-shadow:none;
@@ -18,7 +18,7 @@
   padding:var(--makeon-media-inset);
   border:0;
   border-radius:var(--makeon-media-radius);
-  outline:1px solid var(--makeon-media-edge);
+  outline:0;
   outline-offset:-1px;
   background:var(--makeon-media-mat);
 }
@@ -26,13 +26,14 @@
 .site.b2b-site :is(.event-intro-photo,.event-pair-media) > img {
   outline:1px solid oklch(0 0 0 / .1);
   outline-offset:-1px;
-  border-radius:2px;
+  border-radius:var(--makeon-media-radius);
 }
 
 .site.b2b-site .event-intro-frame { grid-column:1; grid-row:1; min-width:0; }
 /* Equal inline proportions preserve both original photo ratios and shared height. */
-.site.b2b-site .event-photo-frame { padding-inline:4%; }
-.site.b2b-site .office-coffee-closeup { aspect-ratio:4 / 3; }
+.site.b2b-site .event-photo-frame { padding-inline:0; }
+.site.b2b-site .office-craft-visual { overflow:hidden; background:transparent; }
+.site.b2b-site .office-coffee-closeup { aspect-ratio:4 / 3; border-radius:0; background:transparent; }
 /* 1200×900 window at x800/y300 in the 2048×1365 original, without distortion. */
 .site.b2b-site .office-coffee-photo-crop { position:absolute; inset:auto; left:-66.666667%; top:-33.333333%; width:170.666667%; height:151.666667%; }
 .site.b2b-site .office-coffee-closeup img { object-fit:cover; object-position:center; }
@@ -59,5 +60,5 @@
   .site.b2b-site .event-intro-frame { grid-column:auto; grid-row:auto; }
 }
 @media (max-width:600px) {
-  :root { --makeon-media-inset:12px; }
+  :root { --makeon-media-inset:0px; }
 }
