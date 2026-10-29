@@ -100,6 +100,8 @@ export async function applySession(
       target === "expired"
     )
       return;
+    // Expiration webhooks can be retried after an abandoned draft was removed.
+    if (!order && target === "expired") return;
     if (!order || order.stripeSessionId !== session.id)
       throw new Error("Unknown checkout session.");
     if (
@@ -133,6 +135,10 @@ export async function applySession(
         WHERE id = ${productID} AND reserved >= ${quantity} AND stock >= ${quantity} RETURNING id`);
       if (!("rows" in updated) || updated.rows.length !== 1)
         throw new Error("Stock reservation is inconsistent.");
+    }
+    if (target === "expired" && order.orderType !== "production") {
+      await cms.delete({ collection: "orders", id: order.id, req });
+      return;
     }
     return cms.update({
       collection: "orders",
@@ -187,12 +193,11 @@ async function failDraft(cms: Payload, reference: string) {
       if (!("rows" in updated) || updated.rows.length !== 1)
         throw new Error("Stock reservation is inconsistent.");
     }
-    await cms.update({
-      collection: "orders",
-      id: order.id,
-      req,
-      data: { status: "failed" },
-    });
+    if (order.orderType !== "production") {
+      await cms.delete({ collection: "orders", id: order.id, req });
+    } else {
+      await cms.update({ collection: "orders", id: order.id, req, data: { status: "failed" } });
+    }
   });
 }
 
@@ -201,7 +206,26 @@ async function failDraft(cms: Payload, reference: string) {
  * A local timestamp alone never releases stock: Stripe is the authority.
  * Catalog/checkout requests invoke this recovery; it is not a scheduled job.
  */
+/** Remove legacy abandoned stock drafts whose reservations have already been released. */
+export async function pruneAbandonedCheckouts(cms: Payload) {
+  const { docs } = await cms.find({ collection: "orders", depth: 0, limit: 25,
+    where: { and: [
+      { status: { in: ["expired", "failed"] } },
+      { or: [{ orderType: { equals: "stock" } }, { orderType: { exists: false } }] },
+      { or: [{ paymentMethod: { equals: "card" } }, { paymentMethod: { exists: false } }] },
+    ] },
+  });
+  for (const draft of docs) await transaction(cms, async id => {
+    const req = { transactionID: id };
+    await lockOrder(cms, id, draft.reference);
+    const current = (await cms.find({ collection: "orders", req, depth: 0, limit: 1, where: { id: { equals: draft.id } } })).docs[0];
+    if (current && current.orderType !== "production" && current.paymentMethod !== "cod" && ["expired", "failed"].includes(current.status))
+      await cms.delete({ collection: "orders", id: current.id, req });
+  });
+}
+
 export async function reconcileExpired(cms: Payload, stripe: Stripe) {
+  await pruneAbandonedCheckouts(cms);
   const { docs } = await cms.find({
     collection: "orders",
     depth: 0,
@@ -467,8 +491,10 @@ export async function createCheckout(
   const session = order.stripeSessionId
     ? await stripe!.checkout.sessions.retrieve(order.stripeSessionId)
     : await sessionForOrder(order, stripe!, cms);
-  if (!session.url || session.status !== "open")
+  if (!session.url || session.status !== "open") {
+    await applySession(session, cms);
     throw new CommerceError("Sesiunea de plată nu mai este disponibilă.", 409);
+  }
   return { url: session.url };
 }
 
@@ -486,15 +512,32 @@ export async function cancelCheckout(
     depth: 0,
   });
   const order = docs[0];
-  if (!order || order.status !== "pending" || !order.stripeSessionId) return;
-  const session = await stripe.checkout.sessions.retrieve(
-    order.stripeSessionId,
-  );
-  const settled =
-    session.status === "open"
-      ? await stripe.checkout.sessions.expire(session.id)
-      : session;
-  await applySession(settled, cms);
+  if (!order || order.orderType === "production" || order.paymentMethod === "cod") return {};
+  if (order.status === "paid" && order.stripeSessionId)
+    return { url: `/comanda?session_id=${encodeURIComponent(order.stripeSessionId)}`, paid: true };
+  if (order.status !== "pending") {
+    await pruneAbandonedCheckouts(cms);
+    return {};
+  }
+  // Recover a session-create response lost before its ID reached our database.
+  let session = order.stripeSessionId
+    ? await stripe.checkout.sessions.retrieve(order.stripeSessionId)
+    : await sessionForOrder(order, stripe, cms);
+  if (session.status === "open") {
+    try { session = await stripe.checkout.sessions.expire(session.id); }
+    catch (error) {
+      // Payment may have completed between retrieve and expire. Re-read Stripe;
+      // never delete a paid checkout or release its stock based on browser state.
+      const latest = await stripe.checkout.sessions.retrieve(session.id);
+      if (latest.status === "open") throw error;
+      session = latest;
+    }
+  }
+  const result = await applySession(session, cms);
+  if (result?.status === "paid") return { url: `/comanda?session_id=${encodeURIComponent(session.id)}`, paid: true };
+  if (session.status !== "expired") throw new CommerceError("Verificăm încă plata. Reîncearcă în câteva momente.", 409);
+  return {};
+
 }
 
 export { parseLines, CommerceError };

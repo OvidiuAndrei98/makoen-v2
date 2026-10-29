@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import type { ShipmentPayment } from "@/lib/shipment-payment";
 import type { Order } from "@/payload-types";
 
 type Shipment = { state: string; number: string | null; error: string | null; environment: string; canAttach: boolean };
@@ -20,14 +21,15 @@ export default function OrderShipping({ order }: { order: Order }) {
     postalCode: text(address.postal_code), weight: "", pickupPoint: "", service: "",
   });
   const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [payment, setPayment] = useState<ShipmentPayment | null>(null);
   const [options, setOptions] = useState<Options | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [recovery, setRecovery] = useState("");
   const endpoint = `/api/orders/shipping?orderID=${order.id}`;
-  const apply = (body: { shipment: Shipment | null; options: Options | null }) => {
-    setShipment(body.shipment); setOptions(body.options);
+  const apply = (body: { shipment: Shipment | null; options: Options | null; payment: ShipmentPayment }) => {
+    setShipment(body.shipment); setOptions(body.options); setPayment(body.payment);
     if (body.options) setFields(previous => ({ ...previous,
       pickupPoint: previous.pickupPoint || (body.options!.pickupPoints.length === 1 ? String(body.options!.pickupPoints[0].id) : ""),
       service: previous.service || (body.options!.services.length === 1 ? String(body.options!.services[0].id) : ""),
@@ -88,9 +90,9 @@ export default function OrderShipping({ order }: { order: Order }) {
           <button type="button" className="btn btn--style-secondary" disabled={busy || !recovery.trim()} onClick={() => void mutate({ action: "attach", number: recovery.trim() })}>Asociază AWB existent</button>
         </div>}
       </>}
-      {!loading && !["paid", "cod_pending"].includes(order.status) && !shipment && <p>AWB-ul poate fi emis după confirmarea plății cu cardul sau a comenzii ramburs.</p>}
-      {!loading && options && (!shipment || shipment.state === "rejected") && <>
-        <p>Livrare la adresă în România, un colet. {order.paymentMethod === "cod" && order.status === "cod_pending" ? `Ramburs de încasat: ${(order.totalBani / 100).toFixed(2)} RON (produse + transport).` : "Plată încasată, fără ramburs."} Verifică destinatarul și greutatea coletului ambalat.</p>
+      {!loading && payment && !payment.allowed && (!shipment || shipment.state === "rejected") && <p>{payment.reason}</p>}
+      {!loading && payment?.allowed && options && (!shipment || shipment.state === "rejected") && <>
+        <p>Livrare la adresă în România, un colet. {payment.cashOnDeliveryBani > 0 ? `Ramburs de încasat: ${new Intl.NumberFormat("ro-RO", { style: "currency", currency: "RON" }).format(payment.cashOnDeliveryBani / 100)} (produse + transport).` : "De încasat la livrare: 0,00 RON. Plata este deja achitată."} Verifică destinatarul și greutatea coletului ambalat.</p>
         {options.environment === "sandbox" && <p><strong>Mediu de test — AWB fără livrare reală.</strong></p>}
         <fieldset disabled={busy} className="makeon-shipping-fields">
           <legend className="makeon-shipping-legend">Date pentru AWB</legend>

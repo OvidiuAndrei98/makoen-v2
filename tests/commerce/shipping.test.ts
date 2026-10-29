@@ -5,6 +5,7 @@ import { Pool, type PoolClient } from "pg";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Payload } from "payload";
 import type { Order } from "../../src/payload-types";
+import { shipmentPayment } from "../../src/lib/shipment-payment";
 import { shippingInput, shipmentBody, createOrderShipment, shipmentFor } from "../../src/lib/order-shipping";
 import { samedayForm, samedayCreate, samedayPDF, SamedayError } from "../../src/lib/sameday-client";
 import { up } from "../../src/migrations/20261022_120000_sameday_shipments";
@@ -84,7 +85,7 @@ test("durable claims prevent duplicate AWBs across concurrent requests and uncer
     await admin.query(`CREATE SCHEMA "${schema}"`);
     await pool.query("CREATE TABLE orders (id integer PRIMARY KEY, reference text NOT NULL, snapshot jsonb NOT NULL)");
     await up({ db: connection } as unknown as Parameters<typeof up>[0]);
-    for (let id = 1; id <= 3; id++) await pool.query("INSERT INTO orders VALUES ($1,$2,$3)", [id, `${order.reference}-${id}`, JSON.stringify({ ...order, id, reference: `${order.reference}-${id}` })]);
+    for (let id = 1; id <= 4; id++) await pool.query("INSERT INTO orders VALUES ($1,$2,$3)", [id, `${order.reference}-${id}`, JSON.stringify({ ...order, id, reference: `${order.reference}-${id}` })]);
     configure(); let calls = 0;
     const success = mock(async () => { calls++; await new Promise(resolve => setTimeout(resolve, 80)); return Response.json({ awbNumber: "TEST123456" }); });
     const concurrent = await Promise.allSettled([createOrderShipment(cms, 1, input, success), createOrderShipment(cms, 1, input, success)]);
@@ -103,9 +104,20 @@ test("durable claims prevent duplicate AWBs across concurrent requests and uncer
     assert.equal((await shipmentFor(cms, 3))?.state, "rejected");
     await createOrderShipment(cms, 3, input, mock(async () => Response.json({ awbNumber: "TEST654321" })));
     assert.equal((await shipmentFor(cms, 3))?.state, "created");
+    const codOrder={...order,id:4,reference:`${order.reference}-4`,paymentMethod:'cod',status:'cod_pending',totalBani:12500};
+    await pool.query('UPDATE orders SET snapshot=$1 WHERE id=4',[JSON.stringify(codOrder)]);
+    let codPayload: URLSearchParams | undefined;
+    const codFetcher=(async(url: string | URL | Request,init?: RequestInit)=>{
+      if(String(url).endsWith('/api/awb')) codPayload=new URLSearchParams(String(init?.body));
+      return mock(async()=>Response.json({awbNumber:'TESTCOD123456'}))(url,init);
+    }) as typeof fetch;
+    await createOrderShipment(cms,4,input,codFetcher);
+    assert.equal(codPayload?.get('cashOnDelivery'),'125');
+    assert.equal(codPayload?.get('awbPayment'),'1');
+    assert.equal((await pool.query("SELECT snapshot->>'status' AS status FROM orders WHERE id=4")).rows[0].status,'cod_pending');
     process.env.SAMEDAY_USERNAME = "another-account";
     await assert.rejects(shipmentFor(cms, 1), /configurații/);
-    assert.equal((await pool.query("SELECT snapshot->>'status' AS status FROM orders")).rows.every(row => row.status === "paid"), true);
+    assert.equal((await pool.query("SELECT snapshot->>'status' AS status FROM orders WHERE id < 4")).rows.every(row => row.status === "paid"), true);
   } finally {
     for (const session of Object.values(sessions)) { await session.client.query("ROLLBACK"); session.client.release(); }
     await pool.end();
@@ -122,4 +134,22 @@ test('COD AWBs collect products plus shipping in RON and do not mark the order p
   assert.equal(cod.status,'cod_pending');
   assert.equal(shipmentBody({...cod,status:'paid'},shippingInput(input)).cashOnDelivery,0);
   assert.throws(()=>shipmentBody({...cod,status:'cancelled'},shippingInput(input)));
+});
+
+
+test('AWB eligibility follows confirmed COD or paid status and reports unconfirmed quotes explicitly',()=>{
+  const cod={...order,status:'cod_pending' as const,paymentMethod:'cod' as const,totalBani:12500};
+  assert.deepEqual(shipmentPayment(cod),{allowed:true,cashOnDeliveryBani:12500,reason:null});
+  assert.equal(shipmentBody({...cod,paymentMethod:null},shippingInput(input)).cashOnDelivery,125);
+  for(const paymentMethod of ['card','cod',null] as const){
+    const paid={...order,status:'paid' as const,paymentMethod};
+    assert.equal(shipmentPayment(paid).allowed,true);
+    assert.equal(shipmentBody(paid,shippingInput(input)).cashOnDelivery,0);
+  }
+  const requested=shipmentPayment({...cod,status:'requested',orderType:'production'});
+  assert.equal(requested.allowed,false);assert.match(requested.reason!,/Confirmă comanda ramburs/);
+  for(const status of ['pending','failed','expired','cancelled'] as const)
+    assert.equal(shipmentPayment({...cod,status}).allowed,false);
+  for(const totalBani of [0,-1,NaN,Infinity,125.5])
+    assert.equal(shipmentPayment({...cod,totalBani}).allowed,false);
 });

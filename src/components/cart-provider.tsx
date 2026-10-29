@@ -23,6 +23,7 @@ import { money } from "@/lib/coffee-catalog";
 import { useCatalog } from "./catalog-provider";
 import CoffeePack from "./coffee-pack";
 import useDialogMotion from "./use-dialog-motion";
+import useCheckoutReturn from "./use-checkout-return";
 import ProductionRequestForm from "./production-request-form";
 import { packageLabel } from "@/lib/product-format";
 
@@ -34,6 +35,7 @@ type CartContextValue = {
   open: () => void;
   count: number;
   clear: (snapshot?: string) => void;
+  checkoutRecovery: ReturnType<typeof useCheckoutReturn>;
 };
 const CartContext = createContext<CartContextValue | null>(null);
 const storageKey = "makeon-coffee-cart-v1";
@@ -63,6 +65,7 @@ export default function CartProvider({
   children: React.ReactNode;
 }) {
   const catalog = useCatalog();
+  const checkoutRecovery = useCheckoutReturn(() => catalog.refresh());
   const productBySlug = useCallback(
     (slug: string) => catalog.products.find((p) => p.slug === slug),
     [catalog.products],
@@ -190,6 +193,7 @@ export default function CartProvider({
     <CartContext.Provider
       value={{
         items,
+        checkoutRecovery,
         add,
         count,
         clear: (snapshot) => setItems(previous => !snapshot || JSON.stringify(previous) === snapshot ? [] : previous),
@@ -199,6 +203,7 @@ export default function CartProvider({
       }}
     >
       {children}
+      {checkoutRecovery.error && <div className="cart-toast" role="alert"><span>{checkoutRecovery.error}</span><button type="button" disabled={checkoutRecovery.busy} onClick={() => void checkoutRecovery.retry()}>Reîncearcă</button></div>}
       {notice && (
         <div className="cart-toast" role="status">
           <Check size={17} />

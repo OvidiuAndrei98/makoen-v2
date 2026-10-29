@@ -1,6 +1,7 @@
 import { getCMS } from "@/lib/cms";
 import { allowedRequestOrigin } from "@/lib/request-origin";
 import { SamedayError, samedayOptions, samedayPDF } from "@/lib/sameday-client";
+import { shipmentPayment } from "@/lib/shipment-payment";
 import { shipmentFor, createOrderShipment, attachOrderShipment } from "@/lib/order-shipping";
 
 export const runtime = "nodejs";
@@ -35,8 +36,9 @@ async function handle(request: Request, mutate: boolean) {
       const bytes = await samedayPDF(shipment.number, format);
       return new Response(bytes, { headers: { ...headers, "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="AWB-${shipment.number}-${format}.pdf"` } });
     }
-    const options = (order.status === "paid" || (order.paymentMethod === "cod" && order.status === "cod_pending")) && (!shipment || shipment.state === "rejected") ? await samedayOptions() : null;
-    return Response.json({ shipment, options }, { headers });
+    const payment = shipmentPayment(order);
+    const options = payment.allowed && (!shipment || shipment.state === "rejected") ? await samedayOptions() : null;
+    return Response.json({ shipment, options, payment }, { headers });
   } catch (error) {
     if (error instanceof SamedayError) return Response.json({ error: error.message }, { status: error.status, headers });
     if (error instanceof SyntaxError) return Response.json({ error: "Date invalide." }, { status: 400, headers });

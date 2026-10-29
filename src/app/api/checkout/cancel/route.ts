@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     if (typeof body.key !== "string" || !/^[0-9a-f-]{36}$/i.test(body.key))
       throw new CommerceError("Invalid checkout key");
-    await cancelCheckout(body.key);
-    return Response.json({ cancelled: true });
+    const result = await cancelCheckout(body.key);
+    return Response.json({ cancelled: true, ...result });
   } catch {
     return Response.json(
       { error: "Nu am putut elibera rezervarea. Aceasta va expira automat." },

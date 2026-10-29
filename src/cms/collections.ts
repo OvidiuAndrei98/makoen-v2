@@ -1,4 +1,4 @@
-import { APIError, type CollectionConfig, type Field } from "payload";
+import { APIError, type CollectionConfig, type Field, type Where } from "payload";
 import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import { adminOnly, nobody } from "./access";
 import { queueOrderStatusEmail } from "../lib/order-status-email";
@@ -264,11 +264,19 @@ export const Products: CollectionConfig = {
   },
 };
 
+// Pending card snapshots exist only while Stripe owns an active reservation.
+// They are not business orders and are never exposed in admin lists or counters.
+export const registeredOrders: Where = { or: [
+  { status: { in: ["paid", "cod_pending"] } },
+  { orderType: { equals: "production" } },
+  { and: [{ paymentMethod: { equals: "cod" } }, { status: { in: ["cod_pending", "cancelled"] } }] },
+] };
+
 export const Orders: CollectionConfig = {
   slug: "orders",
   labels: { singular: "Comandă", plural: "Comenzi" },
   access: {
-    read: adminOnly,
+    read: ({ req }) => req.user?.collection === "users" ? registeredOrders : false,
     create: nobody,
     update: adminOnly,
     delete: nobody,

@@ -26,9 +26,12 @@ export default function CheckoutResult({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.ok) {
+          const result = await response.json();
+          if (result.paid && result.url) { window.location.replace(result.url); return; }
           sessionStorage.removeItem("makeon-checkout-key");
+          sessionStorage.removeItem("makeon-checkout-cart");
           refresh();
         }
       })

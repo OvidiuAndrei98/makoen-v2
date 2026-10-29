@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useDocumentInfo } from "@payloadcms/ui";
 import { MapPin, Package, UserRound, CreditCard } from "lucide-react";
 import type { Order } from "@/payload-types";
@@ -23,9 +24,33 @@ const string = (value: unknown) =>
 
 /** Read-only view of the payment snapshot; amounts are converted from bani for display only. */
 export function OrderSummary() {
-  const { data } = useDocumentInfo();
-  const order = data as Order | undefined;
-  if (!order?.reference) return null;
+  const { data, id } = useDocumentInfo();
+  const orderID = id ?? data?.id;
+  const [order, setOrder] = useState<Order | null>(null);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    if (!orderID) return;
+    const controller = new AbortController();
+    setOrder(null); setError("");
+    (async () => {
+      try {
+        // Hidden/read-only form fields may be absent from DocumentInfo after a
+        // save. Fetch the persisted order rather than treating blanks as unpaid.
+        const response = await fetch(`/api/orders/${encodeURIComponent(String(orderID))}?depth=0`, { cache: "no-store", signal: controller.signal });
+        const saved = await response.json();
+        if (!response.ok) throw new Error("Nu am putut încărca datele comenzii.");
+        if (!saved.reference || !Object.hasOwn(paymentLabels, saved.status)) throw new Error("Statusul plății nu este disponibil. Reîncarcă datele comenzii înainte de emiterea AWB-ului.");
+        if (!controller.signal.aborted) setOrder(saved as Order);
+      } catch (cause) {
+        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Comanda nu este disponibilă momentan.");
+      }
+    })();
+    return () => controller.abort();
+  }, [orderID, data?.updatedAt, revision]);
+  if (!orderID) return null;
+  if (error) return <section className="makeon-order-panel"><p role="alert">{error}</p><button type="button" className="btn btn--style-secondary" onClick={() => setRevision(value => value + 1)}>Reîncarcă datele comenzii</button></section>;
+  if (!order) return <p role="status">Se încarcă datele comenzii…</p>;
   const money = (amount: number) =>
     new Intl.NumberFormat("ro-RO", {
       style: "currency",
@@ -88,7 +113,7 @@ export function OrderSummary() {
       </section>
       <section className="makeon-order-panel">
         <h3>Plată și facturare</h3>
-        <p>Metodă de plată: <strong>{order.paymentMethod === "cod" ? "Ramburs" : "Card online"}</strong></p>
+        <p>Metodă de plată: <strong>{(order.paymentMethod === "cod" || order.status === "cod_pending") ? "Ramburs" : "Card online"}</strong></p>
         {details?.billing && <>
           <p>{details.billing.type === "company" ? "Persoană juridică" : "Persoană fizică"}</p>
           <strong>{details.billing.companyName || order.customerName}</strong>
@@ -100,13 +125,13 @@ export function OrderSummary() {
       </section>
       <CodPayment order={order} />
       <OrderStatusNotifications orderID={order.id} updatedAt={order.updatedAt} />
-      <OrderShipping key={`${order.id}-${order.updatedAt}`} order={order} />
       {order.orderType === "production" && (
         <ProductionPayment
           key={`${order.id}-${order.status}-${order.paymentAttempt}`}
           order={order}
         />
       )}
+      <OrderShipping key={`${order.id}-${order.updatedAt}`} order={order} />
       <div className="makeon-order-details">
         <section className="makeon-order-panel">
           <h3>

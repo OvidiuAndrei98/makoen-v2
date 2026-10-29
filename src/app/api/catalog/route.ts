@@ -1,7 +1,7 @@
 import { getProducts } from "@/lib/storefront";
 import { checkoutConfigured, cmsConfigured, ordersConfigured } from "@/lib/commerce-env";
 import { getCMS } from "@/lib/cms";
-import { reconcileExpired, stripeClient } from "@/lib/commerce";
+import { reconcileExpired, stripeClient, pruneAbandonedCheckouts } from "@/lib/commerce";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -10,6 +10,7 @@ export async function GET() {
     // remaining stock is available to start another checkout.
     if (checkoutConfigured())
       await reconcileExpired(await getCMS(), stripeClient());
+    else if (cmsConfigured()) await pruneAbandonedCheckouts(await getCMS());
     return Response.json(
       {
         products: await getProducts(),

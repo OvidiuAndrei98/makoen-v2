@@ -126,3 +126,9 @@ Comenzile ramburs din stoc scad stocul imediat, o singură dată. O comandă ram
 După livrare, verifică decontul curierului, bifează confirmarea și apasă **Confirmă încasarea rambursului**. Trecerea la **Livrată** nu marchează automat plata. Factura curierului se achită separat conform contractului firmei.
 
 Înainte de publicare rulează `npm run cms:migrate` pentru `20261029_120000_payment_methods`, cu `PAYLOAD_DB_PUSH=false`. Migrarea păstrează comenzile existente și le atribuie metoda card. Nu se colectează date de firmă retroactiv pentru comenzile vechi.
+
+
+La plata cu cardul, deschiderea Stripe nu înregistrează o comandă în lista de administrare. La întoarcerea în magazin fără plată, sesiunea este închisă, stocul este eliberat imediat după confirmarea Stripe și încercarea temporară este ștearsă complet. Coșul rămâne disponibil. Lista și contoarele includ numai comenzi plătite, ramburs și la cerere. Dacă plata s-a finalizat în același timp cu revenirea, comanda plătită este păstrată. Încercările vechi din stoc marcate Expirată/Eșuată sunt eliminate automat la următoarele verificări ale catalogului; comenzile la cerere rămân înregistrate.
+
+
+Panoul comenzii încarcă statusul plății și metoda de plată din comanda salvată pe server. La emiterea AWB, **Ramburs de încasat** permite expedierea fără plată în avans și preia totalul produselor plus transportul. Pentru **Plătită**, suma de încasat pe AWB este zero. Pentru o solicitare ramburs la cerere încă neconfirmată, stabilește mai întâi prețurile și transportul în **Confirmare telefonică și plată**, apoi apasă **Confirmă comanda ramburs**. Secțiunea de confirmare este afișată înaintea celei de AWB.

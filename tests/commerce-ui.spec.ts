@@ -198,7 +198,7 @@ test('card checkout submits billing details and keeps the cart until payment is 
   let submitted: Record<string,any> | undefined;
   await page.route('**/api/checkout', async route=>{
     submitted=route.request().postDataJSON();
-    await route.fulfill({json:{url:'http://127.0.0.1:3000/cafea?card-checkout-test=1'}});
+    await route.fulfill({json:{url:'http://127.0.0.1:3000/comanda?card-checkout-test=1'}});
   });
   await page.goto('/finalizare-comanda');
   const form=page.locator('.checkout-form');
@@ -211,4 +211,55 @@ test('card checkout submits billing details and keeps the cart until payment is 
   expect(submitted?.details.billing.type).toBe('personal');
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('makeon-coffee-cart-v1')!).length)).toBe(1);
   expect(await page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(submitted?.key);
+});
+
+
+for (const destination of ['/cafea','/finalizare-comanda']) {
+  test(`return from Stripe to ${destination} immediately releases stock and keeps the cart`,async({page})=>{
+    let cancelled=0;
+    const key='a1234567-1234-4123-8123-123456789012';
+    await page.route('**/api/catalog',route=>route.fulfill({json:{products:coffeeProducts.map(p=>({...p,price:50,stock:cancelled?5:4})),managed:true,checkout:true,cod:true,shippingBani:2500}}));
+    await page.route('**/api/checkout/cancel',async route=>{
+      expect(route.request().postDataJSON().key).toBe(key);cancelled++;
+      await route.fulfill({json:{cancelled:true}});
+    });
+    await page.addInitScript(({key})=>{
+      localStorage.setItem('makeon-coffee-cart-v1',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:1}]));
+      sessionStorage.setItem('makeon-checkout-key',key);
+      sessionStorage.setItem('makeon-checkout-cart',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:1}]));
+    },{key});
+    await page.goto(destination);
+    await expect.poll(()=>cancelled).toBe(1);
+    await expect.poll(()=>page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(null);
+    expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('makeon-coffee-cart-v1')!).length)).toBe(1);
+    if(destination==='/finalizare-comanda') await expect(page.getByRole('heading',{name:'Finalizează comanda.'})).toBeVisible();
+    await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
+    expect(cancelled).toBe(1);
+  });
+}
+
+test('native browser Back from Stripe cancels the unpaid attempt immediately',async({page})=>{
+  let cancelled=0;
+  await page.route('**/api/catalog',route=>route.fulfill({json:{products:coffeeProducts.map(p=>({...p,price:50,stock:5})),managed:true,checkout:true,cod:true,shippingBani:2500}}));
+  await page.addInitScript(()=>localStorage.setItem('makeon-coffee-cart-v1',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:1}])));
+  await page.route('https://checkout.stripe.com/mock-return',route=>route.fulfill({contentType:'text/html',body:'<h1>Stripe test checkout</h1>'}));
+  await page.route('**/api/checkout',route=>route.fulfill({json:{url:'https://checkout.stripe.com/mock-return'}}));
+  await page.route('**/api/checkout/cancel',async route=>{cancelled++;await route.fulfill({json:{cancelled:true}});});
+  await page.goto('/finalizare-comanda');
+  await fillCheckout(page.locator('.checkout-form'));
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button',{name:'Trimite comanda'}).click();
+  await expect(page).toHaveURL('https://checkout.stripe.com/mock-return');
+  await page.goBack();
+  await expect(page).toHaveURL(/finalizare-comanda/);
+  await expect.poll(()=>cancelled).toBe(1);
+  await expect.poll(()=>page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(null);
+  await expect(page.getByRole('heading',{name:'Finalizează comanda.'})).toBeVisible();
+  // BFCache restores an existing component instead of mounting it again.
+  await page.evaluate(()=>{
+    sessionStorage.setItem('makeon-checkout-key','b1234567-1234-4123-8123-123456789012');
+    window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));
+  });
+  await expect.poll(()=>cancelled).toBe(2);
+  await expect.poll(()=>page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(null);
 });

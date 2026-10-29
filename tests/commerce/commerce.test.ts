@@ -215,6 +215,7 @@ test('expiration releases reservations without reducing physical stock', async (
   await commerce.createCheckout([{ slug: p.slug, grind: 'Boabe', quantity: 2 }], key, fakeStripe, cms);
   const session = keys.get(`MK-${key}`)!; session.status = 'expired';
   await commerce.applySession(session, cms); await commerce.applySession(session, cms);
+  assert.equal((await cms.count({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).totalDocs,0);
   const updated = await cms.findByID({ collection: 'products', id: p.id });
   assert.equal(updated.stock, 2); assert.equal(updated.reserved, 0);
 });
@@ -234,6 +235,8 @@ test('returning from cancelled checkout releases stock and keeps the physical qu
   const p = await product(2); const key = randomUUID();
   await commerce.createCheckout([{ slug: p.slug, grind: 'Boabe', quantity: 2 }], key, fakeStripe, cms);
   await commerce.cancelCheckout(key, fakeStripe, cms);
+  await commerce.cancelCheckout(key, fakeStripe, cms);
+  assert.equal((await cms.count({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).totalDocs,0);
   const updated = await cms.findByID({ collection: 'products', id: p.id });
   assert.equal(updated.stock, 2); assert.equal(updated.reserved, 0);
 });
@@ -552,4 +555,48 @@ test('stock COD is available without Stripe credentials and does not depend on o
     assert.equal(result.paymentMethod,'cod');
     assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,0);
   } finally { process.env.STRIPE_SECRET_KEY=secret;process.env.STRIPE_WEBHOOK_SECRET=webhook; }
+});
+
+
+test('abandoned card attempts are hidden while active and removed entirely on return; real orders remain visible',async()=>{
+  const p=await product(4), key=randomUUID(), user={id:999,collection:'users' as const,email:'admin@example.test'};
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+  const query={collection:'orders' as const,where:{reference:{equals:`MK-${key}`}},overrideAccess:false,user};
+  assert.equal((await cms.find(query)).totalDocs,0);
+  assert.equal((await cms.count(query)).totalDocs,0);
+  await commerce.cancelCheckout(key,fakeStripe,cms);
+  assert.equal((await cms.count({...query,overrideAccess:true})).totalDocs,0);
+  const paidKey=randomUUID();
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],paidKey,fakeStripe,cms);
+  const session=keys.get(`MK-${paidKey}`)!;
+  await commerce.applySession({...session,status:'complete',payment_status:'paid'},cms);
+  assert.equal((await cms.find({...query,where:{reference:{equals:`MK-${paidKey}`}}})).totalDocs,1);
+  const codKey=randomUUID();
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],codKey,fakeStripe,cms,legal.version,checkoutDetails());
+  assert.equal((await cms.find({...query,where:{reference:{equals:`MK-${codKey}`}}})).totalDocs,1);
+});
+
+test('a payment completing during Back wins over cancellation and remains recorded once',async()=>{
+  const p=await product(2),key=randomUUID();
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+  const raceStripe={checkout:{sessions:{...fakeStripe.checkout.sessions,expire:async(id:string)=>{
+    const session=sessions.get(id)!;session.status='complete';session.payment_status='paid';
+    throw new Error('Session is already complete');
+  }}}} as unknown as Stripe;
+  const result=await commerce.cancelCheckout(key,raceStripe,cms);
+  assert.equal(result.paid,true);assert.match(result.url!,/session_id=/);
+  const saved=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  assert.equal(saved.status,'paid');
+  await commerce.cancelCheckout(key,raceStripe,cms);
+  const stock=await cms.findByID({collection:'products',id:p.id});
+  assert.equal(stock.stock,1);assert.equal(stock.reserved,0);
+});
+
+test('old abandoned drafts are deleted without touching made-to-order requests',async()=>{
+  const p=await product(1);
+  const create=async(reference:string,orderType:'stock'|'production')=>cms.create({collection:'orders',data:{reference,orderType,fulfillmentStatus:'new',paymentMethod:'card',status:'expired',currency:'ron',totalBani:1000,shippingBani:0,items:[{product:p.id,slug:p.slug,name:p.name,grind:'Boabe',quantity:1,unitPriceBani:1000}]}});
+  const stock=await create(`MK-${randomUUID()}`,'stock'),production=await create(`MK-${randomUUID()}`,'production');
+  await commerce.pruneAbandonedCheckouts(cms);
+  assert.equal((await cms.count({collection:'orders',where:{id:{equals:stock.id}}})).totalDocs,0);
+  assert.equal((await cms.findByID({collection:'orders',id:production.id})).status,'expired');
 });

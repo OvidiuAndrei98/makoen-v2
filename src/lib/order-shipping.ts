@@ -4,6 +4,7 @@ import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import type { Payload } from "payload";
 import type { Order } from "@/payload-types";
 import { transaction, transactionDB, lockOrder } from "./commerce";
+import { shipmentPayment } from "./shipment-payment";
 import { SamedayError, samedayConfig, samedayOptions, samedayCreate, samedayPDF } from "./sameday-client";
 
 const db = (cms: Payload) => (cms.db as unknown as PostgresAdapter).drizzle;
@@ -49,9 +50,8 @@ export function shippingInput(value: unknown) {
 }
 
 export function shipmentBody(order: Order, input: ReturnType<typeof shippingInput>) {
-  if (order.status !== "paid" && !(order.paymentMethod === "cod" && order.status === "cod_pending")) throw new SamedayError("AWB-ul poate fi emis după confirmarea plății cu cardul sau a comenzii ramburs.", 409);
-  if (order.fulfillmentStatus === "shipped" || order.fulfillmentStatus === "delivered")
-    throw new SamedayError("Comanda este deja expediată sau livrată.", 409);
+  const payment = shipmentPayment(order);
+  if (!payment.allowed) throw new SamedayError(payment.reason!, 409);
   const shipping = order.shippingAddress as { address?: { country?: string }; country?: string } | null;
   const country = shipping?.address?.country || shipping?.country;
   if (country !== "RO") throw new SamedayError("Această integrare acceptă doar livrări în România.", 400);
@@ -59,7 +59,7 @@ export function shipmentBody(order: Order, input: ReturnType<typeof shippingInpu
   return {
     pickupPoint: input.pickupPoint, packageType: 0, packageNumber: 1,
     packageWeight: input.weight, parcels: [{ weight: input.weight }],
-    service: input.service, awbPayment: 1, cashOnDelivery: order.paymentMethod === "cod" && order.status === "cod_pending" ? order.totalBani / 100 : 0, insuredValue: 0, thirdPartyPickup: 0,
+    service: input.service, awbPayment: 1, cashOnDelivery: payment.cashOnDeliveryBani / 100, insuredValue: 0, thirdPartyPickup: 0,
     awbRecipient: {
       name: input.name, phoneNumber: input.phone, personType: 0,
       countyString: input.county, cityString: input.city, address: input.address,

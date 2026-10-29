@@ -539,3 +539,8 @@ Production COD requests remain `requested` until the administrator confirms quot
 Sameday COD AWBs use `cashOnDelivery = totalBani / 100`; card AWBs use zero. Admin-only `/api/orders/cod` confirms collection after delivery or cancels unshipped stock COD orders with one-time stock restoration. A created/in-flight/uncertain AWB blocks cancellation. Shipment returns and AWB cancellation reconciliation remain manual operations. Payment collection is never inferred from fulfillment status.
 
 Apply migration `20261029_120000_payment_methods` before deploying the updated app. It adds payment method, checkout details, collection timestamp and additive status enum values. Existing orders default to card; billing snapshots cannot be silently rolled back. Keep schema push disabled outside disposable tests.
+
+
+### Abandoned card checkouts
+
+Order read access exposes only paid orders, COD orders and production requests, including in dashboard counters. Active stock/card snapshots are internal reservation drafts. On return to any shop route, `use-checkout-return.ts` cancels the previous Stripe session (also via persisted `pageshow` on BFCache restore). Expiration atomically releases reserved stock and deletes the stock/card draft and its child items; expiration webhook retries after deletion are harmless. A completed payment wins cancellation races and remains a paid order. Production requests/payment-link attempts are retained. Legacy released `expired`/`failed` stock/card drafts are pruned in batches during catalog/checkout recovery. Browser state never authorizes deletion before Stripe confirms expiration.

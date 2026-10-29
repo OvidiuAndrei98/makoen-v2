@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
 import { useCart } from "./cart-provider";
@@ -16,6 +16,7 @@ export default function CheckoutForm() {
   const [reference, setReference] = useState("");
   const busy = useRef(false);
   const attempt = useRef<{ fingerprint: string; key: string } | null>(null);
+  useEffect(() => { attempt.current = null; }, [cart.checkoutRecovery.revision]);
   const products = cart.items.map(line => ({ ...line, product: catalog.products.find(p => p.slug === line.slug) }));
   const available = products.length > 0 && products.every(line => line.product?.price != null && line.product.stock != null);
   const subtotal = products.reduce((sum, line) => sum + (line.product?.price ?? 0) * line.quantity, 0);
@@ -23,6 +24,10 @@ export default function CheckoutForm() {
     <Check size={36} aria-hidden="true" /><h1>Mulțumim pentru comandă.</h1>
     <p>Comanda ramburs a fost înregistrată. Vei achita produsele și transportul la livrare.</p>
     <p>Referință comandă: <strong>{reference}</strong></p><Link className="primary-button" href="/cafea">Înapoi la magazin</Link>
+  </section>;
+  if (cart.checkoutRecovery.busy || cart.checkoutRecovery.error) return <section className="checkout-result section-padding">
+    <h1>Revenim la coșul tău.</h1>
+    {cart.checkoutRecovery.error ? <><p role="alert">{cart.checkoutRecovery.error}</p><button className="primary-button" type="button" onClick={() => void cart.checkoutRecovery.retry()}>Reîncearcă</button></> : <p role="status">Eliberăm produsele rezervate la plata anterioară…</p>}
   </section>;
   if (!catalog.ready) return <p className="section-padding" role="status">Verificăm coșul…</p>;
   if (catalog.unavailable || !available || (!catalog.checkout && !catalog.cod)) return <section className="checkout-result section-padding">
