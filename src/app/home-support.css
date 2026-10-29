@@ -1,12 +1,29 @@
-.home-process { padding-block:var(--section-space); }
-.home-process-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:64px; margin:28px 0 0; padding:0; list-style:none; }
+.home-process { padding-block:var(--section-space) 24px; scroll-margin-block-start:106px; }
+.home-process-panel { padding:clamp(28px,4vw,56px); border:1px solid var(--makeon-border); border-radius:24px; background:var(--makeon-surface-muted); }
+.home-process-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:48px; margin:36px 0 0; padding:0; list-style:none; }
 .home-process-steps > li { position:relative; min-width:0; }
-.home-process-arrow { position:absolute; top:3px; right:-44px; color:var(--makeon-muted); }
-.b2b-site .home-process-steps h3 { margin:0; font:500 21px/1.35 var(--font-heading); letter-spacing:-.025em; }
-.home-process-steps p { max-width:40ch; margin-top:12px; color:var(--makeon-muted); font-size:15px; line-height:1.7; }
-@media (max-width:700px) {
-  .home-process-steps { grid-template-columns:minmax(0,1fr); gap:56px; }
-  .home-process-arrow { top:auto; right:auto; bottom:-40px; left:calc(50% - 12px); transform:rotate(90deg); }
+.home-process-steps > li:not(:last-child)::before { content:""; position:absolute; top:24px; left:60px; right:-28px; height:1px; background:var(--makeon-border); }
+.home-process-icon { position:relative; display:grid; place-items:center; width:48px; height:48px; border:1px solid #d6dbd2; border-radius:50%; background:var(--makeon-surface); color:#354738; }
+.home-process-steps > li:last-child .home-process-icon { border-color:var(--makeon-action); background:var(--makeon-action); color:var(--makeon-ink); }
+.home-process-copy { margin-top:24px; }
+.home-process-arrow { position:absolute; top:15px; right:-34px; color:#788171; background:var(--makeon-surface-muted); }
+.b2b-site .home-process-steps h3 { margin:0; font:600 clamp(22px,2vw,27px)/1.2 var(--font-heading); letter-spacing:-.025em; }
+.home-process-steps p { max-width:34ch; margin:12px 0 0; color:var(--makeon-muted); font-size:15px; line-height:1.7; }
+@media (max-width:900px) {
+  .home-process-panel { padding:28px; }
+  .home-process-steps { grid-template-columns:minmax(0,1fr); gap:36px; margin-top:28px; }
+  .home-process-steps > li { display:grid; grid-template-columns:44px minmax(0,1fr); column-gap:18px; }
+  .home-process-icon { width:44px; height:44px; }
+  .home-process-copy { margin-top:7px; }
+  .home-process-steps p { max-width:48ch; margin-top:10px; }
+  .home-process-steps > li:not(:last-child)::before { top:54px; bottom:-20px; left:21px; right:auto; width:1px; height:auto; }
+  .home-process-arrow { top:auto; right:auto; bottom:-30px; left:13px; transform:rotate(90deg); }
+}
+@media (max-width:540px) {
+  .home-process-panel { padding:24px 20px; border-radius:20px; }
+  .home-process-steps > li { column-gap:14px; }
+  .b2b-site .home-process-steps h3 { font-size:23px; }
+  .home-process-steps p { font-size:14px; line-height:1.65; }
 }
 /* Compact service cards share the same hierarchy and geometry. */
 .home-solutions { padding-block:80px 24px; background:var(--makeon-surface); scroll-margin-block-start:106px; }
