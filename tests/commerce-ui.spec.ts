@@ -89,9 +89,11 @@ test("quantities exceeding stock open a made-to-order request instead of direct 
   await page
     .getByRole("button", { name: "Deschide coșul de cafea (2)" })
     .click();
-  await expect(
-    page.getByRole("link", { name: "Continuă comanda" }),
-  ).toHaveCount(0);
+  const cart=page.getByRole("dialog", { name: "Coșul de cafea" });
+  await expect(cart.locator('form')).toHaveCount(0);
+  await cart.getByRole("link", { name: "Continuă comanda" }).click();
+  await expect(page).toHaveURL(/finalizare-comanda/);
+  await expect(cart).not.toBeVisible();
   await expect(
     page.getByRole("button", { name: "Înregistrează comanda" }),
   ).toBeVisible();
@@ -146,17 +148,20 @@ test("a mixed cart submits customer details and selections without immediate pay
     .getByRole("button", { name: "Deschide coșul de cafea (3)" })
     .click();
   const cart = page.getByRole("dialog", { name: "Coșul de cafea" });
-  await fillCheckout(cart);
-  await expect(cart.getByRole("button", { name: "Înregistrează comanda" })).toBeDisabled();
-  await cart.getByRole("checkbox").check();
-  await cart.getByRole("button", { name: "Înregistrează comanda" }).click();
-  await expect(cart.getByRole("alert")).toHaveText("Reîncearcă solicitarea.");
-  await cart.getByRole("button", { name: "Înregistrează comanda" }).click();
-  await expect(cart.getByRole("status")).toContainText(
+  await cart.getByRole("link", { name: "Continuă comanda" }).click();
+  await expect(page).toHaveURL(/finalizare-comanda/);
+  const form=page.locator('main .production-request-form');
+  await fillCheckout(form);
+  await expect(form.getByRole("button", { name: "Înregistrează comanda" })).toBeDisabled();
+  await form.getByRole("checkbox").check();
+  await form.getByRole("button", { name: "Înregistrează comanda" }).click();
+  await expect(form.getByRole("alert")).toHaveText("Reîncearcă solicitarea.");
+  await form.getByRole("button", { name: "Înregistrează comanda" }).click();
+  await expect(page.locator('main .production-request-success')).toContainText(
     "Comanda a fost înregistrată",
   );
   expect(keys[0]).toBe(keys[1]);
-  expect(await cart.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
     true,
   );
 });

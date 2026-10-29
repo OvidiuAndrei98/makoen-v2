@@ -673,3 +673,45 @@ test('made-to-order checkout saves canonical customer details before quoting, re
   assert.equal(paid.status,'paid');assert.equal(paid.totalBani,14900);assert.deepEqual(paid.checkoutDetails,details);
   const inventory=await cms.findByID({collection:'products',id:p.id});assert.equal(inventory.stock,0);assert.equal(inventory.reserved,0);
 });
+
+test('old reservation columns remain compatible; settled legacy rows never block catalog recovery', async () => {
+  const db=(cms.db as unknown as PostgresAdapter).drizzle;
+  await db.execute(sql`ALTER TABLE checkout_reservations ADD COLUMN IF NOT EXISTS status varchar DEFAULT 'pending', ADD COLUMN IF NOT EXISTS stripe_session_id varchar, ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now()`);
+  for(const status of ['expired','paid']) {
+    await db.execute(sql`INSERT INTO checkout_reservations(reference,snapshot,expires_at,status) VALUES (${'legacy-'+status}, ${JSON.stringify({reference:'legacy-'+status})}::jsonb,now()-interval '1 hour',${status})`);
+  }
+  const p=await product(3);
+  for(const target of ['expired','paid'] as const) {
+    const key=randomUUID(),reference=`MK-${key}`;
+    await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+    const session=keys.get(reference)!;
+    await db.execute(sql`UPDATE checkout_reservations SET stripe_session_id=${session.id},
+      snapshot=snapshot-ARRAY['id','createdAt','updatedAt','status','paymentMethod','orderType','fulfillmentStatus','stripeSessionId','expiresAt'],
+      expires_at=now()-interval '1 minute' WHERE reference=${reference}`);
+    session.status=target==='paid'?'complete':'expired';session.payment_status=target==='paid'?'paid':'unpaid';
+    await commerce.reconcileExpired(cms,fakeStripe);
+    assert.equal(await reservation(reference),undefined);
+    assert.equal((await cms.count({collection:'orders',where:{reference:{equals:reference}}})).totalDocs,target==='paid'?1:0);
+  }
+  assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,2);
+  assert.equal((await cms.findByID({collection:'products',id:p.id})).reserved,0);
+});
+
+test('catalog still lists products when Stripe reservation maintenance fails', async () => {
+  const key=randomUUID(),p=await product(1),reference=`MK-${key}`;
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+  await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`UPDATE checkout_reservations SET expires_at=now()-interval '1 minute' WHERE reference=${reference}`);
+  const db=(cms.db as unknown as PostgresAdapter).drizzle;
+  await db.execute(sql`ALTER TABLE checkout_reservations RENAME TO checkout_reservations_fixture`);
+  try {
+    const {GET}=await import('../../src/app/api/catalog/route');
+    const response=await GET();
+    assert.equal(response.status,200);
+    const catalog=await response.json();
+    assert.ok(catalog.products.some((product: {slug:string})=>product.slug===p.slug));
+    assert.equal((await cms.findByID({collection:'products',id:p.id})).reserved,1);
+    assert.equal((await cms.count({collection:'orders',where:{reference:{equals:reference}}})).totalDocs,0);
+  } finally {
+    await db.execute(sql`ALTER TABLE checkout_reservations_fixture RENAME TO checkout_reservations`);
+  }
+});

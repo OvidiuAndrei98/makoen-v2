@@ -64,6 +64,30 @@ export async function lockOrder(
 
 type CheckoutOrder = Order & { reservation?: true };
 
+/** Earlier releases stored Stripe metadata in columns instead of the JSON snapshot. */
+function reservationOrder(record: Record<string, unknown>): CheckoutOrder {
+  const snapshot = record.snapshot as Order;
+  const iso = (value: unknown) => value instanceof Date ? value.toISOString() : String(value);
+  const expiresAt = snapshot.expiresAt ?? iso(record.expires_at);
+  const createdAt = snapshot.createdAt ?? (record.created_at
+    ? iso(record.created_at)
+    : new Date(new Date(expiresAt).getTime() - 35 * 60000).toISOString());
+  return {
+    ...snapshot,
+    id: snapshot.id ?? 0,
+    orderType: snapshot.orderType ?? "stock",
+    paymentMethod: snapshot.paymentMethod ?? "card",
+    fulfillmentStatus: snapshot.fulfillmentStatus ?? "new",
+    reference: String(record.reference),
+    status: snapshot.status ?? (record.status as Order['status'] | undefined) ?? "pending",
+    stripeSessionId: snapshot.stripeSessionId ?? (record.stripe_session_id as string | null | undefined),
+    createdAt,
+    updatedAt: snapshot.updatedAt ?? createdAt,
+    expiresAt,
+    reservation: true,
+  };
+}
+
 /** Legacy pending orders remain recoverable; new card attempts live outside orders. */
 async function findCheckout(cms: Payload, reference: string, id: number | string): Promise<CheckoutOrder | undefined> {
   const req = { transactionID: id };
@@ -76,9 +100,9 @@ async function findCheckout(cms: Payload, reference: string, id: number | string
   })).docs[0];
   if (existing) return existing;
   const db = transactionDB(cms, id);
-  const result = await db.execute(sql`SELECT snapshot FROM checkout_reservations WHERE reference = ${reference}`);
-  const snapshot = result.rows[0]?.snapshot as Order | undefined;
-  return snapshot ? { ...snapshot, reservation: true } : undefined;
+  const result = await db.execute(sql`SELECT to_jsonb(r) AS record FROM checkout_reservations r WHERE reference = ${reference}`);
+  const record = result.rows[0]?.record as Record<string, unknown> | undefined;
+  return record ? reservationOrder(record) : undefined;
 }
 
 async function updateCheckout(cms: Payload, id: number | string, order: CheckoutOrder, data: Partial<Order>): Promise<CheckoutOrder> {
@@ -246,7 +270,9 @@ export async function pruneAbandonedCheckouts(cms: Payload) {
 
 export async function reconcileExpired(cms: Payload, stripe: Stripe) {
   await pruneAbandonedCheckouts(cms);
-  const reservations = await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`SELECT snapshot FROM checkout_reservations WHERE expires_at < now() ORDER BY expires_at LIMIT 25`);
+  const reservations = await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`SELECT to_jsonb(r) AS record FROM checkout_reservations r
+    WHERE expires_at < now() AND coalesce(snapshot->>'status', to_jsonb(r)->>'status', 'pending') = 'pending'
+    ORDER BY expires_at LIMIT 25`);
   const { docs } = await cms.find({
     collection: "orders",
     depth: 0,
@@ -258,7 +284,7 @@ export async function reconcileExpired(cms: Payload, stripe: Stripe) {
       ],
     },
   });
-  for (const order of [...docs, ...reservations.rows.map(row => ({ ...(row.snapshot as Order), reservation: true as const }))]) {
+  for (const order of [...docs, ...reservations.rows.map(row => reservationOrder(row.record as Record<string, unknown>))]) {
     if (order.stripeSessionId) {
       const session = await stripe.checkout.sessions.retrieve(
         order.stripeSessionId,

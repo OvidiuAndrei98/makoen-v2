@@ -24,7 +24,6 @@ import { useCatalog } from "./catalog-provider";
 import CoffeePack from "./coffee-pack";
 import useDialogMotion from "./use-dialog-motion";
 import useCheckoutReturn from "./use-checkout-return";
-import ProductionRequestForm from "./production-request-form";
 import { needsProductionRequest } from "@/lib/cart-availability";
 import { packageLabel } from "@/lib/product-format";
 
@@ -376,19 +375,8 @@ export default function CartProvider({
                         ? "Livrarea și disponibilitatea se confirmă la comandă."
                         : "Solicită prețurile și disponibilitatea pentru cafelele alese."}
                 </p>
-                {needsRequest ? (
-                  <ProductionRequestForm
-                    items={items}
-                    onComplete={(snapshot) => {
-                      setItems((previous) =>
-                        JSON.stringify(previous) === snapshot ? [] : previous,
-                      );
-                      setOpened(false);
-                      catalog.refresh();
-                    }}
-                  />
-                ) : (catalog.checkout || catalog.cod) && completePrices ? (
-                  <Link className="primary-button cart-phone" href="/finalizare-comanda" onClick={() => setOpened(false)} aria-disabled={!canPay}>
+                {needsRequest || ((catalog.checkout || catalog.cod) && completePrices) ? (
+                  <Link className="primary-button cart-phone" href="/finalizare-comanda" onClick={() => setOpened(false)} aria-disabled={!needsRequest && !canPay}>
                     Continuă comanda <ArrowUpRight size={18} />
                   </Link>
                 ) : (

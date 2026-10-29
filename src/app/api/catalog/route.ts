@@ -8,9 +8,15 @@ export async function GET() {
   try {
     // Recover inventory even when an expiration webhook was missed and no
     // remaining stock is available to start another checkout.
-    if (checkoutConfigured())
-      await reconcileExpired(await getCMS(), stripeClient());
-    else if (cmsConfigured()) await pruneAbandonedCheckouts(await getCMS());
+    try {
+      if (checkoutConfigured())
+        await reconcileExpired(await getCMS(), stripeClient());
+      else if (cmsConfigured()) await pruneAbandonedCheckouts(await getCMS());
+    } catch {
+      // Sellable stock already excludes reservations. Failed maintenance may
+      // temporarily understate availability, but must not hide the catalog.
+      console.error("Catalog reservation reconciliation failed; reservations remain held.");
+    }
     return Response.json(
       {
         products: await getProducts(),
