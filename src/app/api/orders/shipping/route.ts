@@ -35,7 +35,7 @@ async function handle(request: Request, mutate: boolean) {
       const bytes = await samedayPDF(shipment.number, format);
       return new Response(bytes, { headers: { ...headers, "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="AWB-${shipment.number}-${format}.pdf"` } });
     }
-    const options = order.status === "paid" && (!shipment || shipment.state === "rejected") ? await samedayOptions() : null;
+    const options = (order.status === "paid" || (order.paymentMethod === "cod" && order.status === "cod_pending")) && (!shipment || shipment.state === "rejected") ? await samedayOptions() : null;
     return Response.json({ shipment, options }, { headers });
   } catch (error) {
     if (error instanceof SamedayError) return Response.json({ error: error.message }, { status: error.status, headers });

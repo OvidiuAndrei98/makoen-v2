@@ -1,6 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Locator } from "@playwright/test";
 import { coffeeProducts } from "../src/lib/coffee-catalog";
 import { legal } from "../src/lib/legal";
+
+async function fillCheckout(scope: Locator) {
+  await scope.getByLabel("Nume și prenume", { exact: false }).fill("Client test");
+  await scope.getByLabel("Telefon", { exact: false }).fill("+40744123456");
+  await scope.getByLabel("E-mail", { exact: false }).fill("client@example.test");
+  await scope.getByLabel("Stradă, număr, bloc, apartament", { exact: false }).fill("Strada Test 10");
+  await scope.getByLabel("Județ / sector", { exact: false }).fill("Cluj");
+  await scope.getByLabel("Localitate", { exact: false }).fill("Cluj-Napoca");
+}
 
 test("managed catalog and shipping reach checkout; a stock conflict keeps the cart", async ({
   page,
@@ -36,13 +45,17 @@ test("managed catalog and shipping reach checkout; a stock conflict keeps the ca
     .click();
   const cart = page.getByRole("dialog", { name: "Coșul de cafea" });
   await expect(cart).toContainText("119,98");
-  await expect(cart.getByRole("button", { name: "Plătește prin Stripe" })).toBeDisabled();
-  await cart.getByRole("checkbox").check();
-  await cart.getByRole("button", { name: "Plătește prin Stripe" }).click();
-  await expect(cart.getByRole("alert")).toHaveText(
+  await cart.getByRole("link", { name: "Continuă comanda" }).click();
+  await expect(page).toHaveURL(/finalizare-comanda/);
+  const form = page.locator(".checkout-form");
+  await fillCheckout(form);
+  await expect(form.getByRole("button", { name: "Trimite comanda" })).toBeDisabled();
+  await form.getByRole("checkbox").check();
+  await form.getByRole("button", { name: "Trimite comanda" }).click();
+  await expect(form.getByRole("alert")).toHaveText(
     "Stocul disponibil s-a schimbat.",
   );
-  await expect(cart.locator(".cart-line")).toHaveCount(1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("makeon-coffee-cart-v1")!).length)).toBe(1);
   expect(requestItems).toEqual([
     { slug: "intense", grind: "Boabe", quantity: 2 },
   ]);
@@ -77,7 +90,7 @@ test("quantities exceeding stock open a made-to-order request instead of direct 
     .getByRole("button", { name: "Deschide coșul de cafea (2)" })
     .click();
   await expect(
-    page.getByRole("button", { name: "Plătește prin Stripe" }),
+    page.getByRole("link", { name: "Continuă comanda" }),
   ).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Înregistrează comanda" }),
@@ -133,9 +146,7 @@ test("a mixed cart submits customer details and selections without immediate pay
     .getByRole("button", { name: "Deschide coșul de cafea (3)" })
     .click();
   const cart = page.getByRole("dialog", { name: "Coșul de cafea" });
-  await cart.locator("#production-name").fill("Client test");
-  await cart.locator("#production-phone").fill("+40744123456");
-  await cart.locator("#production-email").fill("client@example.test");
+  await fillCheckout(cart);
   await expect(cart.getByRole("button", { name: "Înregistrează comanda" })).toBeDisabled();
   await cart.getByRole("checkbox").check();
   await cart.getByRole("button", { name: "Înregistrează comanda" }).click();
@@ -148,4 +159,56 @@ test("a mixed cart submits customer details and selections without immediate pay
   expect(await cart.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
     true,
   );
+});
+
+for (const width of [320, 390, 1440]) {
+  test(`company invoicing and COD confirmation work at ${width}px`, async ({page}) => {
+    await page.setViewportSize({width,height:900});
+    await page.route('**/api/catalog', route => route.fulfill({json:{products:coffeeProducts.map(p=>({...p,price:50,stock:5})),managed:true,checkout:true,cod:true,shippingBani:2500}}));
+    await page.addInitScript(()=>localStorage.setItem('makeon-coffee-cart-v1',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:2}])));
+    let body: Record<string,any> | undefined;
+    await page.route('**/api/checkout', async route=>{
+      body=route.request().postDataJSON();
+      await route.fulfill({json:{reference:'MK-cod-test',paymentMethod:'cod'}});
+    });
+    await page.goto('/finalizare-comanda');
+    const form=page.locator('.checkout-form');
+    await fillCheckout(form);
+    await form.getByRole('radio',{name:'Persoană juridică'}).check();
+    await form.getByLabel('Denumirea firmei',{exact:false}).fill('Firma Test SRL');
+    await form.getByLabel('CUI / CIF',{exact:false}).fill('RO12345678');
+    await form.getByLabel('Adresa sediului social',{exact:false}).fill('Strada Sediu 20, Cluj-Napoca, Cluj');
+    await form.getByRole('radio',{name:/Ramburs/}).check();
+    await form.getByRole('checkbox').check();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await expect(page.locator('.checkout-summary')).toContainText('125,00');
+    await form.getByRole('button',{name:'Trimite comanda'}).click();
+    await expect(page.getByRole('heading',{name:'Mulțumim pentru comandă.'})).toBeVisible();
+    expect(body?.details.paymentMethod).toBe('cod');
+    expect(body?.details.billing.companyName).toBe('Firma Test SRL');
+    expect(body?.details.billing.address).toContain('Sediu 20');
+    expect(body?.details.shipping.line1).toBe('Strada Test 10');
+    expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('makeon-coffee-cart-v1')!).length)).toBe(0);
+  });
+}
+
+test('card checkout submits billing details and keeps the cart until payment is confirmed', async ({page})=>{
+  await page.route('**/api/catalog', route=>route.fulfill({json:{products:coffeeProducts.map(p=>({...p,price:50,stock:5})),managed:true,checkout:true,cod:true,shippingBani:2500}}));
+  await page.addInitScript(()=>localStorage.setItem('makeon-coffee-cart-v1',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:1}])));
+  let submitted: Record<string,any> | undefined;
+  await page.route('**/api/checkout', async route=>{
+    submitted=route.request().postDataJSON();
+    await route.fulfill({json:{url:'http://127.0.0.1:3000/cafea?card-checkout-test=1'}});
+  });
+  await page.goto('/finalizare-comanda');
+  const form=page.locator('.checkout-form');
+  await fillCheckout(form);
+  await expect(form.getByRole('radio',{name:/Card online/})).toBeChecked();
+  await form.getByRole('checkbox').check();
+  await form.getByRole('button',{name:'Trimite comanda'}).click();
+  await expect(page).toHaveURL(/card-checkout-test=1/);
+  expect(submitted?.details.paymentMethod).toBe('card');
+  expect(submitted?.details.billing.type).toBe('personal');
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('makeon-coffee-cart-v1')!).length)).toBe(1);
+  expect(await page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(submitted?.key);
 });

@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import type { Payload } from "payload";
 import type Stripe from "stripe";
 import { getCMS } from "./cms";
-import { checkoutConfigured } from "./commerce-env";
+import { checkoutConfigured, ordersConfigured } from "./commerce-env";
 import { packageLabel } from "./product-format";
 import {
   CommerceError,
@@ -18,6 +18,8 @@ import {
   sessionForOrder,
   applySession,
 } from "./commerce";
+
+import { parseCheckoutDetails } from "./checkout-details";
 
 /** Made-to-order requests do not reserve existing inventory. Prices become immutable when a link is issued. */
 export function parseProductionRequest(value: unknown) {
@@ -53,6 +55,7 @@ export function parseProductionRequest(value: unknown) {
     throw new CommerceError("Mesajul este prea lung.");
   if (body.website) throw new CommerceError("Solicitare nepermisă.");
   return {
+    ...(body.details ? { details: parseCheckoutDetails(body.details) } : {}),
     key,
     name,
     email,
@@ -143,11 +146,16 @@ export async function createProductionRequest(
             }
           : {}),
         orderType: "production",
+        paymentMethod: input.details?.paymentMethod ?? "card",
+        ...(input.details ? {
+          checkoutDetails: input.details,
+          shippingAddress: { name: input.details.contact.name, phone: input.details.contact.phone, address: input.details.shipping },
+        } : {}),
         status: "requested",
         fulfillmentStatus: "new",
-        customerName: input.name,
-        customerEmail: input.email,
-        customerPhone: input.phone,
+        customerName: input.details?.contact.name ?? input.name,
+        customerEmail: input.details?.contact.email ?? input.email,
+        customerPhone: input.details?.contact.phone ?? input.phone,
         customerNote: input.note,
         items,
         totalBani,
@@ -164,25 +172,24 @@ export async function createProductionRequest(
 export async function generateProductionPayment(
   orderID: number,
   quote: { unitPrices: unknown; shipping: unknown },
-  stripe: Stripe = stripeClient(),
+  stripe?: Stripe,
   cmsArg?: Payload,
 ) {
-  if (!checkoutConfigured())
-    throw new CommerceError(
-      "Configurează Stripe și transportul înainte de generarea linkului.",
-      503,
-    );
   const cms = cmsArg ?? (await getCMS());
   let order = await cms.findByID({
     collection: "orders",
     id: orderID,
     depth: 0,
   });
+  const cod = order.paymentMethod === "cod";
+  if (!(cod ? ordersConfigured() : checkoutConfigured())) throw new CommerceError("Configurează metoda de plată și transportul înainte de confirmare.", 503);
+  if (!cod) stripe ??= stripeClient();
   if (order.orderType !== "production")
     throw new CommerceError("Această comandă nu este la cerere.", 409);
+  if (order.status === "cod_pending" && cod) return { reference: order.reference };
   // A live link is reused. Never create a second payable session alongside it.
   if (order.stripeSessionId && order.status === "pending") {
-    const session = await stripe.checkout.sessions.retrieve(
+    const session = await stripe!.checkout.sessions.retrieve(
       order.stripeSessionId,
     );
     if (session.status === "open" && session.url) return { url: session.url };
@@ -199,7 +206,7 @@ export async function generateProductionPayment(
     });
     if (current.status === "paid")
       throw new CommerceError("Comanda este deja plătită.", 409);
-    if (current.status === "pending") return current; // Another administrator/retry already froze this quote.
+    if (current.status === "pending" || (cod && current.status === "cod_pending")) return current; // Another administrator/retry already froze this quote.
     if (!["requested", "expired", "failed"].includes(current.status))
       throw new CommerceError("Stare comandă invalidă.", 409);
     if (
@@ -244,15 +251,16 @@ export async function generateProductionPayment(
         items,
         shippingBani,
         totalBani,
-        status: "pending",
+        status: cod ? "cod_pending" : "pending",
         paymentAttempt: (current.paymentAttempt ?? 0) + 1,
         stripeSessionId: null,
         paymentUrl: null,
-        expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString(),
+        expiresAt: cod ? null : new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString(),
       },
     });
   });
-  const session = await sessionForOrder(order, stripe, cms);
+  if (cod) return { reference: order.reference };
+  const session = await sessionForOrder(order, stripe!, cms);
   if (!session.url || session.status !== "open") {
     await applySession(session, cms);
     throw new CommerceError(

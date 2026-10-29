@@ -31,8 +31,10 @@ Catalogul de cafea include pagini individuale de produs, fotografii, gramaje, no
 
 Coșul păstrează selecția între pagini și permite modificarea cantităților și eliminarea produselor. Magazinul are două fluxuri de comandă:
 
-- **Produse disponibile:** plată prin Stripe Checkout, cu rezervarea stocului și actualizarea lui după confirmarea plății.
-- **Comenzi la cerere:** solicitare înregistrată în dashboard, confirmare telefonică și link de plată generat de administrator. Coșurile care includ produse fără stoc sau fără preț confirmat urmează integral acest flux.
+- **Produse disponibile:** card prin Stripe Checkout sau ramburs. Cardul rezervă stocul până la plată; rambursul scade stocul la înregistrarea comenzii.
+- **Comenzi la cerere:** solicitare înregistrată în dashboard, confirmare telefonică, apoi link pentru card sau confirmarea totalului ramburs. Coșurile care includ produse fără stoc sau fără preț confirmat urmează integral acest flux.
+
+Finalizarea comenzii permite facturare pe persoană fizică sau juridică, cu sediul firmei separat de adresa de livrare. Datele de facturare sunt disponibile în dashboard.
 
 Plățile sunt procesate idempotent, iar rezervările și actualizările stocului sunt protejate prin tranzacții și constrângeri în PostgreSQL. Comenzile la cerere nu afectează stocul fizic și pot fi trecute în pregătire după confirmarea plății.
 

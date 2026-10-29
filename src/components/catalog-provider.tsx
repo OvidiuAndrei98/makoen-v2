@@ -6,6 +6,7 @@ type Catalog = {
   products: CoffeeProduct[];
   managed: boolean;
   checkout: boolean;
+  cod: boolean;
   shippingBani: number | null;
   ready: boolean;
   unavailable: boolean;
@@ -27,6 +28,7 @@ export default function CatalogProvider({
     products: [],
     managed: false,
     checkout: false,
+    cod: false,
     shippingBani: null,
     ready: false,
     unavailable: false,
@@ -47,6 +49,7 @@ export default function CatalogProvider({
           setCatalog((previous) => ({
             ...previous,
             checkout: false,
+            cod: false,
             ready: true,
             unavailable: true,
           }));

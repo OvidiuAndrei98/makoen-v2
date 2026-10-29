@@ -2,8 +2,8 @@
  * bump the terms version when publishing a materially revised document.
  */
 export const legal = {
-  version: "2026-10-05",
-  updated: "5 octombrie 2026",
+  version: "2026-10-29",
+  updated: "29 octombrie 2026",
   draft: true,
   company: { name: "", cui: "", registration: "", address: "" },
   email: "info@makeon.ro",

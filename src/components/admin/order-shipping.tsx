@@ -88,9 +88,9 @@ export default function OrderShipping({ order }: { order: Order }) {
           <button type="button" className="btn btn--style-secondary" disabled={busy || !recovery.trim()} onClick={() => void mutate({ action: "attach", number: recovery.trim() })}>Asociază AWB existent</button>
         </div>}
       </>}
-      {!loading && order.status !== "paid" && !shipment && <p>AWB-ul poate fi emis după confirmarea plății.</p>}
+      {!loading && !["paid", "cod_pending"].includes(order.status) && !shipment && <p>AWB-ul poate fi emis după confirmarea plății cu cardul sau a comenzii ramburs.</p>}
       {!loading && options && (!shipment || shipment.state === "rejected") && <>
-        <p>Livrare la adresă în România, un colet, fără ramburs. Verifică destinatarul și greutatea coletului ambalat.</p>
+        <p>Livrare la adresă în România, un colet. {order.paymentMethod === "cod" && order.status === "cod_pending" ? `Ramburs de încasat: ${(order.totalBani / 100).toFixed(2)} RON (produse + transport).` : "Plată încasată, fără ramburs."} Verifică destinatarul și greutatea coletului ambalat.</p>
         {options.environment === "sandbox" && <p><strong>Mediu de test — AWB fără livrare reală.</strong></p>}
         <fieldset disabled={busy} className="makeon-shipping-fields">
           <legend className="makeon-shipping-legend">Date pentru AWB</legend>

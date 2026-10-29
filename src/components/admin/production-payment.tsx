@@ -15,10 +15,10 @@ export default function ProductionPayment({ order }: { order: Order }) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const locked = order.status === "pending";
-  if (order.status === "paid")
+  if (["paid", "cod_pending", "cancelled"].includes(order.status))
     return (
       <section className="makeon-order-panel">
-        <strong>Plată confirmată. Poți începe pregătirea comenzii.</strong>
+        <strong>{order.status === "cancelled" ? "Comandă anulată." : order.status === "cod_pending" ? "Comandă ramburs confirmată. Poți începe pregătirea; plata se încasează la livrare." : "Plată confirmată. Poți începe pregătirea comenzii."}</strong>
       </section>
     );
   return (
@@ -26,7 +26,7 @@ export default function ProductionPayment({ order }: { order: Order }) {
       <h3>Confirmare telefonică și plată</h3>
       <p>
         Contactează clientul, confirmă termenul și completează prețurile
-        agreate. Linkul se transmite clientului după generare.
+        agreate. {order.paymentMethod === "cod" ? "Confirmarea comenzii stabilește suma de încasat la livrare." : "Linkul se transmite clientului după generare."}
       </p>
       {order.customerNote && (
         <p>
@@ -92,9 +92,9 @@ export default function ProductionPayment({ order }: { order: Order }) {
               }),
             });
             const result = await response.json();
-            if (!response.ok || !result.url)
+            if (!response.ok || (!result.url && !result.reference))
               throw new Error(result.error || "Linkul nu a putut fi generat.");
-            setUrl(result.url);
+            setUrl(result.url || "");
             window.location.reload();
           } catch (err) {
             setError(err instanceof Error ? err.message : "Reîncearcă.");
@@ -107,7 +107,7 @@ export default function ProductionPayment({ order }: { order: Order }) {
           ? "Se generează…"
           : locked
             ? "Verifică / recuperează linkul"
-            : "Generează link de plată"}
+            : order.paymentMethod === "cod" ? "Confirmă comanda ramburs" : "Generează link de plată"}
       </button>
       {url && (
         <div className="production-payment-link">

@@ -70,6 +70,12 @@ before(async () => {
   process.env.STRIPE_SECRET_KEY = 'sk_test_local_mock'; process.env.STRIPE_WEBHOOK_SECRET = 'whsec_local_mock';
   process.env.APP_URL = 'http://localhost:3000'; process.env.SHIPPING_PRICE_BANI = '2000';
   Object.assign(process.env, { NODE_ENV: 'development' });
+  // Remove SQL-only fixtures before Payload schema push on this disposable DB.
+  // The URL above is fixed to localhost/makeon_test; no shared DB is touched.
+  const { Pool } = await import('pg');
+  const cleanup = new Pool({connectionString:process.env.DATABASE_URL});
+  await cleanup.query('DROP TABLE IF EXISTS public.order_shipments; DROP TABLE IF EXISTS public.order_status_emails');
+  await cleanup.end();
   const { getPayload } = await import('payload');
   const { default: config } = await import('../../src/payload.config');
   cms = await getPayload({ config });
@@ -451,4 +457,99 @@ test('production payment-link endpoint requires an authenticated administrator',
   const {POST}=await import('../../src/app/api/orders/payment-link/route');
   const response=await POST(new Request('http://localhost:3000/api/orders/payment-link',{method:'POST',headers:{origin:'http://localhost:3000','Content-Type':'application/json'},body:JSON.stringify({orderID:1,unitPrices:[0.01],shipping:0})}));
   assert.equal(response.status,401);
+});
+
+const checkoutDetails = (paymentMethod: 'card' | 'cod' = 'cod') => ({
+  paymentMethod,
+  contact: { name: 'Client Test', email: 'client@example.test', phone: '0712345678' },
+  shipping: { line1: 'Strada Test 10', city: 'Cluj-Napoca', state: 'Cluj', postal_code: '400001', country: 'RO' as const },
+  billing: { type: 'company' as const, companyName: 'Firma Test SRL', taxId: 'RO12345678', registrationNumber: 'J12/123/2020', address: 'Strada Sediului 5, Cluj-Napoca, Cluj' },
+});
+
+test('COD is atomic and retryable without Stripe; company billing is immutable and distinct from shipping', async () => {
+  const p = await product(2), key = randomUUID(), details = checkoutDetails();
+  const lines = [{ slug: p.slug, grind: 'Boabe', quantity: 1 }];
+  const beforeCreates = creates;
+  const outcomes = await Promise.all([
+    commerce.createCheckout(lines, key, fakeStripe, cms, legal.version, details),
+    commerce.createCheckout(lines, key, fakeStripe, cms, legal.version, details),
+  ]);
+  assert.deepEqual(outcomes[0], outcomes[1]);
+  assert.equal(creates, beforeCreates);
+  const order = (await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  assert.equal(order.status,'cod_pending'); assert.equal(order.paymentMethod,'cod');
+  assert.equal(order.totalBani,6999); assert.equal(order.stripeSessionId,null);
+  const { parseCheckoutDetails } = await import('../../src/lib/checkout-details');
+  assert.deepEqual(parseCheckoutDetails(order.checkoutDetails),details);
+  const stock = await cms.findByID({collection:'products',id:p.id});
+  assert.equal(stock.stock,1); assert.equal(stock.reserved,0);
+  await assert.rejects(commerce.createCheckout(lines,key,fakeStripe,cms,legal.version,{...details,paymentMethod:'card'}));
+  await assert.rejects(commerce.createCheckout(lines,key,fakeStripe,cms,legal.version,{...details,contact:{...details.contact,name:'Alt client'}}));
+  await assert.rejects(commerce.createCheckout([{...lines[0],quantity:2}],randomUUID(),fakeStripe,cms,legal.version,details));
+});
+
+test('card checkout preserves the company snapshot after Stripe payment and settles stock once', async () => {
+  const p = await product(3), key = randomUUID(), details = checkoutDetails('card');
+  const lines = [{slug:p.slug,grind:'Boabe',quantity:1}];
+  await commerce.createCheckout(lines,key,fakeStripe,cms,legal.version,details);
+  await commerce.createCheckout(lines,key,fakeStripe,cms,legal.version,details);
+  const session = keys.get(`MK-${key}`)!;
+  const paid = {...session,status:'complete',payment_status:'paid',customer_details:{name:'Cardholder',email:'other@example.test',phone:null}} as Stripe.Checkout.Session;
+  await commerce.applySession(paid,cms); await commerce.applySession(paid,cms);
+  const saved = (await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  assert.equal(saved.customerName,details.contact.name); assert.equal(saved.customerEmail,details.contact.email);
+  assert.equal(saved.status,'paid');
+  const {parseCheckoutDetails} = await import('../../src/lib/checkout-details');
+  assert.deepEqual(parseCheckoutDetails(saved.checkoutDetails),details);
+  const stock = await cms.findByID({collection:'products',id:p.id});
+  assert.equal(stock.stock,2); assert.equal(stock.reserved,0);
+});
+
+test('COD cancellation restores stock once; only delivered orders can be marked collected', async () => {
+  const adapter = cms.db as unknown as PostgresAdapter;
+  await adapter.drizzle.execute(sql`CREATE TABLE IF NOT EXISTS order_shipments (order_id integer PRIMARY KEY, state text)`);
+  const {updateCashOnDelivery} = await import('../../src/lib/cod-orders');
+  const p = await product(3), key=randomUUID();
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:2}],key,fakeStripe,cms,legal.version,checkoutDetails());
+  const order=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  await assert.rejects(updateCashOnDelivery(cms,order.id,'collect'));
+  await Promise.all([updateCashOnDelivery(cms,order.id,'cancel'),updateCashOnDelivery(cms,order.id,'cancel')]);
+  assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,3);
+  const key2=randomUUID();
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key2,fakeStripe,cms,legal.version,checkoutDetails());
+  const delivered=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key2}`}}})).docs[0];
+  await adapter.drizzle.execute(sql`INSERT INTO order_shipments VALUES (${delivered.id},'created')`);
+  await assert.rejects(updateCashOnDelivery(cms,delivered.id,'cancel'));
+  await cms.update({collection:'orders',id:delivered.id,data:{fulfillmentStatus:'delivered'}});
+  await updateCashOnDelivery(cms,delivered.id,'collect'); await updateCashOnDelivery(cms,delivered.id,'collect');
+  const saved=await cms.findByID({collection:'orders',id:delivered.id});
+  assert.equal(saved.status,'paid'); assert.ok(saved.codCollectedAt);
+  assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,2);
+});
+
+test('production COD confirms the quote without Stripe or deductions from physical stock', async () => {
+  const {createProductionRequest,generateProductionPayment} = await import('../../src/lib/production-orders');
+  const p=await product(0), key=randomUUID(), details=checkoutDetails();
+  const input={key,name:details.contact.name,email:details.contact.email,phone:details.contact.phone,note:'',lines:[{slug:p.slug,grind:'Boabe',quantity:2}],details,legalVersion:legal.version};
+  await createProductionRequest(input,cms);
+  const order=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  const beforeCreates=creates;
+  const result=await generateProductionPayment(order.id,{unitPrices:[50],shipping:20},fakeStripe,cms);
+  assert.equal(result.reference,order.reference);
+  await generateProductionPayment(order.id,{unitPrices:[1],shipping:0},fakeStripe,cms);
+  const saved=await cms.findByID({collection:'orders',id:order.id});
+  assert.equal(saved.status,'cod_pending');assert.equal(saved.totalBani,12000);assert.equal(saved.stripeSessionId,null);
+  assert.equal(creates,beforeCreates); assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,0);
+  await cms.update({collection:'orders',id:order.id,data:{fulfillmentStatus:'processing'}});
+});
+
+test('stock COD is available without Stripe credentials and does not depend on online payment configuration', async () => {
+  const secret=process.env.STRIPE_SECRET_KEY, webhook=process.env.STRIPE_WEBHOOK_SECRET;
+  const p=await product(1),key=randomUUID();
+  try {
+    delete process.env.STRIPE_SECRET_KEY; delete process.env.STRIPE_WEBHOOK_SECRET;
+    const result=await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,undefined,cms,legal.version,checkoutDetails());
+    assert.equal(result.paymentMethod,'cod');
+    assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,0);
+  } finally { process.env.STRIPE_SECRET_KEY=secret;process.env.STRIPE_WEBHOOK_SECRET=webhook; }
 });

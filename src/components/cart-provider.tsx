@@ -24,8 +24,6 @@ import { useCatalog } from "./catalog-provider";
 import CoffeePack from "./coffee-pack";
 import useDialogMotion from "./use-dialog-motion";
 import ProductionRequestForm from "./production-request-form";
-import OrderLegalAcknowledgement from "./order-legal-acknowledgement";
-import { legal } from "@/lib/legal";
 import { packageLabel } from "@/lib/product-format";
 
 /** Persist selections only; the server resolves current prices and reserves inventory. */
@@ -35,7 +33,7 @@ type CartContextValue = {
   add: (slug: string, grind: string, quantity?: number) => void;
   open: () => void;
   count: number;
-  clear: () => void;
+  clear: (snapshot?: string) => void;
 };
 const CartContext = createContext<CartContextValue | null>(null);
 const storageKey = "makeon-coffee-cart-v1";
@@ -69,15 +67,9 @@ export default function CartProvider({
     (slug: string) => catalog.products.find((p) => p.slug === slug),
     [catalog.products],
   );
-  const [paying, setPaying] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [paymentError, setPaymentError] = useState("");
-  // Network retries retain the key for this cart; a changed cart receives a new key.
-  const checkoutKey = useRef<{ fingerprint: string; key: string } | null>(null);
   const [items, setItems] = useState<CartLine[]>([]),
     [loaded, setLoaded] = useState(false),
     [opened, setOpened] = useState(false);
-  useEffect(() => setTermsAccepted(false), [items, opened]);
   const [notice, setNotice] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
   useDialogMotion(dialog, opened, "cart");
@@ -158,10 +150,9 @@ export default function CartProvider({
     (sum, i) => sum + (productBySlug(i.slug)?.price ?? 0) * i.quantity,
     0,
   );
-  // UI hint only: the server performs the atomic stock check. An existing retry
-  // may already hold this cart's reservation, reducing the reported public stock.
+  // UI hint only: the server performs the atomic stock check.
   const canPay =
-    catalog.checkout &&
+    (catalog.checkout || catalog.cod) &&
     completePrices &&
     items.every((i) => {
       const p = productBySlug(i.slug);
@@ -169,7 +160,6 @@ export default function CartProvider({
         .filter((line) => line.slug === i.slug)
         .reduce((sum, line) => sum + line.quantity, 0);
       return (
-        checkoutKey.current?.fingerprint === JSON.stringify(items) ||
         (p?.stock != null && p.stock >= quantity)
       );
     });
@@ -183,42 +173,7 @@ export default function CartProvider({
         .filter((item) => item.slug === line.slug)
         .reduce((sum, item) => sum + item.quantity, 0);
       return p && (p.price == null || (p.stock != null && p.stock < requested));
-    }) &&
-    checkoutKey.current?.fingerprint !== JSON.stringify(items);
-  async function pay() {
-    if (paying || !canPay || !termsAccepted) return;
-    setPaying(true);
-    setPaymentError("");
-    const fingerprint = JSON.stringify(items);
-    if (!checkoutKey.current || checkoutKey.current.fingerprint !== fingerprint)
-      checkoutKey.current = { fingerprint, key: crypto.randomUUID() };
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          key: checkoutKey.current.key,
-          termsAccepted,
-          legalVersion: legal.version,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        if (response.status === 409) checkoutKey.current = null;
-        throw new Error(data.error || "Nu am putut deschide plata.");
-      }
-      sessionStorage.setItem("makeon-checkout-cart", fingerprint);
-      sessionStorage.setItem("makeon-checkout-key", checkoutKey.current.key);
-      window.location.assign(data.url);
-    } catch (error) {
-      setPaymentError(
-        error instanceof Error ? error.message : "Reîncearcă plata.",
-      );
-      catalog.refresh();
-      setPaying(false);
-    }
-  }
+    });
   const changeQuantity = (line: CartLine, value: number) =>
     setItems((previous) =>
       previous.map((i) =>
@@ -237,7 +192,7 @@ export default function CartProvider({
         items,
         add,
         count,
-        clear: () => setItems([]),
+        clear: (snapshot) => setItems(previous => !snapshot || JSON.stringify(previous) === snapshot ? [] : previous),
         open: () => {
           setOpened(true);
         },
@@ -415,7 +370,7 @@ export default function CartProvider({
                 <p>
                   {needsRequest
                     ? "Preț estimativ. Confirmăm telefonic totalul, transportul și termenul înainte de plată."
-                    : catalog.checkout && completePrices
+                    : (catalog.checkout || catalog.cod) && completePrices
                       ? `Transport: ${money((catalog.shippingBani ?? 0) / 100)}. Total: ${money(total + (catalog.shippingBani ?? 0) / 100)}.`
                       : completePrices
                         ? "Livrarea și disponibilitatea se confirmă la comandă."
@@ -432,22 +387,10 @@ export default function CartProvider({
                       catalog.refresh();
                     }}
                   />
-                ) : catalog.checkout && completePrices ? (
-                  <>
-                    <OrderLegalAcknowledgement
-                      checked={termsAccepted}
-                      onChange={setTermsAccepted}
-                      disabled={paying}
-                    />
-                    <button
-                      className="primary-button cart-phone"
-                      disabled={!canPay || paying || !termsAccepted}
-                      onClick={pay}
-                    >
-                      {paying ? "Deschidem plata…" : "Plătește prin Stripe"}
-                      <ArrowUpRight size={18} />
-                    </button>
-                  </>
+                ) : (catalog.checkout || catalog.cod) && completePrices ? (
+                  <Link className="primary-button cart-phone" href="/finalizare-comanda" onClick={() => setOpened(false)} aria-disabled={!canPay}>
+                    Continuă comanda <ArrowUpRight size={18} />
+                  </Link>
                 ) : (
                   <a
                     className="primary-button cart-phone"
@@ -459,23 +402,18 @@ export default function CartProvider({
                   </a>
                 )}
                 {!needsRequest &&
-                  catalog.checkout &&
+                  (catalog.checkout || catalog.cod) &&
                   completePrices &&
                   !canPay && (
                     <p className="checkout-error">
                       Verifică disponibilitatea și cantitățile din coș.
                     </p>
                   )}
-                {paymentError && (
-                  <p className="checkout-error" role="alert">
-                    {paymentError}
-                  </p>
-                )}
                 <span className="cart-summary-note">
                   {needsRequest
-                    ? "Plata se face prin link după confirmarea telefonică."
-                    : catalog.checkout && completePrices
-                      ? "Plata este procesată securizat de Stripe."
+                    ? "Card sau ramburs, după confirmarea telefonică."
+                    : (catalog.checkout || catalog.cod) && completePrices
+                      ? catalog.checkout && catalog.cod ? "Alegi plata cu cardul sau ramburs la finalizarea comenzii." : catalog.checkout ? "Plată online cu cardul la finalizarea comenzii." : "Plată ramburs, la livrare."
                       : "+40 744 524 728 · Nicio comandă nu este trimisă automat."}
                 </span>
               </div>

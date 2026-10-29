@@ -305,14 +305,16 @@ export const Orders: CollectionConfig = {
     ],
     beforeValidate: [
       ({ data, originalDoc }) => {
+        if (originalDoc?.status === "cancelled" && data?.fulfillmentStatus && data.fulfillmentStatus !== originalDoc.fulfillmentStatus)
+          throw new Error("O comandă anulată nu poate fi pregătită sau expediată.");
         if (
           originalDoc?.orderType === "production" &&
           data?.fulfillmentStatus &&
           data.fulfillmentStatus !== "new" &&
-          originalDoc.status !== "paid"
+          !["paid", "cod_pending"].includes(originalDoc.status)
         ) {
           throw new Error(
-            "Comanda la cerere poate fi pregătită numai după confirmarea plății.",
+            "Comanda la cerere poate fi pregătită după confirmarea plății sau a comenzii ramburs.",
           );
         }
         return data;
@@ -353,12 +355,17 @@ export const Orders: CollectionConfig = {
         { value: "requested", label: "De confirmat telefonic" },
         { value: "pending", label: "În așteptarea plății" },
         { value: "paid", label: "Plătită" },
+        { value: "cod_pending", label: "Ramburs de încasat" },
+        { value: "cancelled", label: "Anulată" },
         { value: "expired", label: "Expirată" },
         { value: "failed", label: "Eșuată" },
       ],
     },
     { name: "stripeSessionId", type: "text", unique: true, index: true },
     { name: "paymentIntentId", type: "text" },
+    { name: "paymentMethod", label: "Metodă de plată", type: "select", defaultValue: "card", options: [{ value: "card", label: "Card online" }, { value: "cod", label: "Ramburs" }] },
+    { name: "checkoutDetails", label: "Date de livrare și facturare", type: "json" },
+    { name: "codCollectedAt", label: "Încasarea rambursului confirmată", type: "date" },
     { name: "expiresAt", type: "date" },
     { name: "customerEmail", label: "Email client", type: "email" },
     { name: "customerName", label: "Nume client", type: "text" },
@@ -421,7 +428,7 @@ export const Orders: CollectionConfig = {
 };
 
 // Fulfillment is the only editable order state in the admin. Payment status,
-// customer details, items and amounts belong to the server-side Stripe snapshot.
+// customer details, items and amounts belong to the server-side checkout snapshot.
 // Field access enforces this for API requests; hiding inputs alone is insufficient.
 Orders.fields = [
   {

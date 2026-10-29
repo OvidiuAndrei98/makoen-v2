@@ -4,16 +4,23 @@ export function cmsConfigured() {
   );
 }
 
+export function ordersConfigured() {
+  const shipping = Number(process.env.SHIPPING_PRICE_BANI);
+  return (
+    cmsConfigured() && Boolean(process.env.APP_URL) &&
+    /^\d+$/.test(process.env.SHIPPING_PRICE_BANI ?? "") &&
+    Number.isSafeInteger(shipping) && shipping >= 0 && shipping <= 99999999
+  );
+}
+
 /** Fail closed unless payments, signed webhooks and an explicit shipping amount are configured. */
 export function checkoutConfigured() {
   return (
-    cmsConfigured() &&
+    ordersConfigured() &&
     Boolean(
       process.env.STRIPE_SECRET_KEY &&
-      process.env.STRIPE_WEBHOOK_SECRET &&
-      process.env.APP_URL,
-    ) &&
-    /^\d+$/.test(process.env.SHIPPING_PRICE_BANI ?? "")
+      process.env.STRIPE_WEBHOOK_SECRET,
+    )
   );
 }
 

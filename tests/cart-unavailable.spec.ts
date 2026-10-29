@@ -21,11 +21,11 @@ for (const width of [320, 518, 1440]) {
       const copy = el.querySelector(".cart-line-copy")!;
       return copy.getBoundingClientRect().width > el.clientWidth * .9 && el.scrollWidth <= el.clientWidth;
     })).toBe(true);
-    await expect(cart.getByRole("button", { name: "Plătește prin Stripe" })).toHaveCount(0);
+    await expect(cart.getByRole("link", { name: "Continuă comanda" })).toHaveCount(0);
     await expect(cart.locator(".production-request-form")).toHaveCount(0);
     await cart.getByRole("button", { name: "Elimină din coș", exact: true }).click();
     await expect(row).toHaveCount(0);
-    await expect(cart.getByRole("button", { name: "Plătește prin Stripe" })).toBeVisible();
+    await expect(cart.getByRole("link", { name: "Continuă comanda" })).toBeVisible();
     await expect(cart.locator(".cart-summary-total")).toContainText("50,00");
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("makeon-coffee-cart-v1")!).length)).toBe(1);
   });

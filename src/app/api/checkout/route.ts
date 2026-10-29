@@ -1,13 +1,17 @@
+import { createHash } from "node:crypto";
 import { createCheckout, parseLines, CommerceError } from "@/lib/commerce";
-import { checkoutConfigured } from "@/lib/commerce-env";
+import { ordersConfigured } from "@/lib/commerce-env";
+import { parseCheckoutDetails } from "@/lib/checkout-details";
 import { requireLegalAcceptance } from "@/lib/commerce-validation";
 
 export const runtime = "nodejs";
+// Best-effort per-instance abuse control; retries of one key do not create new orders.
+const attempts = new Map<string, { keys: Set<string>; expires: number }>();
 /** Validate browser input; the commerce service owns pricing and inventory locks. */
 export async function POST(request: Request) {
-  if (!checkoutConfigured())
+  if (!ordersConfigured())
     return Response.json(
-      { error: "Plata online nu este încă disponibilă." },
+      { error: "Comenzile nu sunt disponibile momentan." },
       { status: 503 },
     );
   const origin = request.headers.get("origin");
@@ -25,6 +29,14 @@ export async function POST(request: Request) {
       )
     )
       throw new CommerceError("Identificator de plată invalid.");
+    const details = parseCheckoutDetails(body.details);
+    const now = Date.now();
+    for (const [key, entry] of attempts) if (entry.expires <= now) attempts.delete(key);
+    const ip = createHash("sha256").update(request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown").digest("hex");
+    const entry = attempts.get(ip) ?? { keys: new Set<string>(), expires: now + 10 * 60000 };
+    if (!entry.keys.has(body.key) && entry.keys.size >= 10) throw new CommerceError("Prea multe comenzi. Încearcă din nou în câteva minute.", 429);
+    if (attempts.size >= 5000) attempts.delete(attempts.keys().next().value!);
+    entry.keys.add(body.key); attempts.set(ip, entry);
     return Response.json(
       await createCheckout(
         parseLines(body),
@@ -32,6 +44,7 @@ export async function POST(request: Request) {
         undefined,
         undefined,
         legalVersion,
+        details,
       ),
     );
   } catch (error) {

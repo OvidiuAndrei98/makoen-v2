@@ -9,6 +9,8 @@ import * as migration_20261007_132345 from './20261007_132345';
 import * as migration_20261011_120000_order_status_emails from './20261011_120000_order_status_emails';
 import * as migration_20261022_120000_sameday_shipments from './20261022_120000_sameday_shipments';
 
+import * as migration_20261029_120000_payment_methods from './20261029_120000_payment_methods';
+
 export const migrations = [
   {
     up: migration_20261002_120914_initial.up,
@@ -60,4 +62,5 @@ export const migrations = [
     down: migration_20261022_120000_sameday_shipments.down,
     name: '20261022_120000_sameday_shipments',
   },
+  { up: migration_20261029_120000_payment_methods.up, down: migration_20261029_120000_payment_methods.down, name: '20261029_120000_payment_methods' },
 ];

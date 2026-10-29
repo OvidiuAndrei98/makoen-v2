@@ -113,3 +113,13 @@ test("durable claims prevent duplicate AWBs across concurrent requests and uncer
     await admin.end();
   }
 });
+
+test('COD AWBs collect products plus shipping in RON and do not mark the order paid', () => {
+  const cod = {...order,paymentMethod:'cod' as const,status:'cod_pending' as const,totalBani:12345};
+  const body = shipmentBody(cod, shippingInput(input));
+  assert.equal(body.cashOnDelivery,123.45);
+  assert.equal(samedayForm(body).get('cashOnDelivery'),'123.45');
+  assert.equal(cod.status,'cod_pending');
+  assert.equal(shipmentBody({...cod,status:'paid'},shippingInput(input)).cashOnDelivery,0);
+  assert.throws(()=>shipmentBody({...cod,status:'cancelled'},shippingInput(input)));
+});

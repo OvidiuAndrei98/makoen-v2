@@ -226,7 +226,7 @@ export interface Product {
 export interface Order {
   id: number;
   /**
-   * Alege etapa comenzii și apasă Salvează. Statusul plății este actualizat automat.
+   * Alege etapa și apasă Salvează. La schimbarea statusului, clientul este notificat prin email. Verifică rezultatul în Notificări client.
    */
   fulfillmentStatus: 'new' | 'processing' | 'shipped' | 'delivered';
   orderType?: ('stock' | 'production') | null;
@@ -237,9 +237,20 @@ export interface Order {
   legalVersion?: string | null;
   legalAcceptedAt?: string | null;
   reference: string;
-  status: 'requested' | 'pending' | 'paid' | 'expired' | 'failed';
+  status: 'requested' | 'pending' | 'paid' | 'cod_pending' | 'cancelled' | 'expired' | 'failed';
   stripeSessionId?: string | null;
   paymentIntentId?: string | null;
+  paymentMethod?: ('card' | 'cod') | null;
+  checkoutDetails?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  codCollectedAt?: string | null;
   expiresAt?: string | null;
   customerEmail?: string | null;
   customerName?: string | null;
@@ -458,6 +469,9 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   stripeSessionId?: T;
   paymentIntentId?: T;
+  paymentMethod?: T;
+  checkoutDetails?: T;
+  codCollectedAt?: T;
   expiresAt?: T;
   customerEmail?: T;
   customerName?: T;

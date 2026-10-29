@@ -5,6 +5,8 @@ import { MapPin, Package, UserRound, CreditCard } from "lucide-react";
 import type { Order } from "@/payload-types";
 import ProductionPayment from "./production-payment";
 import OrderStatusNotifications from "./order-status-notifications";
+import CodPayment from "./cod-payment";
+import type { CheckoutDetails } from "@/lib/checkout-details";
 import OrderShipping from "./order-shipping";
 
 const paymentLabels = {
@@ -13,6 +15,8 @@ const paymentLabels = {
   paid: "Plătită",
   expired: "Expirată",
   failed: "Eșuată",
+  cod_pending: "Ramburs de încasat",
+  cancelled: "Anulată",
 };
 const string = (value: unknown) =>
   typeof value === "string" ? value.trim() : "";
@@ -27,6 +31,7 @@ export function OrderSummary() {
       style: "currency",
       currency: order.currency || "RON",
     }).format(amount / 100);
+  const details = order.checkoutDetails as CheckoutDetails | null;
   const shipping = order.shippingAddress;
   const recipient =
     shipping && typeof shipping === "object" && !Array.isArray(shipping)
@@ -81,6 +86,19 @@ export function OrderSummary() {
           {order.legalAcceptedAt && <p>Termeni acceptați: versiunea {order.legalVersion}, {new Intl.DateTimeFormat("ro-RO", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Bucharest" }).format(new Date(order.legalAcceptedAt))}.</p>}
         </div>
       </section>
+      <section className="makeon-order-panel">
+        <h3>Plată și facturare</h3>
+        <p>Metodă de plată: <strong>{order.paymentMethod === "cod" ? "Ramburs" : "Card online"}</strong></p>
+        {details?.billing && <>
+          <p>{details.billing.type === "company" ? "Persoană juridică" : "Persoană fizică"}</p>
+          <strong>{details.billing.companyName || order.customerName}</strong>
+          {details.billing.taxId && <p>CUI / CIF: {details.billing.taxId}</p>}
+          {details.billing.registrationNumber && <p>Nr. Registrul Comerțului: {details.billing.registrationNumber}</p>}
+          <p>{details.billing.address}</p>
+        </>}
+        {order.codCollectedAt && <p>Încasare ramburs confirmată: {new Date(order.codCollectedAt).toLocaleString("ro-RO", { timeZone: "Europe/Bucharest" })}</p>}
+      </section>
+      <CodPayment order={order} />
       <OrderStatusNotifications orderID={order.id} updatedAt={order.updatedAt} />
       <OrderShipping key={`${order.id}-${order.updatedAt}`} order={order} />
       {order.orderType === "production" && (

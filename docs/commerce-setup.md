@@ -44,11 +44,13 @@ La stoc disponibil zero, produsul rămâne vizibil și poate fi comandat **la ce
 1. Deschide comanda marcată **La cerere / producție**, cu statusul plății **De confirmat telefonic**.
 2. Contactează clientul folosind telefonul din comandă. Confirmă produsele, prețul, transportul și termenul de pregătire.
 3. În panoul **Confirmare telefonică și plată**, completează prețul unitar al fiecărui produs și transportul în lei. Prețurile inițiale sunt estimative; produsele fără preț necesită completare.
-4. Apasă **Generează link de plată**. Copiază linkul și transmite-l clientului pe canalul agreat. Linkul nu este trimis automat prin e-mail.
+4. Pentru card, apasă **Generează link de plată**. Copiază linkul și transmite-l clientului pe canalul agreat. Linkul nu este trimis automat prin e-mail.
 5. Cât timp linkul este activ, prețurile sunt blocate și generările repetate folosesc același link. Valabilitatea este afișată în panou, aproximativ 23 de ore. După expirare, reîncarcă/verifică linkul, apoi generează unul nou.
 6. După confirmarea Stripe, statusul plății devine **Plătită**. Poți trece comanda în **În pregătire** și începe producția.
 
-Comenzile la cerere nu rezervă și nu scad stocul fizic existent, inclusiv pentru un coș mixt: reprezintă produse pregătite după confirmare și plată. Nu le trata ca livrări automate din stoc. Sistemul blochează trecerea în pregătire/expediere/livrare înainte de plată. Dacă generarea linkului întâmpină o eroare, reîncearcă fără a schimba prețurile; aceeași încercare este recuperată.
+Pentru ramburs, apasă **Confirmă comanda ramburs** după stabilirea prețurilor și transportului. Totalul se fixează și statusul devine **Ramburs de încasat**; nu se generează link Stripe.
+
+Comenzile la cerere nu rezervă și nu scad stocul fizic existent, inclusiv pentru un coș mixt: reprezintă produse pregătite după confirmare. Nu le trata ca livrări automate din stoc. Pregătirea este permisă după plata cu cardul confirmată sau după confirmarea comenzii ramburs. Dacă generarea linkului întâmpină o eroare, reîncearcă fără a schimba prețurile; aceeași încercare este recuperată.
 
 ## Încărcarea fotografiilor
 
@@ -66,17 +68,17 @@ Deschide **Comenzi** și selectează o comandă. Pagina afișează clientul, dat
 
 Există două statusuri diferite:
 
-- **Status plată** se actualizează automat: De confirmat telefonic (comenzi la cerere), În așteptarea plății, Plătită, Expirată sau Eșuată. Nu poate fi modificat manual.
+- **Status plată** este gestionat de sistem: De confirmat telefonic (comenzi la cerere), În așteptarea plății, Ramburs de încasat, Plătită, Anulată, Expirată sau Eșuată. Pentru ramburs există acțiuni dedicate de confirmare și anulare; câmpul nu se editează direct.
 - **Status comandă** se modifică de tine: Nouă → În pregătire → Expediată → Livrată. Selectează etapa potrivită și apasă **Salvează**.
 
 Pentru o comandă obișnuită:
 
-1. Verifică dacă statusul plății este **Plătită**.
+1. Verifică dacă statusul plății este **Plătită** (card) sau **Ramburs de încasat** (ramburs).
 2. Verifică produsele și adresa, apoi trece comanda în **În pregătire**.
 3. După predarea coletului curierului, selectează **Expediată**.
 4. După confirmarea livrării, selectează **Livrată**.
 
-Nu expedia o comandă doar pentru că apare în listă: poate fi încă neplătită. Dacă plata pare neclară, verifică situația în contul Stripe și contactează echipa tehnică înainte de a cere clientului să plătească din nou.
+Pentru card, nu expedia o comandă înainte de confirmarea plății. Pentru ramburs, verifică totalul de încasat la livrare. Dacă plata pare neclară, verifică situația în contul Stripe și contactează echipa tehnică înainte de a cere clientului să plătească din nou.
 
 La schimbarea statusului și salvare, clientul primește o notificare prin email. Resalvarea fără o schimbare de status nu trimite un nou mesaj. Secțiunea **Notificări client** arată rezultatul; dacă trimiterea nu a fost confirmată, folosește **Reîncearcă notificările**. „Trimis” înseamnă că serviciul de email a acceptat mesajul, nu că acesta a ajuns sigur în inbox. Dacă apare **Necesită verificare**, contactează echipa tehnică înainte de o nouă trimitere. Comenzile fără o adresă de email validă nu pot fi notificate.
 
@@ -86,7 +88,7 @@ Actualizarea statusului nu generează automat un AWB sau o factură. Rambursări
 
 ## AWB Sameday
 
-În detaliul unei comenzi plătite, secțiunea **Livrare Sameday · AWB** permite emiterea unui AWB pentru un singur colet, cu livrare la adresă în România. Verifică numele, telefonul, adresa și județul (denumirea completă), apoi introdu greutatea coletului ambalat în kg. Punctul de ridicare și serviciul 24H sunt încărcate din contul Sameday. Plata este deja încasată online: AWB-ul are ramburs zero. Nu sunt incluse harta easybox, livrările internaționale sau retururile.
+În detaliul unei comenzi plătite sau confirmate cu ramburs, secțiunea **Livrare Sameday · AWB** permite emiterea unui AWB pentru un singur colet, cu livrare la adresă în România. Verifică numele, telefonul, adresa și județul (denumirea completă), apoi introdu greutatea coletului ambalat în kg. Punctul de ridicare și serviciul 24H sunt încărcate din contul Sameday. Pentru card, AWB-ul are ramburs zero. Pentru ramburs, AWB-ul preia automat totalul produselor și transportului în lei. Nu sunt incluse harta easybox, livrările internaționale sau retururile.
 
 După emitere poți descărca eticheta PDF A4 sau A6. Statusul comenzii nu se schimbă automat; marchează expedierea când predai coletul. Anulările și solicitările de ridicare se gestionează în eAWB.
 
@@ -111,3 +113,16 @@ E-mailul include numele, adresa de e-mail, soluția dorită, dimensiunea echipei
 - **O comandă are o problemă de plată:** notează referința comenzii și contactează echipa tehnică. Nu modifica stocul pentru a corecta o plată neclară.
 
 Când ceri ajutor, trimite pagina pe care apare problema, mesajul de eroare și, dacă este necesar, referința comenzii. Nu trimite parole sau date de card.
+
+
+## Plata cu cardul, ramburs și facturarea pe firmă
+
+Din coș, **Continuă comanda** deschide `/finalizare-comanda`. Clientul completează contactul și adresa de livrare și alege card online sau ramburs. Transportul este inclus în total în ambele cazuri. Rambursul funcționează și fără Stripe configurat; necesită baza de date, `APP_URL` și `SHIPPING_PRICE_BANI`. Plata cu cardul necesită suplimentar cheile Stripe și webhook-ul.
+
+La **Persoană juridică** se cer denumirea firmei, CUI / CIF și sediul social; numărul Registrului Comerțului este opțional. Datele apar în **Plată și facturare**, separat de livrare. Sistemul salvează datele pentru facturare; nu emite automat facturi și nu transmite documente în e-Factura.
+
+Comenzile ramburs din stoc scad stocul imediat, o singură dată. O comandă ramburs neexpediată poate fi anulată din panoul **Plată ramburs**, restabilind stocul o singură dată. Anularea este blocată dacă există un AWB creat, în curs sau neconfirmat; aceste situații se verifică în eAWB și cu echipa tehnică. Retururile după expediere se gestionează separat, după recepția fizică a produselor.
+
+După livrare, verifică decontul curierului, bifează confirmarea și apasă **Confirmă încasarea rambursului**. Trecerea la **Livrată** nu marchează automat plata. Factura curierului se achită separat conform contractului firmei.
+
+Înainte de publicare rulează `npm run cms:migrate` pentru `20261029_120000_payment_methods`, cu `PAYLOAD_DB_PUSH=false`. Migrarea păstrează comenzile existente și le atribuie metoda card. Nu se colectează date de firmă retroactiv pentru comenzile vechi.

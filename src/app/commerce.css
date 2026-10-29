@@ -156,3 +156,53 @@
   display: block;
   margin-bottom: 12px;
 }
+
+/* Contact, invoicing and payment share the same checkout on phone and desktop. */
+.checkout-page { padding-block:48px 80px; color:var(--ink); }
+.checkout-page-heading { margin-bottom:36px; }
+.checkout-page-heading > a { display:inline-flex; min-height:44px; align-items:center; font-size:14px; }
+.checkout-page-heading h1 { margin:12px 0; font:500 clamp(34px,4vw,54px)/1.15 var(--font-heading); }
+.checkout-page-heading p,.checkout-hint { color:var(--muted); font-size:14px; line-height:1.65; }
+.checkout-page-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr); gap:48px; align-items:start; }
+.checkout-form-content,.checkout-fields fieldset { min-width:0; margin:0; padding:0; border:0; }
+.checkout-fields { display:grid; gap:30px; }
+.checkout-fields legend { margin-bottom:16px; padding:0; font:600 22px/1.3 var(--font-heading); }
+.checkout-fields .checkout-hint { margin:0 0 16px; }
+.checkout-input-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.checkout-fields .checkout-input-grid > label { display:flex; flex-direction:column; gap:8px; min-width:0; margin:0; font-size:14px; line-height:1.5; }
+.checkout-wide { grid-column:1 / -1; }
+.checkout-fields .checkout-input-grid input { display:block; width:100%; min-width:0; min-height:48px; margin:0; padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); font:400 16px/1.5 var(--font-body); }
+.checkout-choice-row { display:flex; flex-wrap:wrap; gap:12px 24px; margin-bottom:16px; }
+.checkout-fields .checkout-choice-row label { display:flex; align-items:center; gap:10px; min-height:44px; margin:0; cursor:pointer; font-size:14px; }
+.checkout-fields input[type="radio"] { flex:0 0 18px; width:18px; height:18px; min-height:0; margin:0; padding:0; accent-color:#52623b; }
+.checkout-payment-options { display:grid; gap:12px; }
+.checkout-fields .checkout-payment-options label { display:flex; align-items:center; gap:14px; min-height:80px; margin:0; padding:16px; border:1px solid var(--line); border-radius:10px; cursor:pointer; }
+.checkout-payment-options label.is-selected { border-color:#52623b; background:#52623b0a; }
+.checkout-payment-options strong,.checkout-payment-options small { display:block; }
+.checkout-payment-options strong { font-size:15px; font-weight:600; }
+.checkout-payment-options small { margin-top:5px; color:var(--muted); font-size:13px; line-height:1.5; }
+.checkout-company { margin-top:12px; }
+.checkout-form .order-legal-acknowledgement { margin-block:24px; }
+.checkout-form .primary-button { width:100%; }
+.checkout-summary { position:sticky; top:110px; min-width:0; padding:28px; border:1px solid var(--line); border-radius:16px; background:var(--world-pale); }
+.checkout-summary h2 { font:500 28px/1.2 var(--font-heading); }
+.checkout-summary ul { margin:24px 0; padding:0; list-style:none; }
+.checkout-summary li { display:flex; justify-content:space-between; align-items:start; gap:16px; padding-block:16px; border-bottom:1px solid var(--line); font-size:14px; line-height:1.5; }
+.checkout-summary li > span:first-child { min-width:0; overflow-wrap:anywhere; }
+.checkout-summary li > span:last-child { flex-shrink:0; }
+.checkout-summary small { display:block; margin-top:6px; color:var(--muted); }
+.checkout-summary dl > div { display:flex; justify-content:space-between; gap:16px; padding-block:8px; font-size:14px; }
+.checkout-summary dd { margin:0; }
+.checkout-summary .checkout-grand-total { margin-top:10px; padding-top:18px; border-top:1px solid var(--line); font-size:18px; font-weight:600; }
+.checkout-summary .text-link { min-height:44px; margin-top:16px; }
+.production-request-form .checkout-fields { margin-block:20px; }
+@media (max-width:800px) {
+  .checkout-page-grid { grid-template-columns:minmax(0,1fr); gap:32px; }
+  .checkout-summary { position:static; grid-row:1; padding:22px; }
+}
+@media (max-width:540px) {
+  .checkout-page { padding-block:28px 48px; }
+  .checkout-input-grid { grid-template-columns:minmax(0,1fr); }
+  .checkout-payment-options > label > svg { display:none; }
+  .checkout-page-heading { margin-bottom:24px; }
+}

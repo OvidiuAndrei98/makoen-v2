@@ -9,7 +9,7 @@ import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import type { Payload } from "payload";
 import type { Order } from "@/payload-types";
 import { getCMS } from "./cms";
-import { checkoutConfigured } from "./commerce-env";
+import { checkoutConfigured, ordersConfigured } from "./commerce-env";
 import { packageLabel } from "./product-format";
 import {
   CommerceError,
@@ -18,6 +18,8 @@ import {
   validGrind,
   type CheckoutLine,
 } from "./commerce-validation";
+
+import { parseCheckoutDetails, type CheckoutDetails } from "./checkout-details";
 
 export function stripeClient() {
   if (!process.env.STRIPE_SECRET_KEY)
@@ -142,9 +144,9 @@ export async function applySession(
           typeof session.payment_intent === "string"
             ? session.payment_intent
             : session.payment_intent?.id,
-        customerEmail: session.customer_details?.email || order.customerEmail,
-        customerName: session.customer_details?.name || order.customerName,
-        customerPhone: session.customer_details?.phone || order.customerPhone,
+        customerEmail: order.checkoutDetails ? order.customerEmail : session.customer_details?.email || order.customerEmail,
+        customerName: order.checkoutDetails ? order.customerName : session.customer_details?.name || order.customerName,
+        customerPhone: order.checkoutDetails ? order.customerPhone : session.customer_details?.phone || order.customerPhone,
         shippingAddress: session.collected_information?.shipping_details
           ? { ...session.collected_information.shipping_details }
           : (order.shippingAddress ?? null),
@@ -246,7 +248,7 @@ export async function sessionForOrder(
         depth: 0,
         req,
       });
-      if (order.status !== "pending")
+      if (order.status !== "pending" || order.paymentMethod === "cod")
         throw new CommerceError(
           "Sesiunea de plată nu mai este disponibilă.",
           409,
@@ -259,8 +261,8 @@ export async function sessionForOrder(
           allowed_payment_method_types: ["card"],
           client_reference_id: order.reference,
           metadata: { orderReference: order.reference },
-          ...(order.orderType === "production"
-            ? { customer_email: order.customerEmail || undefined }
+          ...(order.customerEmail
+            ? { customer_email: order.customerEmail }
             : {}),
           line_items: order.items.map((line) => ({
             quantity: line.quantity,
@@ -279,7 +281,7 @@ export async function sessionForOrder(
               },
             },
           ],
-          shipping_address_collection: { allowed_countries: ["RO"] },
+          ...(!order.checkoutDetails ? { shipping_address_collection: { allowed_countries: ["RO"] as ["RO"] } } : {}),
           phone_number_collection: { enabled: true },
           success_url: `${process.env.APP_URL}/comanda?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${process.env.APP_URL}/comanda?anulata=1${order.orderType === "production" ? "&la_cerere=1" : ""}`,
@@ -330,17 +332,21 @@ export async function sessionForOrder(
 export async function createCheckout(
   lines: CheckoutLine[],
   key: string,
-  stripe = stripeClient(),
+  stripe?: Stripe,
   cmsArg?: Payload,
   legalVersion?: string,
+  details?: CheckoutDetails,
 ) {
   const cms = cmsArg ?? (await getCMS());
-  if (!checkoutConfigured())
-    throw new CommerceError("Plata online nu este încă disponibilă.", 503);
+  details = details ? parseCheckoutDetails(details) : undefined;
+  const cod = details?.paymentMethod === "cod";
+  if (!(cod ? ordersConfigured() : checkoutConfigured()))
+    throw new CommerceError("Metoda de plată nu este disponibilă momentan.", 503);
+  if (!cod) stripe ??= stripeClient();
   // Keep validation here as well as at the HTTP boundary: every caller must
   // provide positive integer quantities before any reservation is attempted.
   lines = parseLines({ items: lines });
-  await reconcileExpired(cms, stripe);
+  if (stripe && !cod) await reconcileExpired(cms, stripe);
   const reference = `MK-${key}`;
   const fingerprint = (items: CheckoutLine[]) =>
     JSON.stringify(
@@ -365,7 +371,9 @@ export async function createCheckout(
       if (
         fingerprint(doc.items) !== fingerprint(lines) ||
         doc.orderType === "production" ||
-        doc.status !== "pending"
+        (cod ? !["cod_pending", "paid"].includes(doc.status) : doc.status !== "pending") ||
+        (doc.paymentMethod ?? "card") !== (cod ? "cod" : "card") ||
+        JSON.stringify(doc.checkoutDetails ? parseCheckoutDetails(doc.checkoutDetails) : null) !== JSON.stringify(details ?? null)
       )
         throw new CommerceError("Coșul s-a modificat. Reîncearcă plata.", 409);
       if (legalVersion && doc.legalVersion && doc.legalVersion !== legalVersion)
@@ -411,9 +419,11 @@ export async function createCheckout(
     for (const [productID, quantity] of [...quantities].sort(
       (a, b) => a[0] - b[0],
     )) {
-      const updated = await transactionDB(cms, id)
-        .execute(sql`UPDATE products SET reserved = reserved + ${quantity}
-        WHERE id = ${productID} AND active = true AND stock - reserved >= ${quantity} RETURNING id`);
+      const updated = cod
+        ? await transactionDB(cms, id).execute(sql`UPDATE products SET stock = stock - ${quantity}
+          WHERE id = ${productID} AND active = true AND stock - reserved >= ${quantity} RETURNING id`)
+        : await transactionDB(cms, id).execute(sql`UPDATE products SET reserved = reserved + ${quantity}
+          WHERE id = ${productID} AND active = true AND stock - reserved >= ${quantity} RETURNING id`);
       if (!("rows" in updated) || updated.rows.length !== 1)
         throw new CommerceError(
           "Stoc insuficient pentru unul dintre produse. Actualizează coșul.",
@@ -425,7 +435,7 @@ export async function createCheckout(
       (sum, line) => sum + line.unitPriceBani * line.quantity,
       shippingBani,
     );
-    if (!Number.isSafeInteger(totalBani))
+    if (!Number.isSafeInteger(totalBani) || totalBani > 99999999)
       throw new CommerceError("Valoare comandă invalidă.");
     return cms.create({
       collection: "orders",
@@ -439,15 +449,24 @@ export async function createCheckout(
         totalBani,
         shippingBani,
         currency: "ron",
-        status: "pending",
+        status: cod ? "cod_pending" : "pending",
+        paymentMethod: cod ? "cod" : "card",
+        ...(details ? {
+          checkoutDetails: details,
+          customerName: details.contact.name,
+          customerEmail: details.contact.email,
+          customerPhone: details.contact.phone,
+          shippingAddress: { name: details.contact.name, phone: details.contact.phone, address: details.shipping },
+        } : {}),
         fulfillmentStatus: "new",
-        expiresAt: new Date(Date.now() + 35 * 60 * 1000).toISOString(),
+        expiresAt: cod ? null : new Date(Date.now() + 35 * 60 * 1000).toISOString(),
       },
     });
   });
+  if (cod) return { reference: order.reference, paymentMethod: "cod" as const };
   const session = order.stripeSessionId
-    ? await stripe.checkout.sessions.retrieve(order.stripeSessionId)
-    : await sessionForOrder(order, stripe, cms);
+    ? await stripe!.checkout.sessions.retrieve(order.stripeSessionId)
+    : await sessionForOrder(order, stripe!, cms);
   if (!session.url || session.status !== "open")
     throw new CommerceError("Sesiunea de plată nu mai este disponibilă.", 409);
   return { url: session.url };

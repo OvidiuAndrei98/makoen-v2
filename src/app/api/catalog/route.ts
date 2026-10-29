@@ -1,5 +1,5 @@
 import { getProducts } from "@/lib/storefront";
-import { checkoutConfigured, cmsConfigured } from "@/lib/commerce-env";
+import { checkoutConfigured, cmsConfigured, ordersConfigured } from "@/lib/commerce-env";
 import { getCMS } from "@/lib/cms";
 import { reconcileExpired, stripeClient } from "@/lib/commerce";
 
@@ -15,7 +15,8 @@ export async function GET() {
         products: await getProducts(),
         managed: cmsConfigured(),
         checkout: checkoutConfigured(),
-        shippingBani: checkoutConfigured()
+        cod: ordersConfigured(),
+        shippingBani: ordersConfigured()
           ? Number(process.env.SHIPPING_PRICE_BANI)
           : null,
       },

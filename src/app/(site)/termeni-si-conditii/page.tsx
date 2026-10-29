@@ -44,18 +44,20 @@ export default function TermsPage() {
       <section>
         <h2>4. Comenzi din stoc și comenzi la cerere</h2>
         <p>
-          Produsele cu preț confirmat și stoc disponibil pot fi plătite online.
-          Stocul este rezervat temporar în timpul plății. Confirmarea plății și
-          informațiile comenzii apar pe pagina de rezultat; pentru livrare
-          folosim datele completate în procesul de plată.
+          Produsele cu preț confirmat și stoc disponibil pot fi comandate cu
+          plata online cu cardul sau ramburs la livrare. Pentru card, stocul
+          este rezervat temporar în timpul plății. Pentru ramburs, produsele
+          sunt alocate la înregistrarea comenzii. Pentru livrare folosim
+          adresa completată la finalizarea comenzii.
         </p>
         <p>
           Produsele fără stoc sau fără preț confirmat pot fi solicitate la
           cerere. Dacă un coș include un astfel de produs, întreaga comandă se
           discută telefonic. Înregistrarea solicitării nu presupune plată
           imediată. După confirmarea produselor, totalului și termenului,
-          clientul primește un link de plată. Pregătirea începe după plata
-          confirmată.
+          clientul plătește cu cardul prin linkul primit sau alege ramburs,
+          conform opțiunii înregistrate. Pregătirea începe după plata cu cardul
+          confirmată sau după confirmarea comenzii ramburs.
         </p>
         <p>
           Solicitările pentru echipamente și servicii se confirmă individual.
@@ -72,7 +74,10 @@ export default function TermsPage() {
           comenzile la cerere, prețurile și transportul sunt stabilite în
           discuția cu clientul înainte de emiterea linkului de plată. Plata cu
           cardul este procesată de Stripe; Makeon nu stochează numărul complet
-          al cardului sau codul de securitate.
+          al cardului sau codul de securitate. La alegerea plății ramburs,
+          totalul produselor și al transportului se achită la livrare.
+          Pentru facturare pe persoană juridică, clientul completează denumirea
+          firmei, CUI / CIF și adresa sediului social.
         </p>
       </section>
       <section>
