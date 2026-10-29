@@ -2,6 +2,7 @@ import { APIError, type CollectionConfig, type Field, type Where } from "payload
 import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import { adminOnly, nobody } from "./access";
 import { queueOrderStatusEmail } from "../lib/order-status-email";
+import { mediaStorageErrorMessage } from "../lib/media-storage-error";
 
 const protectedAccess = {
   create: adminOnly,
@@ -61,9 +62,19 @@ export const Media: CollectionConfig = {
             "R2_PUBLIC_URL",
           ].every((key) => Boolean(process.env[key]))
         )
-          throw new Error(
+          throw new APIError(
             "Configurează Cloudflare R2 înainte de a încărca imagini.",
+            503,
+            undefined,
+            true,
           );
+      },
+    ],
+    afterError: [
+      ({ error, req }) => {
+        if (req.user?.collection !== "users") return;
+        const message = mediaStorageErrorMessage(error);
+        if (message) return { status: 503, response: { errors: [{ message }] } };
       },
     ],
   },
