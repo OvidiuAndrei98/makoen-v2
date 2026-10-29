@@ -18,8 +18,8 @@ for (const width of [320, 1440]) {
     await expect(summary).toContainText('Patru stadii de filtrare');
     await expect(summary).toContainText('1.116 € + TVA / aparat');
     for (const [name, selected, canonical] of [
-      ['Cere ofertă pentru cafea', 'Abonament de cafea', 'Abonament de cafea'],
-      ['Cere abonamentul de apă', 'Abonament Vero Aqua', 'Abonament Vero Aqua — 31 € + TVA/lună'],
+      ['Solicită ofertă pentru cafea', 'Abonament de cafea', 'Abonament de cafea'],
+      ['Solicită abonamentul de apă', 'Abonament Vero Aqua', 'Abonament Vero Aqua — 31 € + TVA/lună'],
     ]) {
       const action = summary.getByRole('button', { name, exact:true });
       await action.click();
@@ -45,10 +45,10 @@ for (const width of [390, 1440]) {
     await expect(page.locator('main button[aria-expanded]')).toHaveCount(4); // FAQ only.
     await expect(page.locator('.b2b-anchor-nav')).toHaveCount(0);
     for (const [label, interest, selected] of [
-      ['Cere cafea de probă', 'Cafea de probă', 'Cafea de probă'],
+      ['Solicită cafea de probă', 'Cafea de probă', 'Cafea de probă'],
       ['Discută un blend personalizat', 'Prăjire și blenduri personalizate', 'Prăjire și blenduri'],
-      ['Cere detalii despre filtre', 'Filtre pentru apă și cafea', 'Filtre pentru apă și cafea'],
-      ['Cere ofertă pentru birou', 'Abonament de cafea', 'Abonament de cafea'],
+      ['Solicită detalii despre filtre', 'Filtre pentru apă și cafea', 'Filtre pentru apă și cafea'],
+      ['Solicită ofertă pentru birou', 'Abonament de cafea', 'Abonament de cafea'],
     ]) {
       const action = page.getByRole('button', { name: label, exact: true });
       await action.focus();
@@ -80,7 +80,7 @@ for (const motion of ['reduce', 'no-preference'] as const) {
     for (const name of ['Instalare', 'Mentenanță', 'Schimb de filtre']) {
       await expect(page.locator('#servicii').getByRole('heading', { name, exact: true })).toBeVisible();
     }
-    await page.getByRole('button', { name: 'Cere ofertă pentru apă', exact: true }).click();
+    await page.getByRole('button', { name: 'Solicită ofertă pentru apă', exact: true }).click();
     const dialog = page.locator('.contact-dialog');
     await expect(dialog.locator('#interest')).toHaveText('Consultanță pentru apă');
     for (const [label, canonical] of [

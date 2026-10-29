@@ -15,10 +15,10 @@ async function settledDialog(page: Page) {
 }
 
 for (const context of [
-  { route: '/', action: 'Cere ofertă pentru birou', title: 'Cere ofertă.', selection: 'Cafea + apă' },
-  { route: '/cafea-pentru-birouri', action: 'Cere ofertă pentru cafea', title: 'Cafea pentru biroul tău.', selection: 'Abonament de cafea' },
-  { route: '/apa', action: 'Cere abonamentul Vero Aqua', title: 'Apă pentru biroul tău.', selection: 'Abonament Vero Aqua' },
-  { route: '/cafea-la-evenimente', action: 'Cere ofertă pentru rulotă', title: 'Cafea la evenimentul tău.', selection: 'Eveniment — rulotă' },
+  { route: '/', action: 'Solicită ofertă pentru birou', title: 'Solicită ofertă.', selection: 'Cafea + apă' },
+  { route: '/cafea-pentru-birouri', action: 'Solicită ofertă pentru cafea', title: 'Cafea pentru biroul tău.', selection: 'Abonament de cafea' },
+  { route: '/apa', action: 'Solicită abonamentul Vero Aqua', title: 'Apă pentru biroul tău.', selection: 'Abonament Vero Aqua' },
+  { route: '/cafea-la-evenimente', action: 'Solicită ofertă pentru rulotă', title: 'Cafea la evenimentul tău.', selection: 'Eveniment — rulotă' },
 ]) {
   test(`offer dialog uses the selected context from ${context.route}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -40,7 +40,7 @@ test('desktop offer has one full-height introduction and uniformly sized control
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/apa');
-  await page.getByRole('button', { name: 'Cere abonamentul Vero Aqua', exact: true }).click();
+  await page.getByRole('button', { name: 'Solicită abonamentul Vero Aqua', exact: true }).click();
   const dialog = await settledDialog(page);
   const geometry = await dialog.locator('.dialog-content').evaluate(paper => {
     const frame = paper.getBoundingClientRect();
@@ -84,7 +84,7 @@ test('short option labels retain canonical payload, WhatsApp context and idempot
       json: requests.length === 1 ? { error: 'Trimiterea a eșuat. Încearcă din nou.' } : { ok: true } });
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Cere ofertă pentru birou', exact: true }).first().click();
+  await page.getByRole('button', { name: 'Solicită ofertă pentru birou', exact: true }).first().click();
   const dialog = await settledDialog(page);
   await dialog.locator('#contact-name').fill('A');
   await dialog.locator('#contact-email').fill('invalid');
@@ -186,7 +186,7 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 390, height: 844 }
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/apa');
-    await page.getByRole('button', { name: 'Cere abonamentul Vero Aqua', exact: true }).click();
+    await page.getByRole('button', { name: 'Solicită abonamentul Vero Aqua', exact: true }).click();
     const dialog = await settledDialog(page);
     expect(await dialog.evaluate(node => node.scrollWidth > node.clientWidth)).toBe(false);
     if (viewport.width <= 620) {

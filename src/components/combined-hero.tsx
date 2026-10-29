@@ -30,27 +30,28 @@ export default function CombinedHero({ onOffer }: { onOffer: () => void }) {
             <p className="opening-eyebrow">Makeon · Soluții pentru companii</p>
             <h1 id="hero-title">
               <span className="opening-line-mask">
-                <span className="opening-title-line">Pauza de cafea</span>
+                <span className="opening-title-line">Pauza de cafea și</span>{" "}
               </span>
               <span className="opening-line-mask">
-                <span className="opening-title-line">Pauza de hidratare</span>
+                <span className="opening-title-line">pauza de hidratare,</span>{" "}
               </span>
               <span className="opening-line-mask">
-                <span className="opening-title-line">Rezolvate pentru biroul tau.</span>
+                <span className="opening-title-line">rezolvate pentru biroul tău.</span>
               </span>
             </h1>
             <div className="opening-copy-follow">
               <p className="opening-description">
-                Espressoare, cafea și dozatoare de apă pentru echipa ta. Găsim împreună soluția potrivită, cu un singur
-                partener.
+                Cafea de origine, proaspăt prăjită și livrată direct din prăjitorie,
+                espressoare în comodat și apă cu filtrare profesională.
+                Echipamente, service și aprovizionare, cu un singur partener.
               </p>
               <div className="opening-actions">
                 <button type="button" className="b2b-btn" onClick={onOffer}>
-                  Cere ofertă pentru birou
+                  Solicită ofertă pentru birou
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </button>
                 <Link href="#solutii">
-                  Explorează soluțiile
+                  Vezi soluțiile
                   <ArrowUpRight size={16} aria-hidden="true" />
                 </Link>
               </div>

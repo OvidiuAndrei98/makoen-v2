@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+test.beforeEach(async ({page})=>{
+  await page.route('**/api/catalog',route=>route.fulfill({json:{products:[],managed:false,checkout:false,cod:false,shippingBani:null}}));
+});
+
 for (const width of [320, 390, 430])
   test(`contact form fits ${width}px and retains inputs after failure`, async ({
     page,
@@ -24,7 +28,7 @@ for (const width of [320, 390, 430])
     });
     await page.goto("/");
     await page
-      .getByRole("button", { name: "Cere ofertă pentru birou", exact: true }).first()
+      .getByRole("button", { name: "Solicită ofertă pentru birou", exact: true }).first()
       .click();
     const dialog = page.getByRole("dialog");
     await dialog.locator("#contact-name").fill("Client Test");
@@ -52,3 +56,24 @@ for (const width of [320, 390, 430])
     await page.keyboard.press("Escape");
     await expect(dialog).not.toBeVisible();
   });
+
+test('inline business enquiry and offer dialog keep distinct fields and submit the selected company details',async({page})=>{
+  let submitted:Record<string,unknown>|undefined;
+  await page.route('**/api/contact',async route=>{submitted=route.request().postDataJSON();await route.fulfill({json:{ok:true}})});
+  await page.goto('/');
+  const form=page.locator('.home-contact-form form');
+  await form.getByLabel('Nume',{exact:false}).fill('Client Test');
+  await form.getByLabel('Companie',{exact:false}).fill('Firma Test');
+  await form.getByLabel('E-mail',{exact:false}).fill('client@example.test');
+  await form.getByLabel('Telefon',{exact:false}).fill('0712345678');
+  await page.getByRole('button',{name:'Solicită ofertă pentru birou',exact:true}).click();
+  const dialog=page.locator('.contact-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('#contact-name')).toHaveValue('');
+  const duplicates=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return ids.filter((id,i)=>ids.indexOf(id)!==i)});
+  expect(duplicates).toEqual([]);
+  await page.keyboard.press('Escape');
+  await form.getByRole('button',{name:'Trimite solicitarea'}).click();
+  await expect(page.locator('.home-contact-form')).toContainText('Solicitarea a fost trimisă.');
+  expect(submitted).toMatchObject({company:'Firma Test',phone:'0712345678',interest:'Cafea + apă',team:'11–30 persoane'});
+});

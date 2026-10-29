@@ -240,7 +240,7 @@ test("the offer stays opaque while editing and its fade continues until native c
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/apa");
   await page
-    .getByRole("button", { name: "Cere abonamentul Vero Aqua", exact: true })
+    .getByRole("button", { name: "Solicită abonamentul Vero Aqua", exact: true })
     .click();
   const dialog = page.locator(".contact-offer-dialog");
   await expect(dialog).toHaveAttribute("data-offer-state", "open");

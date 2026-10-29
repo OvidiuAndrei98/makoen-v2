@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { waterSubscription } from "@/lib/business-content";
 
 export default function HomeSupport() {
   return (
@@ -52,17 +51,19 @@ export default function HomeSupport() {
               <div className="home-solution-copy">
                 <h3 id="home-coffee-details-title">
                   <span className="choreography-heading-mask">
-                    <span data-choreo-heading>Cafea pentru echipa ta.</span>
+                    <span data-choreo-heading>Cafea de origine la birou.</span>
                   </span>
                 </h3>
                 <p className="home-solution-description" data-choreo-item>
-                  De la primul espresso la ultima întâlnire. Cafea SwitchMORN,
-                  espressor automat și aprovizionare după ritmul echipei.
+                  Cafea SwitchMORN proaspăt prăjită, livrată direct din prăjitorie.
+                  Alegem gustul și espressorul după preferințele echipei.
                 </p>
-                <p className="home-solution-detail" data-choreo-item>
-                  Blenduri sau cafele de origine. Alegem împreună sortimentele
-                  și aparatul potrivit băuturilor preferate.
-                </p>
+                <ul className="home-solution-points" data-choreo-item>
+                  <li>Cafea de origine și blenduri proaspăt prăjite</li>
+                  <li>Livrare direct din prăjitorie, la intervale planificate</li>
+                  <li>Espressoare în comodat, dimensionate pentru echipă</li>
+                  <li>Service și aprovizionare prin același partener</li>
+                </ul>
               </div>
               <figure className="home-solution-visual home-coffee-visual">
                 <div className="home-solution-media" data-choreo-media>
@@ -84,11 +85,11 @@ export default function HomeSupport() {
             <div className="home-solution-footer" data-choreo-item>
               <div className="home-solution-offer">
                 <p className="home-coffee-quote">
-                  O soluție pentru biroul tău.
+                  Aparatul potrivit, în comodat.
                 </p>
                 <p className="home-solution-conditions">
-                  Ofertă personalizată. Echipamentul, aprovizionarea, instalarea
-                  și mentenanța se stabilesc împreună, cu costurile lor.
+                  Modelul, consumul, condițiile de comodat și serviciile incluse
+                  se stabilesc în oferta pentru echipa ta.
                 </p>
               </div>
               <div className="home-solution-action">
@@ -124,17 +125,19 @@ export default function HomeSupport() {
               <div className="home-solution-copy">
                 <h3 id="home-water-details-title">
                   <span className="choreography-heading-mask">
-                    <span data-choreo-heading>Apă filtrată. Fără griji.</span>
+                    <span data-choreo-heading>Hidratare fără compromis.</span>
                   </span>
                 </h3>
                 <p className="home-solution-description" data-choreo-item>
                   Rece, caldă sau la temperatura camerei. Apă filtrată la birou,
                   dintr-un dozator Vero Aqua nou.
                 </p>
-                <p className="home-solution-detail" data-choreo-item>
-                  Instalare, mentenanță, igienizare, schimb de filtre și
-                  asistență tehnică incluse în abonament.
-                </p>
+                <ul className="home-solution-points" data-choreo-item>
+                  <li>Filtrare profesională, direct la birou</li>
+                  <li>Apă rece, caldă și la temperatura camerei</li>
+                  <li>Mai puține recipiente de plastic de unică folosință</li>
+                  <li>Instalare, mentenanță și schimb de filtre incluse</li>
+                </ul>
               </div>
               <div className="home-water-showcase">
                 <div className="home-water-temperatures" aria-hidden="true">
@@ -167,15 +170,9 @@ export default function HomeSupport() {
             </div>
             <div className="home-solution-footer" data-choreo-item>
               <div className="home-solution-offer">
-                <p className="home-water-summary-price">
-                  <strong>{waterSubscription.monthlyEuro} €</strong>
-                  <span>
-                    + TVA
-                    <br />/ lună / aparat
-                  </span>
-                </p>
+                <p className="home-coffee-quote">Apă la îndemână, toată ziua.</p>
                 <p className="home-solution-conditions">
-                  Configurația și instalarea se confirmă la contractare.
+                  Descoperă aparatul, serviciile incluse și abonamentul pe pagina soluției de apă.
                 </p>
               </div>
               <div className="home-solution-action">

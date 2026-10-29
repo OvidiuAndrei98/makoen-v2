@@ -21,7 +21,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.locator(".site")).toHaveClass(/b2b-water/);
     await expect(page).toHaveTitle(/Vero Aqua/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "Apă pentru birouri.",
+      "Hidratare fără compromis, la biroul tău.",
     );
     await expect(
       page.locator(".world-switch, .mini-switch, .business-switch"),
@@ -46,7 +46,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
       await page.keyboard.press("Escape");
       await expect(menu).not.toBeVisible();
       await page
-        .getByRole("button", { name: "Cere ofertă pentru apă", exact: true })
+        .getByRole("button", { name: "Solicită ofertă pentru apă", exact: true })
         .click();
     } else {
       const nav = page.locator(".desktop-nav");
@@ -96,14 +96,14 @@ test("the water subscription keeps its price, term, inclusions and enquiry selec
   await page.goto("/apa#abonamente");
   const offer = page.locator("#abonamente");
   await expect(offer.getByRole("heading", { level: 1 })).toHaveText(
-    "Apă pentru birouri.",
+    "Hidratare fără compromis, la biroul tău.",
   );
   await expect(offer.locator(".b2b-price")).toContainText("31 €");
   await expect(offer.locator(".b2b-price")).toContainText("+ TVA / lună");
   await expect(offer).toContainText("Înlocuirea filtrelor");
   await expect(offer).toContainText("Mentenanță periodică și igienizare");
   await offer
-    .getByRole("button", { name: "Cere abonamentul Vero Aqua", exact: true })
+    .getByRole("button", { name: "Solicită abonamentul Vero Aqua", exact: true })
     .click();
   await expect(page.locator(".contact-dialog #interest")).toContainText(
     "Abonament Vero Aqua",

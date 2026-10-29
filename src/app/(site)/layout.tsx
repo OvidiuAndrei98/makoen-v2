@@ -34,6 +34,7 @@ import "../service-editorial.css";
 import "../site-choreography.css";
 import "../media-frames.css";
 import "../water-page.css";
+import "../home-business.css";
 import CartProvider from "@/components/cart-provider";
 import CatalogProvider from "@/components/catalog-provider";
 import SmoothScroll from "@/components/smooth-scroll";
@@ -41,7 +42,7 @@ import SmoothScroll from "@/components/smooth-scroll";
 export const metadata: Metadata = {
   title: "Makeon — Cafea, apă și echipamente pentru companii",
   description:
-    "Cafea SwitchMORN, espressoare și apă Vero Aqua pentru birouri. Echipamente, aprovizionare, filtrare și cafea la evenimente. Cere ofertă.",
+    "Cafea SwitchMORN, espressoare și apă Vero Aqua pentru birouri. Echipamente, aprovizionare, filtrare și cafea la evenimente. Solicită ofertă.",
 };
 
 export default function RootLayout({

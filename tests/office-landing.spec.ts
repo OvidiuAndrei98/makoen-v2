@@ -25,7 +25,7 @@ for (const width of [320,390,430,768,1280,1920]) {
       expect(copy!.y+copy!.height).toBeLessThanOrEqual(frame!.y+frame!.height);
     }
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    await hero.getByRole('button',{name:'Cere ofertă pentru birou',exact:true}).click();
+    await hero.getByRole('button',{name:'Solicită ofertă pentru birou',exact:true}).click();
     await expect(page.locator('.contact-dialog #interest')).toContainText('Cafea + apă');
     await page.keyboard.press('Escape');
   });
@@ -57,14 +57,14 @@ for (const width of [390, 1280]) {
   test(`coffee equipment, conditions and offer stay distinct from the store at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/cafea-pentru-birouri');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Cafea pentru birouri.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Cafea de origine, proaspăt prăjită, direct la biroul tău.');
     await expect(page.locator('.coffee-intro .service-coffee-photo img')).toBeVisible();
     await expect(page.locator('#abonamente .coffee-plan-product-image img')).toBeVisible();
     await expect(page.locator('.element-scene, .world-switch')).toHaveCount(0);
     await expect(page.locator('#abonamente')).toContainText('Ofertă personalizată.');
     await expect(page.locator('#abonamente')).not.toContainText('31 €');
-    await expect(page.getByRole('button', { name: 'Cere ofertă pentru cafea', exact: true })).toHaveCount(1);
-    await page.locator('.office-service-hero').getByRole('button', { name: 'Cere ofertă pentru cafea', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Solicită ofertă pentru cafea', exact: true })).toHaveCount(1);
+    await page.locator('.office-service-hero').getByRole('button', { name: 'Solicită ofertă pentru cafea', exact: true }).click();
     await expect(page.locator('.contact-dialog #interest')).toContainText('Abonament de cafea');
     await page.keyboard.press('Escape');
     const catalog=page.locator('#magazin');
@@ -134,7 +134,7 @@ for(const viewport of [{width:390,height:844},{width:844,height:390}]) {
     await expect(menu).not.toBeVisible();
     await expect(opener).toBeFocused();
     await opener.click();
-    await menu.getByRole('button',{name:'Cere ofertă',exact:true}).click();
+    await menu.getByRole('button',{name:'Solicită ofertă',exact:true}).click();
     const offer=page.locator('.contact-dialog');
     await expect(offer).toBeVisible();
     await expect(menu).not.toBeVisible();

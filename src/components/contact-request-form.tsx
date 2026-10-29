@@ -35,13 +35,16 @@ export default function ContactRequestForm({
   onInterestChange,
   onTeamChange,
   showWhatsApp = true,
+  idPrefix = "",
 }: {
   interest: string;
   onInterestChange: (value: string) => void;
   onTeamChange?: (value: string) => void;
   showWhatsApp?: boolean;
+  idPrefix?: string;
 }) {
   const eventRequest = isEventService(interest);
+  const fieldId = (id: string) => idPrefix ? `${idPrefix}-${id}` : id;
   const [team, setTeam] = useState(contactTeams[1]);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
@@ -126,9 +129,9 @@ export default function ContactRequestForm({
       >
         <fieldset disabled={status === "sending"} className="contact-fields">
           <div className="contact-field">
-          <label htmlFor="contact-name">Nume *</label>
+          <label htmlFor={fieldId("contact-name")}>Nume *</label>
           <input
-            id="contact-name"
+            id={fieldId("contact-name")}
             name="name"
             autoComplete="name"
             required
@@ -137,20 +140,20 @@ export default function ContactRequestForm({
           />
           </div>
           <div className="contact-field">
-          <label htmlFor="contact-company">
+          <label htmlFor={fieldId("contact-company")}>
             Companie <span>(opțional)</span>
           </label>
           <input
-            id="contact-company"
+            id={fieldId("contact-company")}
             name="company"
             autoComplete="organization"
             maxLength={160}
           />
           </div>
           <div className="contact-field">
-          <label htmlFor="contact-email">E-mail *</label>
+          <label htmlFor={fieldId("contact-email")}>E-mail *</label>
           <input
-            id="contact-email"
+            id={fieldId("contact-email")}
             name="email"
             type="email"
             autoComplete="email"
@@ -159,11 +162,11 @@ export default function ContactRequestForm({
           />
           </div>
           <div className="contact-field">
-          <label htmlFor="contact-phone">
+          <label htmlFor={fieldId("contact-phone")}>
             Telefon <span>(opțional)</span>
           </label>
           <input
-            id="contact-phone"
+            id={fieldId("contact-phone")}
             name="phone"
             type="tel"
             autoComplete="tel"
@@ -171,9 +174,9 @@ export default function ContactRequestForm({
           />
           </div>
           <div className="contact-field">
-          <label htmlFor="interest">Ce soluție cauți?</label>
+          <label htmlFor={fieldId("interest")}>Ce soluție cauți?</label>
           <CustomSelect
-            id="interest"
+            id={fieldId("interest")}
             label="Ce soluție cauți?"
             value={interest}
             onChange={onInterestChange}
@@ -181,9 +184,9 @@ export default function ContactRequestForm({
           />
           </div>
           <div className="contact-field">
-          <label htmlFor="team">{eventRequest ? "Câți invitați estimezi?" : "Câți oameni sunt în echipă?"}</label>
+          <label htmlFor={fieldId("team")}>{eventRequest ? "Câți invitați estimezi?" : "Câți oameni sunt în echipă?"}</label>
           <CustomSelect
-            id="team"
+            id={fieldId("team")}
             label={eventRequest ? "Câți invitați estimezi?" : "Câți oameni sunt în echipă?"}
             value={team}
             onChange={setTeam}
@@ -191,23 +194,23 @@ export default function ContactRequestForm({
           />
           </div>
           <div className="contact-field contact-field-wide">
-          <label htmlFor="contact-message">
+          <label htmlFor={fieldId("contact-message")}>
             Mesaj <span>(opțional)</span>
           </label>
           <textarea
-            id="contact-message"
+            id={fieldId("contact-message")}
             name="message"
             rows={3}
             maxLength={3000}
             placeholder={eventRequest ? "Data evenimentului, localitatea, durata și formatul dorit…" : undefined}
-            aria-describedby={eventRequest ? "contact-event-hint" : undefined}
+            aria-describedby={eventRequest ? fieldId("contact-event-hint") : undefined}
           />
-          {eventRequest && <p id="contact-event-hint" className="contact-data-note">Include data, localitatea, durata și formatul: bar mobil sau rulotă. Poți adăuga detalii despre spațiu și acces.</p>}
+          {eventRequest && <p id={fieldId("contact-event-hint")} className="contact-data-note">Include data, localitatea, durata și formatul: bar mobil sau rulotă. Poți adăuga detalii despre spațiu și acces.</p>}
           </div>
           <div className="contact-trap" aria-hidden="true">
-            <label htmlFor="contact-website">Website</label>
+            <label htmlFor={fieldId("contact-website")}>Website</label>
             <input
-              id="contact-website"
+              id={fieldId("contact-website")}
               name="website"
               tabIndex={-1}
               autoComplete="off"

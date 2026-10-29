@@ -115,7 +115,7 @@ for (const config of [{ width: 320, height: 568, motion: 'reduce' }, { width: 39
     await expectOpen(panel);
     await page.keyboard.press('Tab');
     await expect(page.locator('.b2b-faq-layout .makeon-disclosure-trigger').nth(1)).toBeFocused();
-    const action = page.locator('#servicii').getByRole('button', { name: 'Cere ofertă pentru apă', exact: true });
+    const action = page.locator('#servicii').getByRole('button', { name: 'Solicită ofertă pentru apă', exact: true });
     await action.click();
     const dialog = page.locator('.contact-dialog');
     await expect(dialog.locator('#interest')).toHaveText('Consultanță pentru apă');

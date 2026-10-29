@@ -79,15 +79,16 @@ export default function WaterLanding() {
                 </p>
                 <h1 id="hero-title">
                   <span className="presentation-line-mask">
-                    <span data-presentation-line>Apă pentru</span>
+                    <span data-presentation-line>Hidratare fără</span>
                   </span>{" "}
                   <span className="presentation-line-mask">
-                    <span data-presentation-line>birouri.</span>
+                    <span data-presentation-line>compromis, la biroul tău.</span>
                   </span>
                 </h1>
                 <p className="water-page-lead" data-presentation-copy>
-                  Rece, caldă sau la temperatura camerei. Mereu la îndemână, cu
-                  un dozator Vero Aqua și servicii incluse.
+                  Filtrare profesională și apă la îndemână toată ziua: rece, caldă
+                  sau la temperatura camerei. Dozator Vero Aqua, instalare și întreținere,
+                  cu un singur partener.
                 </p>
                 <div
                   className="water-page-plan"
@@ -105,7 +106,7 @@ export default function WaterLanding() {
                     className="b2b-btn"
                     onClick={() => onOffer(waterSubscription.interest)}
                   >
-                    Cere abonamentul Vero Aqua
+                    Solicită abonamentul Vero Aqua
                     <ArrowUpRight size={18} aria-hidden="true" />
                   </button>
                 </div>
@@ -180,6 +181,7 @@ export default function WaterLanding() {
                   incluse în abonament.
                 </p>
               </div>
+              <div className="water-team-benefits"><div><h3>Apă la îndemână toată ziua</h3><p>Trei temperaturi pentru pauzele și băuturile echipei.</p></div><div><h3>Mai puțin plastic</h3><p>Un dozator și recipiente reutilizabile reduc nevoia sticlelor de unică folosință.</p></div><div><h3>Mai puțină logistică</h3><p>Un singur partener pentru aparat, întreținere și schimbul filtrelor.</p></div></div>
               <ul className="water-page-inclusion-grid">
                 {inclusions.map(({ Icon, title, text }) => (
                   <li key={title}>
@@ -293,7 +295,7 @@ export default function WaterLanding() {
                   className="b2b-btn"
                   onClick={() => onOffer("Consultanță pentru filtrarea apei")}
                 >
-                  Cere ofertă pentru apă
+                  Solicită ofertă pentru apă
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </button>
               </div>

@@ -16,7 +16,7 @@ export const waterSubscription = {
 export const coffeeQuestions = [
   [
     "Cum aleg aparatul potrivit pentru biroul meu?",
-    "Pornim de la numărul de colegi, consumul zilnic și băuturile preferate. Îți propunem apoi un espressor și o soluție de aprovizionare potrivite echipei tale.",
+    "Pornim de la numărul de colegi, consumul zilnic și băuturile preferate. Îți propunem un espressor în comodat și un plan de livrări regulate, direct din prăjitorie. Condițiile sunt precizate în ofertă.",
   ],
   [
     "Ce sortimente de cafea sunt disponibile?",
@@ -28,7 +28,7 @@ export const coffeeQuestions = [
   ],
   [
     "Ce include oferta pentru compania mea?",
-    "Alegem cafeaua și espressorul după consumul și preferințele echipei. Planul de aprovizionare, instalarea, mentenanța și costurile lor se stabilesc în oferta personalizată.",
+    "Alegem cafeaua proaspăt prăjită și espressorul după consumul și preferințele echipei. Condițiile de comodat, planul de aprovizionare, instalarea, mentenanța și costurile se stabilesc în oferta personalizată.",
   ],
 ] as const;
 
@@ -62,7 +62,7 @@ export const coffeeCraftServices = [
     title: "Blenduri personalizate",
     text: "Explorăm o formulă în funcție de preferințele tale și băuturile pe care le pregătești, pentru echipă, cafenea sau acasă.",
     interest: "Prăjire și blenduri personalizate",
-    action: "Cere detalii despre un blend",
+    action: "Solicită detalii despre un blend",
   },
   {
     title: "Cafea pentru espresso și filtru",
@@ -83,13 +83,13 @@ export const waterServices = [
     title: "Consultanță pentru filtrare",
     text: "Pornim de la analiza apei și echipamentul existent. Recomandăm sistemul de filtrare în funcție de consum, spațiu și nevoile aparatului.",
     interest: "Consultanță pentru filtrarea apei",
-    action: "Cere consultanță pentru apă",
+    action: "Solicită consultanță pentru apă",
   },
   {
     title: "Instalarea sistemului",
     text: "Montarea este adaptată spațiului: birou, cafenea sau restaurant. Configurația și cerințele de instalare se stabilesc înainte de ofertă.",
     interest: "Instalare sistem de filtrare",
-    action: "Cere detalii despre instalare",
+    action: "Solicită detalii despre instalare",
   },
   {
     title: "Mentenanță și schimb de filtre",

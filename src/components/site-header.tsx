@@ -8,11 +8,11 @@ import BrandLogo from "./brand-logo";
 import useDialogMotion from "./use-dialog-motion";
 import { legal } from "@/lib/legal";
 const mainLinks = [
-  { label: "Cafea pentru birouri", href: "/cafea-pentru-birouri" },
-  { label: "Apă & filtrare", href: "/apa" },
-  { label: "Magazin cafea", href: "/cafea" },
-  { label: "Evenimente", href: "/cafea-la-evenimente" },
-  { label: "Despre Makeon", href: "/#despre" },
+  { label: "Cafeaua ta", href: "/cafea-pentru-birouri" },
+  { label: "Pauza ta de hidratare", href: "/apa" },
+  { label: "Prăjitoria ta", href: "/prajitoria" },
+  { label: "Evenimentul tău", href: "/cafea-la-evenimente" },
+  { label: "Contact", href: "/#contact" },
 ];
 const extraLinks = [
   { label: "Filtre și mentenanță", href: "/apa#filtre" },
@@ -43,7 +43,7 @@ export default function SiteHeader({ onOffer, sectionBase = "/" }: {
     <a className="site-skip-link" href="#main-content">Sari la conținut</a><BrandLogo priority />
     <nav className="desktop-nav" aria-label="Navigație principală">{mainLinks.map(link => <Link key={link.href} href={link.href} aria-current={current(link.href) ? "page" : undefined}>{link.label}</Link>)}</nav>
     <div className="header-actions"><CartButton />
-      {onOffer ? <button className="offer-button" onClick={onOffer}>Cere ofertă<ArrowUpRight size={17} aria-hidden="true" /></button> : <Link className="offer-button" href={`${sectionBase}#abonamente`}>Cere ofertă<ArrowUpRight size={17} aria-hidden="true" /></Link>}
+      {onOffer ? <button className="offer-button" onClick={onOffer}>Hai să vorbim<ArrowUpRight size={17} aria-hidden="true" /></button> : <Link className="offer-button" href={`${sectionBase}#abonamente`}>Hai să vorbim<ArrowUpRight size={17} aria-hidden="true" /></Link>}
       <button type="button" className="menu-button" aria-label={mobileMenu ? "Închide meniul" : "Deschide meniul"} aria-expanded={mobileMenu} aria-controls="mobile-navigation" onClick={() => setMobileMenu(value => !value)}><MenuMark /></button>
     </div>
     <dialog ref={menu} className="mobile-menu-dialog modern-mobile-menu" aria-label="Meniul Makeon" onCancel={event => { event.preventDefault(); setMobileMenu(false); }}
@@ -52,7 +52,7 @@ export default function SiteHeader({ onOffer, sectionBase = "/" }: {
       <nav id="mobile-navigation" className="mobile-menu-nav" aria-label="Navigație mobilă">{mainLinks.map(link => <Link className="mobile-menu-link" key={link.href} href={link.href} aria-current={current(link.href) ? "page" : undefined} onClick={() => setMobileMenu(false)}>{link.label}<ArrowUpRight size={22} aria-hidden="true" /></Link>)}
         <div className="mobile-secondary-links">{extraLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setMobileMenu(false)}>{link.label}</Link>)}</div>
       </nav>
-      <div className="mobile-menu-bottom">{onOffer ? <button type="button" className="mobile-offer-button" onClick={() => { afterClose.current = "offer"; setMobileMenu(false); }}>Cere ofertă<ArrowUpRight size={18} /></button> : <Link className="mobile-offer-button" href="/#abonamente" onClick={() => setMobileMenu(false)}>Cere ofertă<ArrowUpRight size={18} /></Link>}<a href={legal.phoneHref}>{legal.phone}</a></div>
+      <div className="mobile-menu-bottom">{onOffer ? <button type="button" className="mobile-offer-button" onClick={() => { afterClose.current = "offer"; setMobileMenu(false); }}>Hai să vorbim<ArrowUpRight size={18} /></button> : <Link className="mobile-offer-button" href="/#abonamente" onClick={() => setMobileMenu(false)}>Hai să vorbim<ArrowUpRight size={18} /></Link>}<a href={legal.phoneHref}>{legal.phone}</a></div>
     </dialog>
   </header>;
 }

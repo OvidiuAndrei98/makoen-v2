@@ -10,7 +10,7 @@ import { useCatalog } from "./catalog-provider";
 import { legal } from "@/lib/legal";
 import AnimatedDisclosure from "./animated-disclosure";
 
-export function BusinessContact({ onOffer, selection, id = "contact", title = "Spune-ne ce ai nevoie pentru echipa ta.", description = "Discutăm spațiul, consumul și serviciile. Îți pregătim o ofertă pentru soluția aleasă.", action = "Cere ofertă pentru birou" }: {
+export function BusinessContact({ onOffer, selection, id = "contact", title = "Spune-ne ce ai nevoie pentru echipa ta.", description = "Discutăm spațiul, consumul și serviciile. Îți pregătim o ofertă pentru soluția aleasă.", action = "Solicită ofertă pentru birou" }: {
   onOffer: OfferHandler; selection?: string; id?: string; title?: string; description?: string; action?: string;
 }) {
   return <section className="b2b-container b2b-contact" id={id} aria-labelledby={`${id}-title`} data-choreography="section">

@@ -32,7 +32,7 @@ function offerContext(interest: string) {
     compactDescription: "Spune-ne despre echipă și consum.",
   };
   return {
-    title: "Cere ofertă.",
+    title: "Solicită ofertă.",
     description: "Spune-ne ce ai nevoie. Îți pregătim o ofertă pentru soluția aleasă.",
     compactDescription: "Spune-ne ce soluție cauți.",
   };

@@ -8,13 +8,13 @@ const steps = [
   },
   {
     Icon: SlidersHorizontal,
-    title: "Îți recomandăm soluția.",
-    description: "Alegem echipamentele și cafeaua potrivite, cu o ofertă clară.",
+    title: "Alegem și instalăm echipamentele.",
+    description: "Dimensionăm aparatele după echipă și spațiu. Stabilim comodatul și serviciile într-o ofertă clară.",
   },
   {
     Icon: Wrench,
-    title: "Ne ocupăm de servicii.",
-    description: "Instalare, aprovizionare și mentenanță, conform ofertei acceptate.",
+    title: "Livrăm și avem grijă de aparate.",
+    description: "Planificăm livrările de cafea proaspăt prăjită, aprovizionarea și mentenanța după ritmul biroului.",
   },
 ];
 

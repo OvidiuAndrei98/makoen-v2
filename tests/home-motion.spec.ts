@@ -51,7 +51,7 @@ async function expectCompleteOpening(page: Page) {
   );
   await expect(
     opening.getByRole("button", {
-      name: "Cere ofertă pentru birou",
+      name: "Solicită ofertă pentru birou",
       exact: true,
     }),
   ).toBeEnabled();
@@ -331,7 +331,7 @@ test("the hero offer and populated cart retain their business data and restore p
   );
   await page.goto("/");
   await page
-    .getByRole("button", { name: "Cere ofertă pentru birou", exact: true })
+    .getByRole("button", { name: "Solicită ofertă pentru birou", exact: true })
     .click();
   await expect(page.locator(".contact-dialog")).toBeVisible();
   await expect(page.locator(".contact-dialog #interest")).toContainText(
@@ -482,7 +482,7 @@ test("an initial pointer gesture near the office CTA edge survives entrance init
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const button = page.getByRole("button", {
-    name: "Cere ofertă pentru birou",
+    name: "Solicită ofertă pentru birou",
     exact: true,
   });
   const box = await button.boundingBox();
