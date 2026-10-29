@@ -781,3 +781,19 @@ body:has(.makeon-order) .doc-header__title {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Explicit COD actions stay readable without Payload's button markup. */
+.makeon-cod-payment p { font-size:14px; line-height:1.65; overflow-wrap:anywhere; }
+.makeon-cod-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; }
+.makeon-cod-actions button { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:46px; margin:0; padding:12px 18px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:14px; font-weight:600; line-height:1.45; text-align:center; cursor:pointer; }
+.makeon-cod-actions button svg { flex-shrink:0; }
+.makeon-cod-actions .makeon-cod-collect { color:#fff; background:#33452f; border-color:#33452f; }
+.makeon-cod-actions .makeon-cod-cancel { color:#8b2923; background:#fff5f3; border-color:#d6a19b; }
+.makeon-cod-actions .makeon-cod-back { color:var(--theme-text); background:var(--theme-elevation-50); border-color:var(--theme-elevation-200); }
+.makeon-cod-actions button:hover { filter:brightness(.96); }
+.makeon-cod-actions button:focus-visible { outline:2px solid var(--theme-text); outline-offset:3px; }
+.makeon-cod-actions button:disabled { opacity:.65; cursor:wait; }
+.makeon-cod-confirmation { margin-top:18px; padding:18px; border:1px solid var(--theme-elevation-200); border-radius:10px; background:var(--theme-elevation-50); }
+.makeon-cod-confirmation p { margin:0; }
+.makeon-cod-error { color:var(--theme-error-500); }
+@media (max-width:600px) { .makeon-cod-actions { flex-direction:column; } .makeon-cod-actions button { width:100%; } }

@@ -508,14 +508,13 @@ test('card checkout preserves the company snapshot after Stripe payment and sett
   assert.equal(stock.stock,2); assert.equal(stock.reserved,0);
 });
 
-test('COD cancellation restores stock once; only delivered orders can be marked collected', async () => {
+test('COD cancellation restores stock once; verified collection is independent of fulfillment', async () => {
   const adapter = cms.db as unknown as PostgresAdapter;
   await adapter.drizzle.execute(sql`CREATE TABLE IF NOT EXISTS order_shipments (order_id integer PRIMARY KEY, state text)`);
   const {updateCashOnDelivery} = await import('../../src/lib/cod-orders');
   const p = await product(3), key=randomUUID();
   await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:2}],key,fakeStripe,cms,legal.version,checkoutDetails());
   const order=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
-  await assert.rejects(updateCashOnDelivery(cms,order.id,'collect'));
   await Promise.all([updateCashOnDelivery(cms,order.id,'cancel'),updateCashOnDelivery(cms,order.id,'cancel')]);
   assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,3);
   const key2=randomUUID();
@@ -523,10 +522,10 @@ test('COD cancellation restores stock once; only delivered orders can be marked 
   const delivered=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key2}`}}})).docs[0];
   await adapter.drizzle.execute(sql`INSERT INTO order_shipments VALUES (${delivered.id},'created')`);
   await assert.rejects(updateCashOnDelivery(cms,delivered.id,'cancel'));
-  await cms.update({collection:'orders',id:delivered.id,data:{fulfillmentStatus:'delivered'}});
   await updateCashOnDelivery(cms,delivered.id,'collect'); await updateCashOnDelivery(cms,delivered.id,'collect');
   const saved=await cms.findByID({collection:'orders',id:delivered.id});
   assert.equal(saved.status,'paid'); assert.ok(saved.codCollectedAt);
+  assert.equal(saved.fulfillmentStatus,'new');
   assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,2);
 });
 

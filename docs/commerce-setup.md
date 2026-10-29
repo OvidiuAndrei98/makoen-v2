@@ -123,7 +123,7 @@ La **Persoană juridică** se cer denumirea firmei, CUI / CIF și sediul social;
 
 Comenzile ramburs din stoc scad stocul imediat, o singură dată. O comandă ramburs neexpediată poate fi anulată din panoul **Plată ramburs**, restabilind stocul o singură dată. Anularea este blocată dacă există un AWB creat, în curs sau neconfirmat; aceste situații se verifică în eAWB și cu echipa tehnică. Retururile după expediere se gestionează separat, după recepția fizică a produselor.
 
-După livrare, verifică decontul curierului, bifează confirmarea și apasă **Confirmă încasarea rambursului**. Trecerea la **Livrată** nu marchează automat plata. Factura curierului se achită separat conform contractului firmei.
+După verificarea încasării banilor, apasă **Marchează încasat**, verifică suma și apasă **Confirmă încasarea**. Butonul este disponibil indiferent de etapa livrării; confirmarea plății nu modifică statusul livrării. Trecerea la **Livrată** nu marchează automat plata. Factura curierului se achită separat conform contractului firmei.
 
 Înainte de publicare rulează `npm run cms:migrate` pentru `20261029_120000_payment_methods`, cu `PAYLOAD_DB_PUSH=false`. Migrarea păstrează comenzile existente și le atribuie metoda card. Nu se colectează date de firmă retroactiv pentru comenzile vechi.
 

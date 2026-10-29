@@ -536,7 +536,7 @@ changing payment behavior, schema, providers, or deployment infrastructure.
 
 Production COD requests remain `requested` until the administrator confirms quoted prices and shipping; they then become `cod_pending` without physical stock deductions. Card requests continue to use payment links.
 
-Sameday COD AWBs use `cashOnDelivery = totalBani / 100`; card AWBs use zero. Admin-only `/api/orders/cod` confirms collection after delivery or cancels unshipped stock COD orders with one-time stock restoration. A created/in-flight/uncertain AWB blocks cancellation. Shipment returns and AWB cancellation reconciliation remain manual operations. Payment collection is never inferred from fulfillment status.
+Sameday COD AWBs use `cashOnDelivery = totalBani / 100`; card AWBs use zero. Admin-only `/api/orders/cod` confirms administrator-verified collection independently of fulfillment or cancels unshipped stock COD orders with one-time stock restoration. A created/in-flight/uncertain AWB blocks cancellation. Shipment returns and AWB cancellation reconciliation remain manual operations. Payment collection is never inferred from fulfillment status.
 
 Apply migration `20261029_120000_payment_methods` before deploying the updated app. It adds payment method, checkout details, collection timestamp and additive status enum values. Existing orders default to card; billing snapshots cannot be silently rolled back. Keep schema push disabled outside disposable tests.
 

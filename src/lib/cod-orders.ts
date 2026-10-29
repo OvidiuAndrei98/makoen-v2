@@ -15,8 +15,6 @@ export async function updateCashOnDelivery(cms: Payload, orderID: number, action
     const target = action === "collect" ? "paid" : "cancelled";
     if (order.status === target) return { reference: order.reference };
     if (order.status !== "cod_pending") throw new CommerceError("Starea comenzii nu permite această operațiune.", 409);
-    if (action === "collect" && order.fulfillmentStatus !== "delivered")
-      throw new CommerceError("Confirmă livrarea și verifică încasarea rambursului înainte de a marca plata.", 409);
     if (action === "cancel") {
       if (!["new", "processing"].includes(order.fulfillmentStatus ?? "new"))
         throw new CommerceError("Comanda este deja expediată. Gestionează returul înainte de corectarea stocului.", 409);
