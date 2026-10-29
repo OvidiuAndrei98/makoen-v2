@@ -1,3 +1,13 @@
+.home-process { padding-block:var(--section-space); }
+.home-process-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; margin:28px 0 0; padding:0; list-style:none; }
+.home-process-steps > li { min-width:0; padding-top:20px; border-top:1px solid var(--makeon-border); }
+.home-process-number { display:block; margin-bottom:16px; color:var(--makeon-muted); font-size:13px; font-variant-numeric:tabular-nums; }
+.b2b-site .home-process-steps h3 { margin:0; font:500 21px/1.35 var(--font-heading); letter-spacing:-.025em; }
+.home-process-steps p { max-width:40ch; margin-top:12px; color:var(--makeon-muted); font-size:15px; line-height:1.7; }
+@media (max-width:700px) {
+  .home-process-steps { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .home-process-number { margin-bottom:10px; }
+}
 /* Compact service cards share the same hierarchy and geometry. */
 .home-solutions { padding-block:80px 24px; background:var(--makeon-surface); scroll-margin-block-start:106px; }
 .home-solutions-heading { display:flex; justify-content:space-between; align-items:end; gap:40px; margin-bottom:32px; }

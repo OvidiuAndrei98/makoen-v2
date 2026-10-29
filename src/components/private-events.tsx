@@ -70,7 +70,7 @@ export default function PrivateEvents({
                 className="text-link"
                 onClick={() => onOffer(setup.service)}
               >
-                Solicită ofertă pentru {i === 0 ? "rulotă" : "barul mobil"}
+                Cere ofertă pentru {i === 0 ? "rulotă" : "barul mobil"}
                 <ArrowUpRight size={18} />
               </button>
             </div>

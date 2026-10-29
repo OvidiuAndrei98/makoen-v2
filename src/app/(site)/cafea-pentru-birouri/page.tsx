@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import MakeonLanding from "@/components/makeon-landing";
 
 export const metadata: Metadata = {
-  title: "Aparate de cafea pentru birouri și companii | Makeon",
+  title: "Cafea pentru birouri și espressoare automate | Makeon",
   description:
-    "Espressoare automate, cafea SwitchMORN și aprovizionare pentru companii. Solicită o ofertă adaptată consumului și nevoilor echipei tale.",
+    "Cafea SwitchMORN, espressoare automate și aprovizionare pentru birouri. Cere ofertă personalizată după consumul și preferințele echipei tale.",
 };
 
 export default function OfficeCoffeePage() {

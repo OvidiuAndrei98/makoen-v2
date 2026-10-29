@@ -45,10 +45,10 @@ for (const width of [390, 1440]) {
     await expect(page.locator('main button[aria-expanded]')).toHaveCount(4); // FAQ only.
     await expect(page.locator('.b2b-anchor-nav')).toHaveCount(0);
     for (const [label, interest, selected] of [
-      ['Solicită cafea de probă', 'Cafea de probă', 'Cafea de probă'],
+      ['Cere cafea de probă', 'Cafea de probă', 'Cafea de probă'],
       ['Discută un blend personalizat', 'Prăjire și blenduri personalizate', 'Prăjire și blenduri'],
       ['Cere detalii despre filtre', 'Filtre pentru apă și cafea', 'Filtre pentru apă și cafea'],
-      ['Cere oferta pentru birou', 'Abonament de cafea', 'Abonament de cafea'],
+      ['Cere ofertă pentru birou', 'Abonament de cafea', 'Abonament de cafea'],
     ]) {
       const action = page.getByRole('button', { name: label, exact: true });
       await action.focus();

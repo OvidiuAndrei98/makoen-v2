@@ -4,9 +4,9 @@ import ShopShell from "@/components/shop-shell";
 import Starburst from "@/components/starburst";
 
 export const metadata: Metadata = {
-  title: "Magazin cafea SwitchMorn — Makeon",
+  title: "Magazin cafea boabe și măcinată SwitchMORN | Makeon",
   description:
-    "Descoperă 17 sortimente SwitchMorn: cafea boabe, măcinată, solubilă și selecții de origine. Alege-ți ritualul și pregătește selecția ta.",
+    "Descoperă cafeaua SwitchMORN pentru birou și acasă: blenduri și cafele de origine. Alege sortimentul, gramajul și măcinarea potrivite din magazin.",
 };
 export default function CoffeeStore() {
   return (

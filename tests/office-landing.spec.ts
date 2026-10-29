@@ -63,8 +63,8 @@ for (const width of [390, 1280]) {
     await expect(page.locator('.element-scene, .world-switch')).toHaveCount(0);
     await expect(page.locator('#abonamente')).toContainText('Ofertă personalizată.');
     await expect(page.locator('#abonamente')).not.toContainText('31 €');
-    await expect(page.getByRole('button', { name: 'Cere oferta de cafea', exact: true })).toHaveCount(1);
-    await page.locator('.office-service-hero').getByRole('button', { name: 'Cere oferta de cafea', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Cere ofertă pentru cafea', exact: true })).toHaveCount(1);
+    await page.locator('.office-service-hero').getByRole('button', { name: 'Cere ofertă pentru cafea', exact: true }).click();
     await expect(page.locator('.contact-dialog #interest')).toContainText('Abonament de cafea');
     await page.keyboard.press('Escape');
     const catalog=page.locator('#magazin');

@@ -41,7 +41,7 @@ import SmoothScroll from "@/components/smooth-scroll";
 export const metadata: Metadata = {
   title: "Makeon — Cafea, apă și echipamente pentru companii",
   description:
-    "Cafea SwitchMORN, espressoare și apă Vero Aqua pentru birouri. Echipamente, aprovizionare, filtrare și cafea la evenimente. Cere o ofertă Makeon.",
+    "Cafea SwitchMORN, espressoare și apă Vero Aqua pentru birouri. Echipamente, aprovizionare, filtrare și cafea la evenimente. Cere ofertă.",
 };
 
 export default function RootLayout({

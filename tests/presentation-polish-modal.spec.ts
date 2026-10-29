@@ -15,8 +15,8 @@ async function settledDialog(page: Page) {
 }
 
 for (const context of [
-  { route: '/', action: 'Cere ofertă pentru birou', title: 'Cere o ofertă.', selection: 'Cafea + apă' },
-  { route: '/cafea-pentru-birouri', action: 'Cere oferta de cafea', title: 'Cafea pentru biroul tău.', selection: 'Abonament de cafea' },
+  { route: '/', action: 'Cere ofertă pentru birou', title: 'Cere ofertă.', selection: 'Cafea + apă' },
+  { route: '/cafea-pentru-birouri', action: 'Cere ofertă pentru cafea', title: 'Cafea pentru biroul tău.', selection: 'Abonament de cafea' },
   { route: '/apa', action: 'Cere abonamentul Vero Aqua', title: 'Apă pentru biroul tău.', selection: 'Abonament Vero Aqua' },
   { route: '/cafea-la-evenimente', action: 'Cere ofertă pentru rulotă', title: 'Cafea la evenimentul tău.', selection: 'Eveniment — rulotă' },
 ]) {

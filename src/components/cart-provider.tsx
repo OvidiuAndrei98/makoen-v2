@@ -454,7 +454,7 @@ export default function CartProvider({
                     href="tel:+40744524728"
                   >
                     <Phone size={17} />
-                    Solicită oferta
+                    Cere ofertă
                     <ArrowUpRight size={18} />
                   </a>
                 )}
