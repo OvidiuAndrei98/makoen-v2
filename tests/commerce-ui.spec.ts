@@ -198,7 +198,7 @@ test('card checkout submits billing details and keeps the cart until payment is 
   let submitted: Record<string,any> | undefined;
   await page.route('**/api/checkout', async route=>{
     submitted=route.request().postDataJSON();
-    await route.fulfill({json:{url:'http://127.0.0.1:3000/comanda?card-checkout-test=1'}});
+    await route.fulfill({json:{url:new URL('/comanda?card-checkout-test=1',page.url()).href}});
   });
   await page.goto('/finalizare-comanda');
   const form=page.locator('.checkout-form');
@@ -263,3 +263,32 @@ test('native browser Back from Stripe cancels the unpaid attempt immediately',as
   await expect.poll(()=>cancelled).toBe(2);
   await expect.poll(()=>page.evaluate(()=>sessionStorage.getItem('makeon-checkout-key'))).toBe(null);
 });
+
+for (const scenario of [
+  { name: 'missing price', price: null, stock: 5 },
+  { name: 'insufficient stock', price: 50, stock: 0 },
+]) {
+  test(`checkout registers a request with client details for ${scenario.name}, without Stripe or WhatsApp`, async ({ page }) => {
+    await page.route('**/api/catalog',route=>route.fulfill({json:{products:coffeeProducts.map(p=>({...p,price:scenario.price,stock:scenario.stock})),managed:true,checkout:false,cod:false,shippingBani:null}}));
+    await page.addInitScript(()=>localStorage.setItem('makeon-coffee-cart-v1',JSON.stringify([{slug:'intense',grind:'Boabe',quantity:2}])));
+    let submitted: Record<string,any> | undefined;
+    await page.route('**/api/checkout',()=>{ throw new Error('Requests must not open payment'); });
+    await page.route('**/api/orders/request',async route=>{
+      submitted=route.request().postDataJSON();
+      await route.fulfill({json:{reference:'MK-request-test'}});
+    });
+    await page.goto('/finalizare-comanda');
+    const form=page.locator('main .production-request-form');
+    await expect(form).toBeVisible();
+    await expect(form.locator('a[href*="wa.me"],a[href^="tel:"]')).toHaveCount(0);
+    await fillCheckout(form);
+    await form.getByRole('checkbox').check();
+    await form.getByRole('button',{name:'Înregistrează comanda'}).click();
+    await expect(page.locator('main .production-request-success')).toContainText('Comanda a fost înregistrată.');
+    expect(submitted?.details.contact.name).toBe('Client test');
+    expect(submitted?.details.contact.email).toBe('client@example.test');
+    expect(submitted?.details.shipping.line1).toBe('Strada Test 10');
+    expect(submitted?.details.paymentMethod).toBe('card');
+    expect(submitted?.items).toEqual([{slug:'intense',grind:'Boabe',quantity:2}]);
+  });
+}

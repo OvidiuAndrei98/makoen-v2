@@ -5,6 +5,8 @@ import { ArrowUpRight, Check } from "lucide-react";
 import { useCart } from "./cart-provider";
 import { useCatalog } from "./catalog-provider";
 import CheckoutFields from "./checkout-fields";
+import ProductionRequestForm from "./production-request-form";
+import { needsProductionRequest } from "@/lib/cart-availability";
 import OrderLegalAcknowledgement from "./order-legal-acknowledgement";
 import { checkoutDetailsFromForm } from "@/lib/checkout-details";
 import { money } from "@/lib/coffee-catalog";
@@ -18,7 +20,9 @@ export default function CheckoutForm() {
   const attempt = useRef<{ fingerprint: string; key: string } | null>(null);
   useEffect(() => { attempt.current = null; }, [cart.checkoutRecovery.revision]);
   const products = cart.items.map(line => ({ ...line, product: catalog.products.find(p => p.slug === line.slug) }));
-  const available = products.length > 0 && products.every(line => line.product?.price != null && line.product.stock != null);
+  const knownProducts = products.length > 0 && products.every(line => line.product);
+  const requested = catalog.managed && knownProducts && needsProductionRequest(cart.items, catalog.products);
+  const available = knownProducts && products.every(line => line.product?.price != null && line.product.stock != null);
   const subtotal = products.reduce((sum, line) => sum + (line.product?.price ?? 0) * line.quantity, 0);
   if (reference) return <section className="checkout-result section-padding" role="status">
     <Check size={36} aria-hidden="true" /><h1>Mulțumim pentru comandă.</h1>
@@ -30,6 +34,10 @@ export default function CheckoutForm() {
     {cart.checkoutRecovery.error ? <><p role="alert">{cart.checkoutRecovery.error}</p><button className="primary-button" type="button" onClick={() => void cart.checkoutRecovery.retry()}>Reîncearcă</button></> : <p role="status">Eliberăm produsele rezervate la plata anterioară…</p>}
   </section>;
   if (!catalog.ready) return <p className="section-padding" role="status">Verificăm coșul…</p>;
+  if (!catalog.unavailable && requested) return <div className="checkout-page section-padding">
+    <header className="checkout-page-heading"><Link href="/cafea">← Înapoi la magazin</Link><h1>Comandă la cerere.</h1><p>Înregistrăm selecția și datele tale. Te contactăm pentru confirmarea prețului și a termenului.</p></header>
+    <ProductionRequestForm items={cart.items} onComplete={snapshot => { cart.clear(snapshot); catalog.refresh(); }} />
+  </div>;
   if (catalog.unavailable || !available || (!catalog.checkout && !catalog.cod)) return <section className="checkout-result section-padding">
     <h1>Verifică selecția ta.</h1><p>Deschide coșul pentru disponibilitate și opțiunile de comandă.</p>
     <button type="button" className="primary-button" onClick={cart.open}>Deschide coșul</button>

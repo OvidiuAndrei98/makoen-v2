@@ -158,7 +158,7 @@ export default function CoffeeDetail({ product }: { product: CoffeeProduct }) {
             {ready && <button type="button" className="text-link" onClick={refresh}>Reîncearcă verificarea</button>}
           </div>}
           <p className="detail-order-note">
-            {product.price == null ? "Adaugă produsele preferate și solicită oferta pentru selecția ta." : "Adaugă produsul în coș și finalizează cumpărăturile prin Stripe."}
+            {product.price == null || (product.stock != null && quantity > product.stock) ? "Adaugă selecția în coș și completează datele pentru comanda la cerere. Te contactăm telefonic pentru confirmare." : "Adaugă produsul în coș. Datele de livrare și metoda de plată se aleg la finalizarea comenzii."}
             {product.stock != null && <span className="stock-note">{product.stock > 0 ? `${product.stock} unități / ambalaje disponibile` : "Disponibil la cerere. Te contactăm telefonic pentru confirmare; pregătirea începe după plată."}</span>}
           </p>
           <div className="detail-ritual">

@@ -40,7 +40,7 @@ test('complementary products require a unit, not grams; payment preserves invent
   await assert.rejects(cms.update({collection:'products',id:accessory.id,data:{unitLabel:null}}), /unitatea/);
   const key = randomUUID();
   await commerce.createCheckout([{slug,grind:'Standard',quantity:1}],key,fakeStripe,cms);
-  const order = (await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  const order = await reservation(`MK-${key}`);
   assert.equal(order.items[0].name,'Cești test · Set de 6');
   assert.equal((await cms.findByID({collection:'products',id:accessory.id})).reserved,1);
   const session = keys.get(`MK-${key}`)!;
@@ -74,7 +74,7 @@ before(async () => {
   // The URL above is fixed to localhost/makeon_test; no shared DB is touched.
   const { Pool } = await import('pg');
   const cleanup = new Pool({connectionString:process.env.DATABASE_URL});
-  await cleanup.query('DROP TABLE IF EXISTS public.order_shipments; DROP TABLE IF EXISTS public.order_status_emails');
+  await cleanup.query('DROP TABLE IF EXISTS public.order_shipments; DROP TABLE IF EXISTS public.order_status_emails; DROP TABLE IF EXISTS public.checkout_reservations');
   await cleanup.end();
   const { getPayload } = await import('payload');
   const { default: config } = await import('../../src/payload.config');
@@ -89,6 +89,8 @@ before(async () => {
   const notifications = await import('../../src/migrations/20261011_120000_order_status_emails');
   await adapter.drizzle.execute(sql`DROP TABLE IF EXISTS order_status_emails`);
   await notifications.up({ db: adapter.drizzle } as Parameters<typeof notifications.up>[0]);
+  const reservations = await import('../../src/migrations/20261029_140000_checkout_reservations');
+  await reservations.up({ db: adapter.drizzle } as Parameters<typeof reservations.up>[0]);
   commerce = await import('../../src/lib/commerce');
 });
 after(async () => { if (cms) {
@@ -100,6 +102,11 @@ after(async () => { if (cms) {
 async function product(stock = 5) {
   return cms.create({ collection: 'products', data: { slug: `test-${randomUUID()}`, name: 'Cafea test', category: 'boabe',
     collection: 'Teste', grams: 500, description: 'Produs pentru verificarea comenzilor.', price: 49.99, stock, reserved: 0, active: true } });
+}
+
+async function reservation(reference: string) {
+  const result = await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`SELECT snapshot FROM checkout_reservations WHERE reference = ${reference}`);
+  return result.rows[0]?.snapshot as import('../../src/payload-types').Order;
 }
 
 test('only admins can delete unused products; order history and reservations prevent deletion', async () => {
@@ -129,10 +136,11 @@ test('only admins can delete unused products; order history and reservations pre
 test('admin order edits preserve payment snapshots and concurrent stock settlement', async () => {
   const p = await product(3); const key = randomUUID();
   await commerce.createCheckout([{ slug: p.slug, grind: 'Boabe', quantity: 1 }], key, fakeStripe, cms);
-  const order = (await cms.find({ collection: 'orders', where: { reference: { equals: `MK-${key}` } } })).docs[0];
+  const session = keys.get(`MK-${key}`)!;
+  const order = await commerce.applySession({ ...session, status: 'complete', payment_status: 'paid' }, cms);
+  assert.ok(order);
   const user = { id: 999, collection: 'users' as const, email: 'admin@example.test' };
   await assert.rejects(cms.update({ collection: 'orders', id: order.id, overrideAccess: false, data: { fulfillmentStatus: 'processing' } }));
-  const session = keys.get(`MK-${key}`)!;
   await Promise.all([
     commerce.applySession({ ...session, status: 'complete', payment_status: 'paid' }, cms),
     cms.update({ collection: 'orders', id: order.id, overrideAccess: false, user,
@@ -186,7 +194,8 @@ test('reserves stock, snapshots server price, and retries checkout idempotently'
   const updated = await cms.findByID({ collection: 'products', id: p.id });
   assert.equal(updated.stock, 5); assert.equal(updated.reserved, 2); assert.equal(creates, beforeCreates + 1);
   const orders = await cms.find({ collection: 'orders', where: { reference: { equals: `MK-${key}` } }, depth: 0 });
-  assert.equal(orders.docs.length, 1); assert.equal(orders.docs[0].totalBani, 11998);
+  assert.equal(orders.docs.length, 0);
+  assert.equal((await reservation(`MK-${key}`)).totalBani, 11998);
   await assert.rejects(commerce.createCheckout([{ ...lines[0], quantity: 1 }], key, fakeStripe, cms));
 });
 
@@ -256,7 +265,8 @@ test('an interrupted Stripe response can be recovered without a second order or 
   await commerce.createCheckout(lines, key, networkStripe, cms);
   assert.equal((await cms.findByID({ collection: 'products', id: p.id })).reserved, 1);
   const orders = await cms.find({ collection: 'orders', where: { reference: { equals: `MK-${key}` } } });
-  assert.equal(orders.docs.length, 1);
+  assert.equal(orders.docs.length, 0);
+  assert.ok(await reservation(`MK-${key}`));
 });
 
 test('webhook rejects an unsigned or forged request', async () => {
@@ -337,9 +347,9 @@ test('an order-save failure rolls back stock deductions and a retry settles exac
   await commerce.createCheckout([{ slug: p.slug, grind: 'Boabe', quantity: 1 }], key, fakeStripe, cms);
   const session = { ...keys.get(`MK-${key}`)!, status: 'complete', payment_status: 'paid' } as Stripe.Checkout.Session;
   const failingCMS = new Proxy(cms, { get(target, name) {
-    if (name === 'update') return async (args: { collection: string; data: { status?: string } }) => {
+    if (name === 'create') return async (args: { collection: string; data: { status?: string } }) => {
       if (args.collection === 'orders' && args.data.status === 'paid') throw new Error('Simulated database write failure');
-      return target.update(args as Parameters<Payload['update']>[0]);
+      return target.create(args as Parameters<Payload['create']>[0]);
     };
     const value = Reflect.get(target, name);
     return typeof value === 'function' ? value.bind(target) : value;
@@ -448,9 +458,9 @@ test('stock checkout rejects missing legal acknowledgement before reserving stoc
   }
   assert.equal((await cms.findByID({collection:'products',id:p.id})).reserved,0);
   const key=randomUUID();await commerce.createCheckout(input.items,key,fakeStripe,cms,legal.version);
-  const first=(await cms.find({collection:'orders',where:{reference:{equals:`MK-${key}`}}})).docs[0];
+  const first=await reservation(`MK-${key}`);
   await commerce.createCheckout(input.items,key,fakeStripe,cms,legal.version);
-  const second=await cms.findByID({collection:'orders',id:first.id});
+  const second=await reservation(`MK-${key}`);
   assert.equal(first.legalVersion,legal.version);assert.ok(first.legalAcceptedAt);
   assert.equal(second.legalAcceptedAt,first.legalAcceptedAt);
   await assert.rejects(commerce.createCheckout(input.items,key,fakeStripe,cms,'new-version'));
@@ -598,4 +608,68 @@ test('old abandoned drafts are deleted without touching made-to-order requests',
   await commerce.pruneAbandonedCheckouts(cms);
   assert.equal((await cms.count({collection:'orders',where:{id:{equals:stock.id}}})).totalDocs,0);
   assert.equal((await cms.findByID({collection:'orders',id:production.id})).status,'expired');
+});
+
+test('card attempts never create orders, even with admin access; only verified payment registers one', async () => {
+  const p = await product(2), key = randomUUID(), reference = `MK-${key}`;
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}], key, fakeStripe, cms, legal.version, checkoutDetails('card'));
+  const count = () => cms.count({collection:'orders',where:{reference:{equals:reference}},overrideAccess:true});
+  assert.equal((await count()).totalDocs, 0);
+  const session = keys.get(reference)!;
+  await commerce.applySession({...session,status:'complete',payment_status:'unpaid'},cms);
+  assert.equal((await count()).totalDocs, 0);
+  await Promise.all(Array.from({length:4},()=>commerce.applySession({...session,status:'complete',payment_status:'paid'},cms)));
+  assert.equal((await count()).totalDocs, 1);
+  assert.equal(await reservation(reference), undefined);
+  const saved=(await cms.find({collection:'orders',where:{reference:{equals:reference}}})).docs[0];
+  assert.equal(saved.status,'paid');assert.equal(saved.legalVersion,legal.version);
+  assert.deepEqual(saved.checkoutDetails,checkoutDetails('card'));
+});
+
+test('closing the browser without returning creates no order; Stripe expiry releases the reservation', async () => {
+  const p=await product(2),key=randomUUID(),reference=`MK-${key}`;
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+  const session=keys.get(reference)!;session.status='expired';
+  await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`UPDATE checkout_reservations SET expires_at = now() - interval '1 minute' WHERE reference = ${reference}`);
+  await commerce.reconcileExpired(cms,fakeStripe);
+  assert.equal((await cms.count({collection:'orders',where:{reference:{equals:reference}}})).totalDocs,0);
+  assert.equal(await reservation(reference),undefined);
+  const inventory=await cms.findByID({collection:'products',id:p.id});
+  assert.equal(inventory.stock,2);assert.equal(inventory.reserved,0);
+});
+
+test('legacy card checkouts already open before deployment can still settle', async () => {
+  const p=await product(1),key=randomUUID(),reference=`MK-${key}`;
+  await commerce.createCheckout([{slug:p.slug,grind:'Boabe',quantity:1}],key,fakeStripe,cms);
+  const {id:_,createdAt:__,updatedAt:___,...snapshot}=await reservation(reference);
+  await cms.create({collection:'orders',data:snapshot});
+  await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`DELETE FROM checkout_reservations WHERE reference=${reference}`);
+  await commerce.applySession({...keys.get(reference)!,status:'complete',payment_status:'paid'},cms);
+  const saved=(await cms.find({collection:'orders',where:{reference:{equals:reference}}})).docs[0];
+  assert.equal(saved.status,'paid');
+  assert.equal((await cms.findByID({collection:'products',id:p.id})).stock,0);
+});
+
+test('made-to-order checkout saves canonical customer details before quoting, reuses its payment link and keeps the request on cancellation', async () => {
+  const {parseProductionRequest,createProductionRequest,generateProductionPayment}=await import('../../src/lib/production-orders');
+  const p=await product(0),key=randomUUID(),details=checkoutDetails('card');
+  const input=parseProductionRequest({key,details,items:[{slug:p.slug,grind:'Boabe',quantity:2}],note:'Contact telefonic pentru termen.'});
+  const {reference}=await createProductionRequest({...input,legalVersion:legal.version},cms);
+  const order=(await cms.find({collection:'orders',where:{reference:{equals:reference}}})).docs[0];
+  assert.equal(order.status,'requested');assert.equal(order.customerPhone,details.contact.phone);
+  assert.equal(order.customerEmail,details.contact.email);assert.equal(order.customerName,details.contact.name);
+  assert.deepEqual(order.checkoutDetails,details);
+  const quote={unitPrices:[64.5],shipping:20};
+  const link=await generateProductionPayment(order.id,quote,fakeStripe,cms);
+  assert.ok(link.url);assert.deepEqual(await generateProductionPayment(order.id,quote,fakeStripe,cms),link);
+  const pending=await cms.findByID({collection:'orders',id:order.id});
+  const session=sessions.get(pending.stripeSessionId!)!;
+  await commerce.applySession({...session,status:'expired'},cms);
+  assert.equal((await cms.findByID({collection:'orders',id:order.id})).status,'expired');
+  const regenerated=await generateProductionPayment(order.id,quote,fakeStripe,cms);assert.ok(regenerated.url);
+  const renewed=await cms.findByID({collection:'orders',id:order.id});
+  await commerce.applySession({...sessions.get(renewed.stripeSessionId!)!,status:'complete',payment_status:'paid'},cms);
+  const paid=await cms.findByID({collection:'orders',id:order.id});
+  assert.equal(paid.status,'paid');assert.equal(paid.totalBani,14900);assert.deepEqual(paid.checkoutDetails,details);
+  const inventory=await cms.findByID({collection:'products',id:p.id});assert.equal(inventory.stock,0);assert.equal(inventory.reserved,0);
 });

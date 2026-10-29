@@ -37,7 +37,11 @@ Pentru a șterge un produs adăugat din greșeală, deschide produsul și alege 
 
 La o plată confirmată, stocul scade automat. Nu îl scădea încă o dată manual pentru aceeași comandă. O sesiune de plată are o rezervare de aproximativ 35 de minute. La anularea sau expirarea confirmată a sesiunii, rezervarea se eliberează; actualizarea poate apărea după procesarea confirmării sau reîncărcarea catalogului.
 
+Pentru produsele din stoc plătite cu cardul, comanda se creează numai după confirmarea Stripe. Deschiderea checkout-ului salvează separat o rezervare tehnică, fără comandă și fără număr de comandă în administrare. Înapoi/anularea eliberează rezervarea după verificarea Stripe; închiderea tabului o lasă până la expirarea sesiunii. O plată confirmată se înregistrează și dacă clientul nu revine pe site. Comenzile ramburs și cele la cerere se înregistrează la trimiterea formularului.
+
 La stoc disponibil zero, produsul rămâne vizibil și poate fi comandat **la cerere**. Clientul completează numele, telefonul și e-mailul, iar solicitarea apare în **Comenzi**, fără plată imediată. Dacă un coș conține atât produse din stoc, cât și produse la cerere, întreaga comandă se confirmă telefonic. Pentru a retrage complet un produs, debifează **Vizibil în magazin** și salvează.
+
+Același formular de comandă la cerere este disponibil și la `/finalizare-comanda` pentru produse fără preț sau cu stoc insuficient. Se păstrează datele de contact, livrarea, facturarea și metoda de plată aleasă. Formularul funcționează fără Stripe configurat; Stripe este necesar ulterior pentru generarea linkului de plată cu cardul.
 
 ## Comenzile la cerere și linkul de plată
 
@@ -126,6 +130,8 @@ Comenzile ramburs din stoc scad stocul imediat, o singură dată. O comandă ram
 După verificarea încasării banilor, apasă **Marchează încasat**, verifică suma și apasă **Confirmă încasarea**. Butonul este disponibil indiferent de etapa livrării; confirmarea plății nu modifică statusul livrării. Trecerea la **Livrată** nu marchează automat plata. Factura curierului se achită separat conform contractului firmei.
 
 Înainte de publicare rulează `npm run cms:migrate` pentru `20261029_120000_payment_methods`, cu `PAYLOAD_DB_PUSH=false`. Migrarea păstrează comenzile existente și le atribuie metoda card. Nu se colectează date de firmă retroactiv pentru comenzile vechi.
+
+Pentru separarea plăților online de comenzile înregistrate, rulează și migrarea `20261029_140000_checkout_reservations` prin aceeași comandă, înainte de publicarea codului nou. Adaugă tabela tehnică `checkout_reservations`; nu mută și nu șterge comenzile existente. Checkout-urile deschise de versiunea veche rămân compatibile cu reconcilierea Stripe.
 
 
 La plata cu cardul, deschiderea Stripe nu înregistrează o comandă în lista de administrare. La întoarcerea în magazin fără plată, sesiunea este închisă, stocul este eliberat imediat după confirmarea Stripe și încercarea temporară este ștearsă complet. Coșul rămâne disponibil. Lista și contoarele includ numai comenzi plătite, ramburs și la cerere. Dacă plata s-a finalizat în același timp cu revenirea, comanda plătită este păstrată. Încercările vechi din stoc marcate Expirată/Eșuată sunt eliminate automat la următoarele verificări ale catalogului; comenzile la cerere rămân înregistrate.

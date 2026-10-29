@@ -26,10 +26,13 @@ export function parseProductionRequest(value: unknown) {
   if (!value || typeof value !== "object")
     throw new CommerceError("Date invalide.");
   const body = value as Record<string, unknown>;
+  const details = body.details == null ? undefined : parseCheckoutDetails(body.details);
+  const contact: Record<string, unknown> = details?.contact ?? body;
   const field = (key: string, max: number) => {
-    if (typeof body[key] !== "string")
+    const source = key === "key" ? body : contact;
+    if (typeof source[key] !== "string")
       throw new CommerceError("Completează datele de contact.");
-    const text = (body[key] as string).trim();
+    const text = (source[key] as string).trim();
     if (text.length > max || /[\r\n\x00]/.test(text))
       throw new CommerceError("Date de contact invalide.");
     return text;
@@ -55,7 +58,7 @@ export function parseProductionRequest(value: unknown) {
     throw new CommerceError("Mesajul este prea lung.");
   if (body.website) throw new CommerceError("Solicitare nepermisă.");
   return {
-    ...(body.details ? { details: parseCheckoutDetails(body.details) } : {}),
+    ...(details ? { details } : {}),
     key,
     name,
     email,

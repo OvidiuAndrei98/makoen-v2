@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Check, ArrowUpRight } from "lucide-react";
 import type { CartLine } from "./cart-provider";
 import OrderLegalAcknowledgement from "./order-legal-acknowledgement";
@@ -19,6 +19,7 @@ export default function ProductionRequestForm({
   const [error, setError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [reference, setReference] = useState("");
+  const noteId = useId();
   const request = useRef<{
     fingerprint: string;
     key: string;
@@ -109,8 +110,8 @@ export default function ProductionRequestForm({
       </p>
       <fieldset disabled={status === "sending"}>
         <CheckoutFields />
-        <label htmlFor="production-note">Detalii suplimentare</label>
-        <textarea id="production-note" name="note" rows={2} maxLength={1500} />
+        <label htmlFor={noteId}>Detalii suplimentare</label>
+        <textarea id={noteId} name="note" rows={2} maxLength={1500} />
         <div className="contact-trap" aria-hidden="true">
           <input
             name="website"

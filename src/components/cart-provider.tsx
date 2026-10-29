@@ -25,6 +25,7 @@ import CoffeePack from "./coffee-pack";
 import useDialogMotion from "./use-dialog-motion";
 import useCheckoutReturn from "./use-checkout-return";
 import ProductionRequestForm from "./production-request-form";
+import { needsProductionRequest } from "@/lib/cart-availability";
 import { packageLabel } from "@/lib/product-format";
 
 /** Persist selections only; the server resolves current prices and reserves inventory. */
@@ -170,13 +171,7 @@ export default function CartProvider({
     catalog.managed &&
     catalog.ready &&
     !catalog.unavailable &&
-    items.some((line) => {
-      const p = productBySlug(line.slug);
-      const requested = items
-        .filter((item) => item.slug === line.slug)
-        .reduce((sum, item) => sum + item.quantity, 0);
-      return p && (p.price == null || (p.stock != null && p.stock < requested));
-    });
+    needsProductionRequest(items, catalog.products);
   const changeQuantity = (line: CartLine, value: number) =>
     setItems((previous) =>
       previous.map((i) =>

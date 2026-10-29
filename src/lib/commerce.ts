@@ -62,6 +62,38 @@ export async function lockOrder(
   );
 }
 
+type CheckoutOrder = Order & { reservation?: true };
+
+/** Legacy pending orders remain recoverable; new card attempts live outside orders. */
+async function findCheckout(cms: Payload, reference: string, id: number | string): Promise<CheckoutOrder | undefined> {
+  const req = { transactionID: id };
+  const existing = (await cms.find({
+    collection: "orders",
+    where: { reference: { equals: reference } },
+    depth: 0,
+    limit: 1,
+    req,
+  })).docs[0];
+  if (existing) return existing;
+  const db = transactionDB(cms, id);
+  const result = await db.execute(sql`SELECT snapshot FROM checkout_reservations WHERE reference = ${reference}`);
+  const snapshot = result.rows[0]?.snapshot as Order | undefined;
+  return snapshot ? { ...snapshot, reservation: true } : undefined;
+}
+
+async function updateCheckout(cms: Payload, id: number | string, order: CheckoutOrder, data: Partial<Order>): Promise<CheckoutOrder> {
+  if (!order.reservation) return cms.update({ collection: "orders", id: order.id, req: { transactionID: id }, data });
+  const updated = { ...order, ...data, updatedAt: new Date().toISOString() };
+  const { reservation: _, ...snapshot } = updated;
+  await transactionDB(cms, id).execute(sql`UPDATE checkout_reservations SET snapshot = ${JSON.stringify(snapshot)}::jsonb, expires_at = ${updated.expiresAt}::timestamptz WHERE reference = ${order.reference}`);
+  return updated;
+}
+
+async function deleteCheckout(cms: Payload, id: number | string, order: CheckoutOrder) {
+  if (order.reservation) await transactionDB(cms, id).execute(sql`DELETE FROM checkout_reservations WHERE reference = ${order.reference}`);
+  else await cms.delete({ collection: "orders", id: order.id, req: { transactionID: id } });
+}
+
 /**
  * Reconcile a session fetched from Stripe or verified by its webhook.
  * Paid sessions deduct stock; expiration releases reservations. The order lock
@@ -85,14 +117,7 @@ export async function applySession(
   return transaction(cms, async (id) => {
     const req = { transactionID: id };
     await lockOrder(cms, id, reference);
-    const found = await cms.find({
-      collection: "orders",
-      where: { reference: { equals: reference } },
-      depth: 0,
-      limit: 1,
-      req,
-    });
-    const order = found.docs[0];
+    const order = await findCheckout(cms, reference, id);
     // Expiration retries from an older production link may arrive after regeneration.
     if (
       order?.orderType === "production" &&
@@ -137,14 +162,10 @@ export async function applySession(
         throw new Error("Stock reservation is inconsistent.");
     }
     if (target === "expired" && order.orderType !== "production") {
-      await cms.delete({ collection: "orders", id: order.id, req });
+      await deleteCheckout(cms, id, order);
       return;
     }
-    return cms.update({
-      collection: "orders",
-      id: order.id,
-      req,
-      data: {
+    const data: Partial<Order> = {
         status: target,
         paymentIntentId:
           typeof session.payment_intent === "string"
@@ -156,8 +177,14 @@ export async function applySession(
         shippingAddress: session.collected_information?.shipping_details
           ? { ...session.collected_information.shipping_details }
           : (order.shippingAddress ?? null),
-      },
-    });
+    };
+    if (order.reservation) {
+      const { id: _, reservation: __, createdAt: ___, updatedAt: ____, ...snapshot } = order;
+      const registered = await cms.create({ collection: "orders", req, data: { ...snapshot, ...data } });
+      await deleteCheckout(cms, id, order);
+      return registered;
+    }
+    return updateCheckout(cms, id, order, data);
   });
 }
 
@@ -166,14 +193,7 @@ async function failDraft(cms: Payload, reference: string) {
   await transaction(cms, async (id) => {
     const req = { transactionID: id };
     await lockOrder(cms, id, reference);
-    const { docs } = await cms.find({
-      collection: "orders",
-      where: { reference: { equals: reference } },
-      depth: 0,
-      limit: 1,
-      req,
-    });
-    const order = docs[0];
+    const order = await findCheckout(cms, reference, id);
     if (!order || order.status !== "pending" || order.stripeSessionId) return;
     const quantities = new Map<number, number>();
     for (const line of order.orderType === "production" ? [] : order.items) {
@@ -194,7 +214,7 @@ async function failDraft(cms: Payload, reference: string) {
         throw new Error("Stock reservation is inconsistent.");
     }
     if (order.orderType !== "production") {
-      await cms.delete({ collection: "orders", id: order.id, req });
+      await deleteCheckout(cms, id, order);
     } else {
       await cms.update({ collection: "orders", id: order.id, req, data: { status: "failed" } });
     }
@@ -226,6 +246,7 @@ export async function pruneAbandonedCheckouts(cms: Payload) {
 
 export async function reconcileExpired(cms: Payload, stripe: Stripe) {
   await pruneAbandonedCheckouts(cms);
+  const reservations = await (cms.db as unknown as PostgresAdapter).drizzle.execute(sql`SELECT snapshot FROM checkout_reservations WHERE expires_at < now() ORDER BY expires_at LIMIT 25`);
   const { docs } = await cms.find({
     collection: "orders",
     depth: 0,
@@ -237,7 +258,7 @@ export async function reconcileExpired(cms: Payload, stripe: Stripe) {
       ],
     },
   });
-  for (const order of docs) {
+  for (const order of [...docs, ...reservations.rows.map(row => ({ ...(row.snapshot as Order), reservation: true as const }))]) {
     if (order.stripeSessionId) {
       const session = await stripe.checkout.sessions.retrieve(
         order.stripeSessionId,
@@ -256,22 +277,18 @@ export async function reconcileExpired(cms: Payload, stripe: Stripe) {
  * retryable. The order lock covers both creation and persistence of the session ID.
  */
 export async function sessionForOrder(
-  order: Order,
+  order: CheckoutOrder,
   stripe: Stripe,
   cms: Payload,
 ) {
   try {
     return await transaction(cms, async (id) => {
       await lockOrder(cms, id, order.reference);
-      const req = { transactionID: id };
       // Re-read under the same lock used by payment/expiration handlers. Stripe
       // creation and recording its ID cannot race another retry or a webhook.
-      order = await cms.findByID({
-        collection: "orders",
-        id: order.id,
-        depth: 0,
-        req,
-      });
+      const current = await findCheckout(cms, order.reference, id);
+      if (!current) throw new CommerceError("Sesiunea de plată nu mai este disponibilă.", 409);
+      order = current;
       if (order.status !== "pending" || order.paymentMethod === "cod")
         throw new CommerceError(
           "Sesiunea de plată nu mai este disponibilă.",
@@ -322,17 +339,12 @@ export async function sessionForOrder(
               : order.reference,
         },
       );
-      await cms.update({
-        collection: "orders",
-        id: order.id,
-        req,
-        data: {
+      await updateCheckout(cms, id, order, {
           stripeSessionId: session.id,
           ...(order.orderType === "production"
             ? { paymentUrl: session.url }
             : {}),
           expiresAt: new Date(session.expires_at * 1000).toISOString(),
-        },
       });
       return session;
     });
@@ -348,7 +360,9 @@ export async function sessionForOrder(
 }
 
 /**
- * Reserve inventory and persist a price snapshot before opening Stripe Checkout.
+ * Reserve inventory and persist a technical snapshot before opening Stripe.
+ * Card attempts create an order only in applySession after verified payment;
+ * COD creates its order and deducts inventory immediately.
  * Client lines contain selections only; CMS supplies prices and availability.
  * Reusing a key requires the same pending cart. Different grind variants consume
  * the same product stock, so reservations aggregate their quantities.
@@ -383,15 +397,8 @@ export async function createCheckout(
   const order = await transaction(cms, async (id) => {
     await lockOrder(cms, id, reference);
     const req = { transactionID: id };
-    const existing = await cms.find({
-      collection: "orders",
-      where: { reference: { equals: reference } },
-      limit: 1,
-      depth: 0,
-      req,
-    });
-    if (existing.docs[0]) {
-      const doc = existing.docs[0];
+    const doc = await findCheckout(cms, reference, id);
+    if (doc) {
       if (
         fingerprint(doc.items) !== fingerprint(lines) ||
         doc.orderType === "production" ||
@@ -406,14 +413,9 @@ export async function createCheckout(
           409,
         );
       if (legalVersion && !doc.legalVersion)
-        return cms.update({
-          collection: "orders",
-          id: doc.id,
-          req,
-          data: {
+        return updateCheckout(cms, id, doc, {
             legalVersion,
             legalAcceptedAt: new Date().toISOString(),
-          },
         });
       return doc;
     }
@@ -461,10 +463,7 @@ export async function createCheckout(
     );
     if (!Number.isSafeInteger(totalBani) || totalBani > 99999999)
       throw new CommerceError("Valoare comandă invalidă.");
-    return cms.create({
-      collection: "orders",
-      req,
-      data: {
+    const data = {
         reference,
         items,
         ...(legalVersion
@@ -473,8 +472,9 @@ export async function createCheckout(
         totalBani,
         shippingBani,
         currency: "ron",
-        status: cod ? "cod_pending" : "pending",
-        paymentMethod: cod ? "cod" : "card",
+        orderType: "stock" as const,
+        status: cod ? "cod_pending" as const : "pending" as const,
+        paymentMethod: cod ? "cod" as const : "card" as const,
         ...(details ? {
           checkoutDetails: details,
           customerName: details.contact.name,
@@ -482,10 +482,14 @@ export async function createCheckout(
           customerPhone: details.contact.phone,
           shippingAddress: { name: details.contact.name, phone: details.contact.phone, address: details.shipping },
         } : {}),
-        fulfillmentStatus: "new",
+        fulfillmentStatus: "new" as const,
         expiresAt: cod ? null : new Date(Date.now() + 35 * 60 * 1000).toISOString(),
-      },
-    });
+    };
+    if (cod) return cms.create({ collection: "orders", req, data });
+    const now = new Date().toISOString();
+    const snapshot: Order = { ...data, id: 0, createdAt: now, updatedAt: now };
+    await transactionDB(cms, id).execute(sql`INSERT INTO checkout_reservations (reference, snapshot, expires_at) VALUES (${reference}, ${JSON.stringify(snapshot)}::jsonb, ${data.expiresAt}::timestamptz)`);
+    return { ...snapshot, reservation: true as const };
   });
   if (cod) return { reference: order.reference, paymentMethod: "cod" as const };
   const session = order.stripeSessionId
@@ -505,13 +509,11 @@ export async function cancelCheckout(
   cmsArg?: Payload,
 ) {
   const cms = cmsArg ?? (await getCMS());
-  const { docs } = await cms.find({
-    collection: "orders",
-    where: { reference: { equals: `MK-${key}` } },
-    limit: 1,
-    depth: 0,
+  const reference = `MK-${key}`;
+  const order = await transaction(cms, async id => {
+    await lockOrder(cms, id, reference);
+    return findCheckout(cms, reference, id);
   });
-  const order = docs[0];
   if (!order || order.orderType === "production" || order.paymentMethod === "cod") return {};
   if (order.status === "paid" && order.stripeSessionId)
     return { url: `/comanda?session_id=${encodeURIComponent(order.stripeSessionId)}`, paid: true };
