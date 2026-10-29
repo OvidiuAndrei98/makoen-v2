@@ -1,12 +1,12 @@
 .home-process { padding-block:var(--section-space); }
-.home-process-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; margin:28px 0 0; padding:0; list-style:none; }
-.home-process-steps > li { min-width:0; padding-top:20px; border-top:1px solid var(--makeon-border); }
-.home-process-number { display:block; margin-bottom:16px; color:var(--makeon-muted); font-size:13px; font-variant-numeric:tabular-nums; }
+.home-process-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:64px; margin:28px 0 0; padding:0; list-style:none; }
+.home-process-steps > li { position:relative; min-width:0; }
+.home-process-arrow { position:absolute; top:3px; right:-44px; color:var(--makeon-muted); }
 .b2b-site .home-process-steps h3 { margin:0; font:500 21px/1.35 var(--font-heading); letter-spacing:-.025em; }
 .home-process-steps p { max-width:40ch; margin-top:12px; color:var(--makeon-muted); font-size:15px; line-height:1.7; }
 @media (max-width:700px) {
-  .home-process-steps { grid-template-columns:minmax(0,1fr); gap:24px; }
-  .home-process-number { margin-bottom:10px; }
+  .home-process-steps { grid-template-columns:minmax(0,1fr); gap:56px; }
+  .home-process-arrow { top:auto; right:auto; bottom:-40px; left:calc(50% - 12px); transform:rotate(90deg); }
 }
 /* Compact service cards share the same hierarchy and geometry. */
 .home-solutions { padding-block:80px 24px; background:var(--makeon-surface); scroll-margin-block-start:106px; }

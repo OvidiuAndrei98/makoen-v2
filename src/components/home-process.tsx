@@ -1,3 +1,5 @@
+import { ArrowRight } from "lucide-react";
+
 export default function HomeProcess() {
   return (
     <section className="b2b-container home-process" id="cum-lucram" aria-labelledby="home-process-title" data-choreography="section">
@@ -6,19 +8,18 @@ export default function HomeProcess() {
       </h2>
       <ol className="home-process-steps">
         <li data-choreo-item>
-          <span className="home-process-number" aria-hidden="true">01</span>
           <h3>Ne spui despre echipă.</h3>
-          <p>Câți colegi sunteți, ce consumați și ce spațiu aveți la dispoziție.</p>
+          <p>Câți colegi sunteți și ce consum de cafea și apă aveți.</p>
+          <ArrowRight className="home-process-arrow" size={24} strokeWidth={1.5} aria-hidden="true" />
         </li>
         <li data-choreo-item>
-          <span className="home-process-number" aria-hidden="true">02</span>
           <h3>Îți recomandăm soluția.</h3>
-          <p>Alegem cafeaua, espressorul sau dozatorul de apă și clarificăm costurile în ofertă.</p>
+          <p>Alegem echipamentele și cafeaua potrivite, cu o ofertă clară.</p>
+          <ArrowRight className="home-process-arrow" size={24} strokeWidth={1.5} aria-hidden="true" />
         </li>
         <li data-choreo-item>
-          <span className="home-process-number" aria-hidden="true">03</span>
-          <h3>Stabilim instalarea și serviciile.</h3>
-          <p>Planificăm instalarea și mentenanța, plus aprovizionarea cu cafea, conform ofertei acceptate.</p>
+          <h3>Ne ocupăm de servicii.</h3>
+          <p>Instalare, aprovizionare și mentenanță, conform ofertei acceptate.</p>
         </li>
       </ol>
     </section>
